@@ -2,6 +2,7 @@
 
 import base64
 import binascii
+import config
 from Crypto.Cipher import AES
 import hashlib
 import hmac
@@ -30,7 +31,7 @@ def guid():
 
 ####################################################################
 
-def mac(method,action,access_token,secret,client = 'global'):
+def mac(method,action,client = 'global'):
 
     # Creates Mac Authentication header string used when sending requests
     # returns string
@@ -45,10 +46,10 @@ def mac(method,action,access_token,secret,client = 'global'):
         + 'ishin-production.aktsk.jp' + '\n' + '3001' + ''''''
 
 
-    hmac_hex_bin = hmac.new(secret.encode('utf-8'), value.encode('utf-8'
+    hmac_hex_bin = hmac.new(config.secret.encode('utf-8'), value.encode('utf-8'
                             ), hashlib.sha256).digest()
     mac = base64.b64encode(hmac_hex_bin).decode()
-    final = 'MAC ' + 'id=' + '"' + access_token + '"' + ' nonce=' + '"' \
+    final = 'MAC ' + 'id=' + '"' + config.access_token + '"' + ' nonce=' + '"' \
         + nonce + '"' + ' ts=' + '"' + ts + '"' + ' mac=' + '"' + mac \
         + '"'
     return final

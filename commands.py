@@ -30,12 +30,12 @@ def complete_stage(stage_id, difficulty, kagi = None):
         return 0
 
 
-    # Begin timer for stage completion, rounded to second.
+    # Begin timer for overall stage completion, rounded to second.
     timer_start = int(round(time.time(), 0))
 
     # Form First Request
     APIToken = ''.join(choice(ascii_uppercase) for i in range(63))
-    friend = GetFriend(MacId, secret, stage_id, difficulty)
+    friend = getfriend(MacId, secret, stage_id, difficulty)
 
     if friend['is_cpu'] == False:
         if kagi != None:
@@ -49,65 +49,68 @@ def complete_stage(stage_id, difficulty, kagi = None):
             sign = json.dumps({'difficulty' : difficulty, 'cpu_friend_id' : friend['id'], 'is_playing_script' : True, 'selected_team_num': config.deck})
 
 
-    enc_sign = encrypt_sign(sign)
+    enc_sign = packet.encrypt_sign(sign)
 
     # ## Send First Request
 
     headers = {
-        'User-Agent': 'Android',
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
-        'Authorization': GetMac('POST', '/quests/' + stage_id
-                                + '/sugoroku_maps/start', MacId,
-                                secret),
+        'Authorization': packet.mac('POST', '/quests/' + stage_id
+                                	+ '/sugoroku_maps/start'),
         'Content-type': 'application/json',
-        'X-Platform': osx,
+        'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
         'X-ClientVersion': '////',
         }
     data = {'sign': enc_sign}
-    url = 'https://ishin-global.aktsk.com/quests/' + stage_id \
-        + '/sugoroku_maps/start'
+
+    if client == 'global':
+    	url = 'https://ishin-global.aktsk.com/quests/' + stage_id \
+        	  + '/sugoroku_maps/start'
+    else:
+    	url = 'http://ishin-production.aktsk.jp/quests/' + stage_id \
+        	  + '/sugoroku_maps/start'
+
     r = requests.post(url, data=json.dumps(data), headers=headers)
 
-    # ##Form second request
-
-    start_time = int(round(time.time(), 0))
-
-    # ## Simple error checking
-    global stones_allowed
-    #print(stones_allowed)
+    # Form second request
+    # Time for request sent
+    
     if 'sign' in r.json():
         dec_sign = decrypt_sign(r.json()['sign'])
-        #print(dec_sign)
     elif 'error' in r.json():
         print(Fore.RED + str(r.json()['error']))
+        # Check if error was due to lack of stamina
         if r.json()['error']['code'] == 'act_is_not_enough':
-            if int(stones_allowed) == 1:
-                #print(1)
-                Restore_Stamina(MacId, secret)
+        	# Check if allowed to refill stamina
+            if config.allow_stamina_refill == True:
+                refill_stamina()
                 r = requests.post(url, data=json.dumps(data),
                               headers=headers)
-            if 'error' in r.json():
-                print(Fore.RED + str(r.json()['error']))
-                return 0
-            dec_sign = decrypt_sign(r.json()['sign'])
+            else:
+            	print(Fore.RED + 'Stamina refill not allowed.')
+            	return 0
         else:
-            print(Fore.RED + str(r.json()['error']))
-            return 0
+        	print(Fore.RED + str(r.json()['error']))
     else:
-        print('I dunno lol')
+    	print(Fore.RED + str(r.json()))
         return 0
 
+    #Retrieve possible tile steps from response
     steps = []
     for x in dec_sign['sugoroku']['events']:
         steps.append(x)
+
     finish_time = int(round(time.time(), 0)+2000)
-    start_time = finish_time - randint(40000000, 50000000)
+    start_time = finish_time - randint(6200000, 8200000)
     damage = randint(500000, 1000000)
+
+    # Hercule punching bag event damage
     if str(stage_id)[0:3] == '711':
-        #print(damage)
         damage = randint(78000000, 79000000)
+
     sign = {
         'actual_steps': steps,
         'difficulty': difficulty,
@@ -124,33 +127,35 @@ def complete_stage(stage_id, difficulty, kagi = None):
         'steps': steps,
         'token': dec_sign['token'],
         }
+
     enc_sign = encrypt_sign(json.dumps(sign))
 
     # Send second request
 
     headers = {
-        'User-Agent': 'Android',
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
-        'Authorization': GetMac('POST', '/quests/' + stage_id
-                                + '/sugoroku_maps/finish', MacId,
-                                secret),
+        'Authorization': packet.mac('POST', '/quests/' + stage_id
+                                + '/sugoroku_maps/finish'),
         'Content-type': 'application/json',
-        'X-Platform': osx,
+        'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
         'X-ClientVersion': '////',
         }
     data = {'sign': enc_sign}
-    url = 'https://ishin-global.aktsk.com/quests/' + stage_id \
-        + '/sugoroku_maps/finish'
-    r = requests.post(url, data=json.dumps(data), headers=headers)
-    r = r.json()
-    r3 = decrypt_sign(r['sign'])
-    #print(r3)
+    if config.client == 'global':
+	    url = 'https://ishin-global.aktsk.com/quests/' + stage_id \
+	        + '/sugoroku_maps/finish'
+	else:
+		url = 'http://ishin-production.aktsk.jp/quests/' + stage_id \
+	        + '/sugoroku_maps/finish'
 
-    # print(r3)
+    r = requests.post(url, data=json.dumps(data), headers=headers)
+    dec_sign = decrypt_sign(r.json()['sign'])
+
     # ## Print out Items from Database
-    if 'items' in r3:
+    if 'items' in dec_sign:
         supportitems = []
         awakeningitems = []
         trainingitems = []
@@ -168,11 +173,11 @@ def complete_stage(stage_id, difficulty, kagi = None):
         trainingfieldsset = set()
         print('Items:')
         print('-------------------------')
-        if 'quest_clear_rewards' in r3:
-            for x in r3['quest_clear_rewards']:
+        if 'quest_clear_rewards' in dec_sign:
+            for x in dec_sign['quest_clear_rewards']:
                 if x['item_type'] == 'Point::Stone':
                     stones += x['amount']
-        for x in r3['items']:
+        for x in dec_sign['items']:
             if x['item_type'] == 'SupportItem':
 
                 # print('' + SupportItems.find(x['item_id']).name + ' x '+str(x['quantity']))
@@ -250,10 +255,10 @@ def complete_stage(stage_id, difficulty, kagi = None):
         for x in carditemsset:
             print(Cards.find(x).name + ' x' + str(carditems.count(x)))
         print(Fore.YELLOW + Style.BRIGHT + 'Stones x' + str(stones))
-    zeni = '{:,}'.format(r3['zeni'])
+    zeni = '{:,}'.format(dec_sign['zeni'])
     print('Zeni: ' + zeni)
-    if 'gasha_point' in r3:
-        print('Friend Points: ' + str(r3['gasha_point']))
+    if 'gasha_point' in dec_sign:
+        print('Friend Points: ' + str(dec_sign['gasha_point']))
 
     print('--------------------------')
 
@@ -261,18 +266,13 @@ def complete_stage(stage_id, difficulty, kagi = None):
 
     i = 0
     card_list = []
-    if 'user_items' in r3:
-        if 'cards' in r3['user_items']:
-            for x in r3['user_items']['cards']:
+    if 'user_items' in dec_sign:
+        if 'cards' in dec_sign['user_items']:
+            for x in dec_sign['user_items']['cards']:
                 if Cards.find(x['card_id']).rarity == 0:
                     card_list.append(x['id'])
-                    i += 1
-                    if i == 99:
-                        SellCards(MacId, secret, card_list)
-                        i = 0
-                        card_list[:] = []
-        if i != 0:
-            SellCards(MacId, secret, card_list)
+        
+    sell_cards(card_list)
 
     # ## Finish timing level
 
@@ -287,7 +287,7 @@ def complete_stage(stage_id, difficulty, kagi = None):
 
 
 ####################################################################
-def GetFriend(
+def getfriend(
     stage_id,
     difficulty,
     ):
@@ -299,7 +299,7 @@ def GetFriend(
         'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/quests/' + stage_id
-                                + '/supporters', config.access_token, config.secret),
+                                + '/supporters'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -390,7 +390,101 @@ def GetFriend(
                     		}
 
     return {
-            'is_cpu' : True,
+            'is_cpu' : False,
             'id' : r.json()['supporters'][0]['id']
            }
+####################################################################
+def refill_stamina():
+
+    # ## Restore user stamina
+
+    stones = get_user()['user']['stone']
+    if stones < 1:
+        print(Fore.RED + 'You have no stones left...')
+        return 0
+    if config.client == 'global':
+	    headers = {
+	        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+	        'Accept': '*/*',
+	        'Authorization': packet.mac('PUT', '/user/recover_act'),
+	        'Content-type': 'application/json',
+	        'X-Platform': config.platform,
+	        'X-AssetVersion': '////',
+	        'X-DatabaseVersion': '////',
+	        'X-ClientVersion': '////',
+	        }
+	    url = 'https://ishin-global.aktsk.com/user/recover_act'
+	else:
+		headers = {
+	        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+	        'Accept': '*/*',
+	        'Authorization': packet.mac('PUT', '/user/recover_act_with_stone'),
+	        'Content-type': 'application/json',
+	        'X-Platform': config.platform,
+	        'X-AssetVersion': '////',
+	        'X-DatabaseVersion': '////',
+	        'X-ClientVersion': '////',
+	        }
+	    url = 'http://ishin-production.aktsk.jp/user/recover_act_with_stone'
+    
+    r = requests.put(url, headers=headers)
+    print(Fore.GREEN + 'STAMINA RESTORED')
+####################################################################
+def get_user():
+
+    # Returns user response from bandai
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/user'),
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+    	url = 'https://ishin-global.aktsk.com/user'
+   	else:
+   		url = 'http://ishin-production.aktsk.jp/user'
+    r = requests.get(url, headers=headers)
+    return r.json()
+
+
+####################################################################
+def sell_cards(card_list):
+	#Takes cards list and sells them in batches of 99
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('POST', '/cards/sell'),
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+    	url = 'https://ishin-global.aktsk.com/cards/sell'
+   	else:
+   		url = 'http://ishin-production.aktsk.jp/cards/sell'
+
+
+    cards_to_sell = []
+    i = 0
+    for card in card_list:
+    	i += 1
+    	cards_to_sell.append(card)
+    	if i == 99:
+    		data = {'card_ids': cards}
+    		r = requests.post(url, data=json.dumps(data), headers=headers)
+    		if 'error' in r.json():
+		        print(r.json()['error'])
+		        return 0
+    		i = 0
+    		cards_to_sell[:] = []
+        
+    print('Sold Cards x' + str(len(card_list)))
 ####################################################################
