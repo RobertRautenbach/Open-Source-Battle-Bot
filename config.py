@@ -1,12 +1,18 @@
 from orator import DatabaseManager, Model
 
-access_token = None
-secret = None
+access_token = '3oPV2U06r80NBjegsWWsuq5qFLfjp7Nm14GBEwxGEmmqNzxQRqkCTcSFS/+g5bWgtFaM9EFARofnwAtXCTsd7g=='
+secret = '72lMI5RrAWNFmZXuly/VmjGsH+h61MfXJtoDffDsUwJ9+FnqSkRwRjqg0GC/r66TAQJgKskCMuO5iRO3NvY9+g=='
 client = 'global'
 platform = 'android'
 
 deck = 1
 allow_stamina_refill = True
+
+
+### Database Config
+config = {'mysql': {'driver': 'sqlite', 'database': 'database.db'}}
+db = DatabaseManager(config)
+Model.set_connection_resolver(db)
 
 class LinkSkills(Model):
 

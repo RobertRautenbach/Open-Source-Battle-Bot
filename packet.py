@@ -6,6 +6,7 @@ import config
 from Crypto.Cipher import AES
 import hashlib
 import hmac
+import json
 import os
 import time
 import uuid
@@ -31,19 +32,23 @@ def guid():
 
 ####################################################################
 
-def mac(method,action,client = 'global'):
+def mac(method,action):
 
     # Creates Mac Authentication header string used when sending requests
     # returns string
 
     ts = str(int(round(time.time(), 0)))
     nonce = ts + ':' + guid()['AdId']
-    if client == 'global'
+    if config.client == 'global':
     	value = ts + '\n' + nonce + '\n' + method + '\n' + action + '\n' \
-        + 'ishin-global.aktsk.com' + '\n' + '3001' + ''''''
+        + 'ishin-global.aktsk.com' + '\n' + '3001' + '''
+
+'''
     else:
     	value = ts + '\n' + nonce + '\n' + method + '\n' + action + '\n' \
-        + 'ishin-production.aktsk.jp' + '\n' + '3001' + ''''''
+        + 'ishin-production.aktsk.jp' + '\n' + '3001' + '''
+
+'''
 
 
     hmac_hex_bin = hmac.new(config.secret.encode('utf-8'), value.encode('utf-8'
