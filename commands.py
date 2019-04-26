@@ -1,3 +1,4 @@
+import base64
 from colorama import init, Fore, Back, Style
 import config
 import json
@@ -8,7 +9,7 @@ from random import randint
 import requests
 from string import ascii_uppercase
 import time
-
+import webbrowser
 
 # Coloroma autoreset
 init(autoreset=True)
@@ -28,12 +29,13 @@ def complete_stage(stage_id, difficulty, kagi = None):
             return 0
 
     #Retrieve correct stage name to print 
-    
-    print('Begin stage: ' + stage_id + ' ' \
-            + config.Quests.find(int(stage_id)).name + ' | Difficulty: ' \
-            + str(difficulty) + ' Deck: ' + str(config.deck))
-    
-    print(Fore.RED + 'Does this quest exist?')
+    try:
+        print('Begin stage: ' + stage_id + ' ' \
+                + config.Quests.find(int(stage_id)).name + ' | Difficulty: ' \
+                + str(difficulty) + ' Deck: ' + str(config.deck))
+    except:
+        print(Fore.RED + 'Does this quest exist?')
+        return 0
         
 
 
@@ -335,7 +337,7 @@ def get_friend(
         'Authorization': GetMac('GET', '/quests/' + stage_id
                                 + '/supporters', MacId, secret1),
         'Content-type': 'application/json',
-        'X-Platform': osx,
+        'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
         'X-ClientVersion': '////',
@@ -498,3 +500,288 @@ def sell_cards(card_list):
         
     print('Sold Cards x' + str(len(card_list)))
 ####################################################################
+def signup():
+
+    # returns string identifier to be formatted and used by SignIn function
+
+    user_acc = {
+        'ad_id': packet.guid()['AdId'],
+        'country': 'AU',
+        'currency': 'AUD',
+        'device': 'samsung',
+        'device_model': 'SM-E7000',
+        'os_version': '7.0',
+        'platform': config.platform,
+        'unique_id': packet.guid()['UniqueId'],
+        }
+    user_account = json.dumps({'user_account': user_acc})
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/auth/sign_up'
+    else:
+        url = 'http://ishin-production.aktsk.jp/auth/sign_up'
+    r = requests.post(url, data=user_account, headers=headers)
+
+    # ## It is now necessary to solve the captcha. Opens browser window
+    # ## in order to solve it. Script waits for user input before continuing
+    if 'captcha_url' not in r.json():
+        print(Fore.RED+'Captcha could not be loaded...')
+        return None
+
+    url = r.json()['captcha_url']
+    webbrowser.open(url, new=2)
+    captcha_session_key = r.json()['captcha_session_key']
+    print('Opening captcha in browser. Press'+ Fore.RED+' ENTER '+Style.RESET_ALL +'once you have solved it...')
+    input()
+
+    # ## Query sign up again passing the captcha session key.
+    # ## Bandais servers check if captcha was solved relative to the session key
+
+    data = {'captcha_session_key': captcha_session_key,
+            'user_account': user_acc}
+    
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/auth/sign_up'
+    else:
+        url = 'http://ishin-production.aktsk.jp/auth/sign_up'
+
+    r = requests.post(url, data=json.dumps(data), headers=headers)
+
+    # ##Return identifier for account, this changes upon transferring account
+    try:
+        return base64.b64decode(r.json()['identifier']).decode('utf-8')
+    except:
+        return None
+
+####################################################################
+####################################################################
+def signin(identifier):
+    # Takes account identifier and encodes it properly, sending BASIC Authorization
+    # request to bandai.
+    # Returns tuple
+
+    # Format identifier to receive access_token and secret
+    basic_pwacc = identifier.split(':')
+    complete_string = basic_pwacc[1] + ':' + basic_pwacc[0]
+    basic_accpw = 'Basic ' \
+        + base64.b64encode(complete_string.encode('utf-8'
+                           )).decode('utf-8')
+    data = json.dumps({
+                       'ad_id': packet.guid()['AdId'],
+                       'unique_id': packet.guid()['UniqueId']
+                      })
+
+    # print(data)
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': basic_accpw,
+        'Content-type': 'application/json',
+        'X-ClientVersion': '////',
+        'X-Language': 'en',
+        'X-UserCountry': 'AU',
+        'X-UserCurrency': 'AUD',
+        'X-Platform': config.platform,
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/auth/sign_in'
+    else:
+        url = 'http://ishin-production.aktsk.jp/auth/sign_in'
+
+    r = requests.post(url, data=data, headers=headers)
+
+    if 'captcha_url' in r.json():
+        print(r.json())
+        url = r.json()['captcha_url']
+        webbrowser.open(url, new=2)
+        captcha_session_key = r.json()['captcha_session_key']
+        print('Opening captcha in browser. Press'+ Fore.RED+' ENTER '+Style.RESET_ALL +'once you have solved it...')
+        input()
+        r = requests.post(url, data=data, headers=headers)
+
+    print(Fore.RED + 'SIGN IN COMPLETE' + Style.RESET_ALL)
+
+    try:
+        return (r.json()['access_token'],r.json()['secret'])
+    except:            
+        return None
+
+####################################################################
+def GetTransferCode():
+    # Returns transfer code in dictionary
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': mac('POST', '/auth/link_codes'),
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    data = {'eternal': 1}
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/auth/link_codes'
+    else:
+        url = 'http://ishin-production.aktsk.jp/auth/link_codes'
+    
+    r = requests.post(url, data=json.dumps(data), headers=headers)
+    try:
+        return {'transfer_code' : r.json()['link_code']}
+    except:
+        return None
+####################################################################
+def tutorial():
+
+    # ##Progress NULL TUTORIAL FINISH
+
+    print(Fore.BLUE + 'Tutorial Progress: 1/8')
+    headers = {
+        'User-Agent': 'Android',
+        'Accept': '*/*',
+        'Authorization': packet.mac('PUT', '/tutorial/finish'),
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/tutorial/finish'
+    else:
+        url = 'http://ishin-production.aktsk.jp/tutorial/finish'
+    r = requests.put(url, headers=headers)
+
+    # ##Progress NULL Gasha
+
+    headers = {
+        'User-Agent': 'Android',
+        'Accept': '*/*',
+        'Authorization': packet.mac('POST', '/tutorial/gasha'),
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/tutorial/gasha'
+    else:
+        url = 'http://ishin-production.aktsk.jp/tutorial/gasha'
+    r = requests.post(url, headers=headers)
+    print(Fore.BLUE + 'Tutorial Progress: 2/8')
+
+    # ##Progress to 999%
+
+    headers = {
+        'User-Agent': 'Android',
+        'Accept': '*/*',
+        'Authorization': packet.mac('PUT', '/tutorial'),
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    progress = {'progress': '999'}
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/tutorial'
+    else:
+        url = 'http://ishin-production.aktsk.jp/tutorial'
+    r = requests.put(url, data=json.dumps(progress), headers=headers)
+    print(Fore.BLUE + 'Tutorial Progress: 3/8')
+
+    # ##Change User name
+
+    headers = {
+        'User-Agent': 'Android',
+        'Accept': '*/*',
+        'Authorization': packet.mac('PUT', '/user'),
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    user = {'user': {'name': 'Ninja'}}
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/user'
+    else:
+        url = 'http://ishin-production.aktsk.jp/user'
+    r = requests.put(url, data=json.dumps(user), headers=headers)
+    print(Fore.BLUE + 'Tutorial Progress: 4/8')
+
+    # ##/missions/put_forward
+
+    headers = {
+        'User-Agent': 'Android',
+        'Accept': '*/*',
+        'Authorization': packet.mac('POST', '/missions/put_forward'),
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/missions/put_forward'
+    else:
+        url = 'http://ishin-production.aktsk.jp/missions/put_forward'
+    r = requests.post(url, headers=headers)
+    print(Fore.BLUE + 'Tutorial Progress: 5/8')
+
+    # ##Apologies accept
+
+    headers = {
+        'User-Agent': 'Android',
+        'Accept': '*/*',
+        'Authorization': packet.mac('PUT', '/apologies/accept'),
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/apologies/accept'
+    else:
+        url = 'http://ishin-production.aktsk.jp/apologies/accept'
+    r = requests.put(url, headers=headers)
+
+    # ##On Demand
+
+    headers = {
+        'User-Agent': 'Android',
+        'Accept': '*/*',
+        'Authorization': packet.mac('PUT', '/user'),
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/user'
+    else:
+        url = 'http://ishin-production.aktsk.jp/user'
+    data = {'user': {'is_ondemand': True}}
+    r = requests.put(url, data=json.dumps(data), headers=headers)
+    print(Fore.BLUE + 'Tutorial Progress: 6/8')
+
+    # ##Hidden potential releasable
+
+    print(Fore.BLUE + 'Tutorial Progress: 7/8')
+    print(Fore.BLUE + 'Tutorial Progress: 8/8')
+    print(Fore.RED + 'TUTORIAL COMPLETE')
+
+
+

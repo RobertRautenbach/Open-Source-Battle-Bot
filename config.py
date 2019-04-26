@@ -1,7 +1,9 @@
 from orator import DatabaseManager, Model
 
-access_token = '3oPV2U06r80NBjegsWWsuq5qFLfjp7Nm14GBEwxGEmmqNzxQRqkCTcSFS/+g5bWgtFaM9EFARofnwAtXCTsd7g=='
-secret = '72lMI5RrAWNFmZXuly/VmjGsH+h61MfXJtoDffDsUwJ9+FnqSkRwRjqg0GC/r66TAQJgKskCMuO5iRO3NvY9+g=='
+AdId = '97b29413-6306-457f-bc0c-96c0a3f861a8'
+UniqueId = '67fc22a1-1cab-4ad5-9abe-a1561f1fa2fc:bd66ee11'
+access_token = None
+secret = None
 client = 'global'
 platform = 'android'
 
