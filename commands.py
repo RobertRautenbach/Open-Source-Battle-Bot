@@ -1,8 +1,10 @@
 import base64
 from colorama import init, Fore, Back, Style
 import config
+import decryptor
 import json
 from orator import DatabaseManager, Model
+import os
 import packet
 from random import choice
 from random import randint
@@ -782,6 +784,48 @@ def tutorial():
     print(Fore.BLUE + 'Tutorial Progress: 7/8')
     print(Fore.BLUE + 'Tutorial Progress: 8/8')
     print(Fore.RED + 'TUTORIAL COMPLETE')
+####################################################################
 
+def db_download():
+
+    # ## Check DB version, download latest DB and decrypt it.
+
+    headers = {
+        'User-Agent': 'Android',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/client_assets/database'),
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        'X-Language': 'en',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/client_assets/database'
+    else:
+        url = 'http://ishin-production.aktsk.jp/client_assets/database'
+    r = requests.get(url, headers=headers)
+
+    url = r.json()['url']
+    print(Fore.RED + 'Downloading New Database Version...')
+    r = requests.get(url, allow_redirects=True)
+    open('dataenc.db', 'wb').write(r.content)
+    print(Fore.RED \
+        + 'Decrypting Latest Database... This can take a few minutes...')
+
+    # ## Calling database decrypt script
+    if config.client == 'global':
+        decryptor.main()
+    else:
+        decryptor.main(p = '2db857e837e0a81706e86ea66e2d1633')
+
+    # Gonna need to rename that main later^
+    # ## JP decrypt: 2db857e837e0a81706e86ea66e2d1633
+    print(Fore.GREEN + 'Database update complete!!! ' + version)
+    
+
+
+####################################################################
 
 
