@@ -1,7 +1,9 @@
 import commands
 import config
-commands.save_account()
+
 config.identifier = commands.signup()
+commands.save_account()
+commands.load_account()
 config.access_token,config.secret = commands.signin(config.identifier)
 #commands.db_download()
 commands.tutorial()

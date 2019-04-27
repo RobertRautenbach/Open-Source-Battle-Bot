@@ -1741,4 +1741,31 @@ def save_account():
                 break
             except Exception as e:
                 print(e)
+####################################################################
+def load_account():
 
+    while 1==1:
+        platform = input("What OS platform would you like to use? a:Android i:iOS: ")
+        if platform[0].lower() in ['a','i']:
+            if platform[0].lower() == 'a':
+                config.platform = 'android'
+            else:
+                config.platform = 'ios'
+            break
+        else:
+            print(Fore.RED+'Could not identify correct platform to use.')
+
+    while 1==1:
+        save_name = input("What save would you like to load?: ")
+        if os.path.isfile('Saves'+os.sep+config.platform+os.sep+save_name):
+            try:
+                f = open(os.path.join('Saves',config.platform, save_name), 'r')
+                config.identifier = f.readline().rstrip()
+                config.AdId = f.readline().rstrip()
+                config.UniqueId = f.readline().rstrip()
+                config.platform = f.readline().rstrip()
+            except Exception as e:
+                print(e)
+            break
+        else:
+            print(Fore.RED + "Could not find "+save_name)
