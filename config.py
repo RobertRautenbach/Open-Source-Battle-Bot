@@ -1,7 +1,6 @@
 from orator import DatabaseManager, Model
 
-AdId = '97b29413-6306-457f-bc0c-96c0a3f861a8'
-UniqueId = '67fc22a1-1cab-4ad5-9abe-a1561f1fa2fc:bd66ee11'
+
 access_token = None
 secret = None
 client = 'global'

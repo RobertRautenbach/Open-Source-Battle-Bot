@@ -334,7 +334,7 @@ def get_friend(
         response = SignIn(signup, AdId, UniqueId)
         RefreshClient()
         headers = {
-        'User-Agent': 'Android',
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
         'Authorization': GetMac('GET', '/quests/' + stage_id
                                 + '/supporters', MacId, secret1),
@@ -648,7 +648,7 @@ def tutorial():
 
     print(Fore.BLUE + 'Tutorial Progress: 1/8')
     headers = {
-        'User-Agent': 'Android',
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
         'Authorization': packet.mac('PUT', '/tutorial/finish'),
         'Content-type': 'application/json',
@@ -666,7 +666,7 @@ def tutorial():
     # ##Progress NULL Gasha
 
     headers = {
-        'User-Agent': 'Android',
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
         'Authorization': packet.mac('POST', '/tutorial/gasha'),
         'Content-type': 'application/json',
@@ -685,7 +685,7 @@ def tutorial():
     # ##Progress to 999%
 
     headers = {
-        'User-Agent': 'Android',
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
         'Authorization': packet.mac('PUT', '/tutorial'),
         'Content-type': 'application/json',
@@ -705,7 +705,7 @@ def tutorial():
     # ##Change User name
 
     headers = {
-        'User-Agent': 'Android',
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
         'Authorization': packet.mac('PUT', '/user'),
         'Content-type': 'application/json',
@@ -725,7 +725,7 @@ def tutorial():
     # ##/missions/put_forward
 
     headers = {
-        'User-Agent': 'Android',
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
         'Authorization': packet.mac('POST', '/missions/put_forward'),
         'Content-type': 'application/json',
@@ -744,7 +744,7 @@ def tutorial():
     # ##Apologies accept
 
     headers = {
-        'User-Agent': 'Android',
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
         'Authorization': packet.mac('PUT', '/apologies/accept'),
         'Content-type': 'application/json',
@@ -762,7 +762,7 @@ def tutorial():
     # ##On Demand
 
     headers = {
-        'User-Agent': 'Android',
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
         'Authorization': packet.mac('PUT', '/user'),
         'Content-type': 'application/json',
@@ -785,13 +785,12 @@ def tutorial():
     print(Fore.BLUE + 'Tutorial Progress: 8/8')
     print(Fore.RED + 'TUTORIAL COMPLETE')
 ####################################################################
-
 def db_download():
 
     # ## Check DB version, download latest DB and decrypt it.
 
     headers = {
-        'User-Agent': 'Android',
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/client_assets/database'),
         'Content-type': 'application/json',
@@ -822,10 +821,106 @@ def db_download():
 
     # Gonna need to rename that main later^
     # ## JP decrypt: 2db857e837e0a81706e86ea66e2d1633
-    print(Fore.GREEN + 'Database update complete!!! ' + version)
+    print(Fore.GREEN + 'Database update complete.')
     
 
 
 ####################################################################
+def accept_missions():
+    # Accept all remaining missions
 
+    headers = {
+               'User-Agent':'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+               'Accept':'*/*',
+               'Authorization': packet.mac('GET', '/missions'),
+               'Content-type' : 'application/json',
+               'X-Platform' : config.platform,
+               'X-AssetVersion' : '////',
+               'X-DatabaseVersion' : '////',
+               'X-ClientVersion' : '////'
+               }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/missions'
+    else:
+        url = 'http://ishin-production.aktsk.jp/missions'
+    r = requests.get(url, headers = headers)
+    missions = r.json()
+    mission_list = []
+    for mission in missions['missions']:
+        if mission['completed_at']!= None and mission['accepted_reward_at'] == None:
+            mission_list.append(mission['id'])
+
+    headers = {
+               'User-Agent':'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+               'Accept':'*/*',
+               'Authorization': packet.mac('POST', '/missions/accept'),
+               'Content-type' : 'application/json',
+               'X-Platform' : config.platform,
+               'X-AssetVersion' : '////',
+               'X-DatabaseVersion' : '////',
+               'X-ClientVersion' : '////'
+               }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/missions/accept'
+    else:
+        url = 'http://ishin-production.aktsk.jp/missions/accept'
+    data = {"mission_ids":mission_list}
+    r = requests.post(url, data = json.dumps(data),headers = headers)
+    if 'error' not in r.json():
+        print(Fore.GREEN+'Accepted missions')
+####################################################################
+def accept_gifts():
+
+    # Gets Gift Ids
+
+    headers = {
+        'User-Agent': 'Android',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/gifts'),
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/gifts'
+    else:
+        url = 'http://ishin-production.aktsk.jp/gifts'
+    r = requests.get(url, headers=headers)
+    
+    gifts = []
+    for x in r.json()['gifts']:
+        gifts.append(x['id'])
+    
+
+    # AcceptGifts
+    if len(gifts) == 0:
+        print('No gifts to accept...')
+        return 0
+    headers = {
+        'User-Agent': 'Android',
+        'Accept': '*/*',
+        'Authorization': packet.mac('POST', '/gifts/accept'),
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/gifts/accept'
+    else:
+        url = 'http://ishin-production.aktsk.jp/gifts/accept'
+
+    chunks = [gifts[x:x+25] for x in range(0, len(gifts), 25)]
+    for data in chunks:
+        data = {'gift_ids': data}
+        r = requests.post(url, data=json.dumps(data), headers=headers)
+    if 'error' not in r.json():
+        print(Fore.GREEN + 'Gifts Accepted...')
+    else:
+        print(r.json())
+
+####################################################################
 
