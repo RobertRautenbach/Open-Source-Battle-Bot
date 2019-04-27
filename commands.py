@@ -109,7 +109,8 @@ def complete_stage(stage_id, difficulty, kagi = None):
     else:
         print(Fore.RED + str(r.json()))
         return 0
-
+    if 'sign' in r.json():
+        dec_sign = packet.decrypt_sign(r.json()['sign'])
     #Retrieve possible tile steps from response
     steps = []
     for x in dec_sign['sugoroku']['events']:
@@ -1245,3 +1246,55 @@ def get_kagi_id(stage):
                 return None
 
     return None
+####################################################################
+
+def complete_unfinished_quest_stages():
+    # ## Will eventually use this to streamline stuff
+    # type: (object, object) -> object
+
+    headers = {
+        'User-Agent': 'Android',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/user_areas'),
+        'Content-type': 'application/json',
+        'X-Language': 'en',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/user_areas'
+    else:
+        url = 'http://ishin-production.aktsk.jp/user_areas'
+    r = requests.get(url, headers=headers)
+
+    maps = []
+    for user in r.json()['user_areas']:
+        for map in user['user_sugoroku_maps']:
+            if map['cleared_count'] == 0 and map['sugoroku_map_id'] < 999999 and map['sugoroku_map_id'] > 100:
+                maps.append(map)
+
+    if len(maps) == 0:
+        print("No quests to complete!")
+        print('--------------------------------------------')
+        return 0
+
+    i = 0
+    while i == 0:
+        #print(maps)
+        for map in maps:
+            complete_stage(str(map['sugoroku_map_id'])[:-1], str(map['sugoroku_map_id'])[-1])
+        r = requests.get(url, headers=headers)
+        maps_check = []
+        for user in r.json()['user_areas']:
+            for map in user['user_sugoroku_maps']:
+                if map['cleared_count'] == 0 and map['sugoroku_map_id'] < 999999 and map['sugoroku_map_id'] > 100:
+                    maps_check.append(map)
+        #print(maps_check)
+        if maps_check == maps:
+            i = 1
+        else:
+            maps = maps_check
+    return 1
+####################################################################
