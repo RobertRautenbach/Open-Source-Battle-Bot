@@ -284,8 +284,9 @@ def complete_stage(stage_id, difficulty, kagi = None):
             for x in dec_sign['user_items']['cards']:
                 if config.Cards.find(x['card_id']).rarity == 0:
                     card_list.append(x['id'])
-        
-    sell_cards(card_list)
+    
+    if len(card_list)> 0:
+        sell_cards(card_list)
 
     # ## Finish timing level
 
@@ -494,15 +495,20 @@ def sell_cards(card_list):
         i += 1
         cards_to_sell.append(card)
         if i == 99:
-            data = {'card_ids': cards}
+            data = {'card_ids': cards_to_sell}
             r = requests.post(url, data=json.dumps(data), headers=headers)
+            print('Sold Cards x' + str(len(cards_to_sell)))
             if 'error' in r.json():
                 print(r.json()['error'])
                 return 0
             i = 0
             cards_to_sell[:] = []
-        
-    print('Sold Cards x' + str(len(card_list)))
+    if i != 0:
+            data = {'card_ids': cards_to_sell}
+            r = requests.post(url, data=json.dumps(data), headers=headers)
+            print('Sold Cards x' + str(len(cards_to_sell)))
+    #print(r.json())
+    
 ####################################################################
 def signup():
 
