@@ -1178,7 +1178,7 @@ def change_team():
     window.Close()
     ###Send selected team to bandai
     headers = {
-        'User-Agent': 'Android',
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
         'Authorization': packet.mac('POST', '/teams'),
         'Content-type': 'application/json',
@@ -1207,3 +1207,41 @@ def change_team():
     return 0
 
 ####################################################################
+def get_kagi_id(stage):
+    # return kagi ID to use for a stage
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/eventkagi_items'),
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/eventkagi_items'
+    else:
+        url = 'http://ishin-production.aktsk.jp/eventkagi_items'
+    r = requests.get(url, headers=headers)
+
+    kagi_items = r.json()['eventkagi_items']
+    area_id = config.Quests.find(stage).area_id
+    area_category = config.Area.find(area_id).category
+    areatabs = config.AreaTabs.all()
+    for tab in areatabs:
+        j = json.loads(tab.area_category_ids)
+        if area_category in j['area_category_ids']:
+            kagi_id = int(tab.id)
+            print('Kagi ID: ' + str(tab.id))
+            break
+    for kagi in kagi_items:
+        if kagi['eventkagi_item_id'] == kagi_id:
+            if kagi['quantity'] > 0:
+                print('kagi_id' + kagi_id)
+                return kagi_id
+            else:
+                return None
+
+    return None
