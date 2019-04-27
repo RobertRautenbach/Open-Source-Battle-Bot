@@ -104,8 +104,14 @@ def complete_stage(stage_id, difficulty, kagi = None):
             else:
                 print(Fore.RED + 'Stamina refill not allowed.')
                 return 0
+        elif r.json()['error']['code'] == 'active_record/record_not_found':
+            return 0
+        elif r.json()['error']['code'] == 'invalid_area_conditions_potential_releasable':
+            print(Fore.RED + 'You do not meet the coniditions to complete potential events')
+            return 0
         else:
             print(Fore.RED + str(r.json()['error']))
+            return 0
     else:
         print(Fore.RED + str(r.json()))
         return 0
@@ -625,13 +631,13 @@ def signin(identifier):
         return None
 
 ####################################################################
-def GetTransferCode():
+def get_transfer_code():
     # Returns transfer code in dictionary
 
     headers = {
         'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
-        'Authorization': mac('POST', '/auth/link_codes'),
+        'Authorization': packet.mac('POST', '/auth/link_codes'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -646,6 +652,7 @@ def GetTransferCode():
     
     r = requests.post(url, data=json.dumps(data), headers=headers)
     try:
+        print(r.json()['link_code'])
         return {'transfer_code' : r.json()['link_code']}
     except:
         return None
@@ -1259,7 +1266,7 @@ def complete_unfinished_quest_stages():
     # type: (object, object) -> object
 
     headers = {
-        'User-Agent': 'Android',
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/user_areas'),
         'Content-type': 'application/json',
@@ -1293,7 +1300,7 @@ def complete_unfinished_quest_stages():
             complete_stage(str(map['sugoroku_map_id'])[:-1], str(map['sugoroku_map_id'])[-1])
 
         headers = {
-        'User-Agent': 'Android',
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/user_areas'),
         'Content-type': 'application/json',
@@ -1320,3 +1327,366 @@ def complete_unfinished_quest_stages():
 def refresh_client():
     config.access_token,config.secret = signin(config.identifier)
     print(Fore.GREEN+'Refreshed Token')
+####################################################################
+def change_name():
+    # Changes name associated with account
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('PUT', '/user'),
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    name = input('What would you like to change your name to?: ')
+    user = {'user': {'name': name}}
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/user'
+    else:
+        url = 'http://ishin-production.aktsk.jp/user'
+    r = requests.put(url, data=json.dumps(user), headers=headers)
+    if 'error' in r.json():
+        print(r.json())
+    else:
+        print("Name changed to: "+name)
+####################################################################
+def increase_capacity():
+
+    # ## Increases account card capacity by 5 every time it is called
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('POST', '/user/capacity/card'),
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/user/capacity/card'
+    else:
+        url = 'http://ishin-production.aktsk.jp/user/capacity/card'
+    
+    r = requests.post(url, headers=headers)
+    if 'error' in r.json():
+        print(Fore.RED + str(r.json()))
+    else:
+        print(Fore.GREEN + 'Card capacity +5')
+####################################################################
+
+def get_user_info():
+
+    # ## Returns User dictionary and info
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/user'),
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/user'
+    else:
+        url = 'http://ishin-production.aktsk.jp/user'
+    r = requests.get(url, headers=headers)
+    user = r.json()
+
+    print('Account OS: '+config.platform.upper())
+    print('User ID: ' + str(user['user']['id']))
+    print('Stones: ' + str(user['user']['stone']))
+    print('Zeni: ' + str(user['user']['zeni']))
+    print('Rank: ' + str(user['user']['rank']))
+    print('Stamina: ' + str(user['user']['act']))
+    print('Name: ' + str(user['user']['name']))
+    print('Total Card Capacity: ' + str(user['user']['total_card_capacity']))
+####################################################################
+def complete_unfinished_events():
+    # ## Will eventually use this to streamline stuff
+    # type: (object, object) -> object
+    ### Get current event IDs
+    # ## Gets current events json which contains some useful data
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/events'),
+        'Content-type': 'application/json',
+        'X-Language': 'en',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/events'
+    else:
+        url = 'http://ishin-production.aktsk.jp/events'
+    r = requests.get(url, headers=headers)
+    events = r.json()
+    event_ids = []
+    for event in events['events']:
+        event_ids.append(event['id'])
+    event_ids = sorted(event_ids)
+    try:
+        event_ids.remove(135)
+    except:
+        None
+
+    ### Complete areas if they are in the current ID pool
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/user_areas'),
+        'Content-type': 'application/json',
+        'X-Language': 'en',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/user_areas'
+    else:
+        url = 'http://ishin-production.aktsk.jp/user_areas'
+    r = requests.get(url, headers=headers)
+    areas = r.json()['user_areas']
+    i = 1
+    for area in areas:
+        if area['area_id'] in event_ids:
+            for stage in area['user_sugoroku_maps']:
+                if stage['cleared_count'] == 0:
+                    complete_stage(str(stage['sugoroku_map_id'])[:-1], str(stage['sugoroku_map_id'])[-1])
+                    i+=1
+        if i % 30 == 0:
+            refresh_client()
+####################################################################
+def complete_clash():
+    print('Fetching current clash...')
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/resources/home?rmbattles=true'),
+        'X-Language': 'en',
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/resources/home?rmbattles=true'
+    else:
+        url = 'http://ishin-production.aktsk.jp/resources/home?rmbattles=true'
+    r = requests.get(url, headers=headers)
+    clash_id = r.json()['rmbattles']['id']
+
+    #### dropout
+    print('Resetting clash to beginning...')
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('POST', '/rmbattles/'+str(clash_id)+'/stages/dropout', MacId,
+                                secret),
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    sign = {
+        'reason': "dropout"
+    }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/rmbattles/'+str(clash_id)+'/stages/dropout'
+    else:
+        url = 'http://ishin-production.aktsk.jp/rmbattles/'+str(clash_id)+'/stages/dropout'
+    
+    r = requests.post(url, data=json.dumps(sign), headers=headers)
+    print('Reset complete...')
+
+    print('Fetching list of stages from Bandai...')
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/rmbattles/'+str(clash_id)),
+        'X-Language': 'en',
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/rmbattles/'+str(clash_id)
+    else:
+        url = 'http://ishin-production.aktsk.jp/rmbattles/'+str(clash_id)
+    
+    r = requests.get(url, headers=headers)
+
+    available_stages = []
+    for area in r.json()['level_stages'].values():
+        for stage in area:
+            available_stages.append(stage['id'])
+    print('Stages obtained...')
+    print('Asking Bandai for available cards...')
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/rmbattles/available_user_cards'),
+        'X-Language': 'en',
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/rmbattles/available_user_cards'
+    else:
+        url = 'http://ishin-production.aktsk.jp/rmbattles/available_user_cards'
+    
+    r = requests.get(url, headers=headers)
+    print('Cards received...')
+    available_user_cards = []
+    #print(r.json())
+    for card in r.json():
+        available_user_cards.append(card)
+    available_user_cards= available_user_cards[:99]
+
+    if len(available_user_cards) == 0:
+        print(Fore.RED+"Not enough cards to complete Battlefield with!")
+        return 0
+
+
+    is_beginning = True
+    #print(available_stages)
+    print('Sending Bandai full team...')
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('PUT', '/rmbattles/teams/1'),
+        'X-Language': 'en',
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    data = {'user_card_ids': available_user_cards}
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/rmbattles/teams/1'
+    else:
+        url = 'http://ishin-production.aktsk.jp/rmbattles/teams/1'
+    
+    r = requests.put(url, data=json.dumps(data), headers=headers)
+    print('Sent!')
+    print('')
+    print('Commencing Ultimate Clash!')
+    print('----------------------------')
+    for stage in available_stages:
+        leader = available_user_cards[0]
+        members = available_user_cards[1]
+        sub_leader = available_user_cards[2]
+
+        sign = {
+            'is_beginning': is_beginning,
+            'user_card_ids':{
+            'leader': leader,
+            'members': members,
+            'sub_leader': sub_leader
+                }
+            }
+
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+            'Accept': '*/*',
+            'Authorization': packet.mac('POST', '/rmbattles/'+str(clash_id)+'/stages/'+str(stage)+'/start'),
+            'Content-type': 'application/json',
+            'X-Platform': config.platform,
+            'X-AssetVersion': '////',
+            'X-DatabaseVersion': '////',
+            'X-ClientVersion': '////',
+            }
+        if config.client == 'global':
+            url = 'https://ishin-global.aktsk.com/rmbattles/'+str(clash_id)+'/stages/'+str(stage)+'/start'
+        else:
+            url = 'http://ishin-production.aktsk.jp/rmbattles/'+str(clash_id)+'/stages/'+str(stage)+'/start'
+        
+        r = requests.post(url, data=json.dumps(sign), headers=headers)
+        print('Commencing Stage '+Fore.YELLOW+str(stage))
+
+        is_beginning = False
+
+        ###Second request
+        finish_time = int(round(time.time(), 0)+2000)
+        start_time = finish_time - randint(40000000, 50000000)
+        if 'sign' in r.json():
+            dec_sign = decrypt_sign(r.json()['sign'])
+        enemy_hp = 0
+        try:
+            for enemy in dec_sign['enemies']:
+                enemy_hp += enemy[0]['hp']
+        except:
+            print('nah')
+
+        sign = {
+            'damage' : enemy_hp,
+            'finished_at_ms': finish_time,
+            'finished_reason':'win',
+            'is_cleared':True,
+            'remaining_hp':0,
+            'round':0,
+            'started_at_ms':start_time,
+            'token': dec_sign['token']
+        }
+
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+            'Accept': '*/*',
+            'Authorization': packet.mac('POST', '/rmbattles/'+str(clash_id)+'/stages/finish'),
+            'Content-type': 'application/json',
+            'X-Platform': config.platform,
+            'X-AssetVersion': '////',
+            'X-DatabaseVersion': '////',
+            'X-ClientVersion': '////',
+            }
+        if config.client == 'global':
+            url = 'https://ishin-global.aktsk.com/rmbattles/'+str(clash_id)+'/stages/finish'
+        else:
+            url = 'http://ishin-production.aktsk.jp/rmbattles/'+str(clash_id)+'/stages/finish'
+        
+        r = requests.post(url, data=json.dumps(sign), headers=headers)
+        print('Completed Stage '+Fore.YELLOW+str(stage))
+
+
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+            'Accept': '*/*',
+            'Authorization': packet.mac('GET', '/rmbattles/teams/1'),
+            'X-Language': 'en',
+            'Content-type': 'application/json',
+            'X-Platform': config.platform,
+            'X-AssetVersion': '////',
+            'X-DatabaseVersion': '////',
+            'X-ClientVersion': '////',
+            }
+        if config.client == 'global':
+            url = 'https://ishin-global.aktsk.com/rmbattles/teams/1'
+        else:
+            url = 'http://ishin-production.aktsk.jp/rmbattles/teams/1'
+        
+        r = requests.get(url, headers=headers)
+        print('----------------------------')
+        if 'sortiable_user_card_ids' not in r.json():
+            return 0
+        available_user_cards = r.json()['sortiable_user_card_ids']
+        #print(available_user_cards)
+####################################################################

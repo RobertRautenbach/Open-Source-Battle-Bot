@@ -3,7 +3,7 @@ from orator import DatabaseManager, Model
 identifier = None
 access_token = None
 secret = None
-client = 'global'
+client = 'japan'
 platform = 'android'
 
 deck = 1
