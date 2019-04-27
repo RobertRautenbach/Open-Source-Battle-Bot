@@ -1,5 +1,7 @@
 from orator import DatabaseManager, Model
 
+AdId = None
+UniqueId = None
 identifier = None
 access_token = None
 secret = None

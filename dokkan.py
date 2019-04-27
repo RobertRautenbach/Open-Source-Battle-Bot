@@ -1,10 +1,11 @@
 import commands
 import config
-
+commands.save_account()
 config.identifier = commands.signup()
 config.access_token,config.secret = commands.signin(config.identifier)
 #commands.db_download()
 commands.tutorial()
+commands.complete_area(1)
 commands.complete_stage('1001','0')
 commands.accept_missions()
 commands.accept_gifts()

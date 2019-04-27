@@ -519,16 +519,17 @@ def sell_cards(card_list):
 def signup():
 
     # returns string identifier to be formatted and used by SignIn function
-
+    config.AdId = packet.guid()['AdId']
+    config.UniqueId = packet.guid()['UniqueId']
     user_acc = {
-        'ad_id': packet.guid()['AdId'],
+        'ad_id': config.AdId,
         'country': 'AU',
         'currency': 'AUD',
         'device': 'samsung',
         'device_model': 'SM-E7000',
         'os_version': '7.0',
         'platform': config.platform,
-        'unique_id': packet.guid()['UniqueId'],
+        'unique_id': config.UniqueId,
         }
     user_account = json.dumps({'user_account': user_acc})
 
@@ -1688,5 +1689,56 @@ def complete_clash():
         if 'sortiable_user_card_ids' not in r.json():
             return 0
         available_user_cards = r.json()['sortiable_user_card_ids']
-        #print(available_user_cards)
+
 ####################################################################
+def complete_area(area_id):
+    # completes all stages and difficulties of a given area.
+
+    quests = config.Quests.where('area_id', '=', area_id).get()
+    total = 0
+    for quest in quests:
+        sugorokus = config.Sugoroku.where('quest_id', '=', quest.id).get()
+        total += len(sugorokus)
+    i = 1
+    for quest in quests:
+        sugorokus = config.Sugoroku.where('quest_id', '=', quest.id).get()
+        difficulties = []
+        for sugoroku in sugorokus:
+            print('Completion of area: ' + str(i) + '/' + str(total))
+            complete_stage(str(quest.id),sugoroku.difficulty)
+            i += 1
+####################################################################
+def save_account():
+    if not os.path.isdir("Saves"):
+        try: 
+            os.mkdir('Saves')
+            os.mkdir('Saves/android')
+            os.mkdir('Saves/ios')
+        except:
+            print(Fore.RED + 'Unable to create saves file')
+            return 0
+
+    valid_save = False
+    while valid_save == False:
+        save_name = input("What would you like to name the file?")
+        while save_name.isalnum() == 0:
+            print(Fore.RED+"Name not allowed!")
+            save_name = input('What would you like to name this save?: ')
+        if os.path.exists('Saves'+os.sep+config.platform+os.sep+save_name):
+            print(Fore.RED + "File by that name already exists.")
+        else:
+            try:
+                f = open(os.path.join('Saves'+os.sep+config.platform+os.sep+save_name), 'w')
+                f.write(str(config.identifier) + '\n')
+                f.write(str(config.AdId) + '\n')
+                f.write(str(config.UniqueId) + '\n')
+                f.write(str(config.platform) + '\n')
+                f.close()
+                print('--------------------------------------------')
+                print(Fore.BLUE + 'Written details to file: ' + save_name)
+                print(Fore.RED + 'If ' + save_name + ' is deleted your account will be lost!')
+                print('--------------------------------------------')
+                break
+            except Exception as e:
+                print(e)
+
