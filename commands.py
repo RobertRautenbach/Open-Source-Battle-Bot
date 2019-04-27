@@ -1291,16 +1291,32 @@ def complete_unfinished_quest_stages():
         #print(maps)
         for map in maps:
             complete_stage(str(map['sugoroku_map_id'])[:-1], str(map['sugoroku_map_id'])[-1])
+
+        headers = {
+        'User-Agent': 'Android',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/user_areas'),
+        'Content-type': 'application/json',
+        'X-Language': 'en',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
         r = requests.get(url, headers=headers)
         maps_check = []
+        #print(r.json())
         for user in r.json()['user_areas']:
             for map in user['user_sugoroku_maps']:
                 if map['cleared_count'] == 0 and map['sugoroku_map_id'] < 999999 and map['sugoroku_map_id'] > 100:
                     maps_check.append(map)
-        #print(maps_check)
         if maps_check == maps:
             i = 1
         else:
             maps = maps_check
+            refresh_client()
     return 1
 ####################################################################
+def refresh_client():
+    config.access_token,config.secret = signin(config.identifier)
+    print(Fore.GREEN+'Refreshed Token')
