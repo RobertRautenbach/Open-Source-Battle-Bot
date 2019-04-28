@@ -1,5 +1,6 @@
 import commands
 import config
+import sys
 
 
 print('0:| New Account')
@@ -30,7 +31,15 @@ while True:
 
 while True:
     print("Type 'help' to view all commands.")
-    command = input()
+
+    # Set up comma separated chain commands. Handled via stdin
+    try:
+        command = input()
+    except:
+        sys.stdin = sys.__stdin__
+        command = input()
+
+    # Pass command to command executor and hand keyboard interrupts.
     try:
         commands.user_command_executor(command)
     except KeyboardInterrupt:

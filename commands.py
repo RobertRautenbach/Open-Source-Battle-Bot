@@ -2,6 +2,7 @@ import base64
 from colorama import init, Fore, Back, Style
 import config
 import decryptor
+import io
 import json
 from orator import DatabaseManager, Model
 import os
@@ -11,6 +12,7 @@ from random import choice
 from random import randint
 import requests
 from string import ascii_uppercase
+import sys
 import time
 import webbrowser
 
@@ -1950,6 +1952,12 @@ def transfer_account():
     refresh_client()
 ####################################################################
 def user_command_executor(command):
+    if ',' in command:
+            command = command.replace(" ", "")
+            command = command.replace(",", "\n")
+            s = io.StringIO(command+'\n')
+            sys.stdin = s
+            command = input()
 
     if command == 'help':
         if os.path.exists('help.txt'):

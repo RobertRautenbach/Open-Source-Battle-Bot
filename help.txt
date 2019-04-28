@@ -1,3 +1,5 @@
+To stop a command from executing, hold ctrl + c
+
 'stage' -> Completes stage given ID or name.
 'area' -> Complete all stages and difficulties in an area.
 'completequest' -> Completes all unfinished quest stages.
