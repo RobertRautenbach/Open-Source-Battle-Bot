@@ -3,10 +3,11 @@ import config
 
 config.identifier = commands.signup()
 commands.save_account()
-commands.load_account()
 config.access_token,config.secret = commands.signin(config.identifier)
-commands.dragonballs()
+commands.get_transfer_code()
+commands.transfer_account()
 
+commands.dragonballs()
 commands.complete_unfinished_quest_stages()
 commands.dragonballs()
 commands.daily_login()

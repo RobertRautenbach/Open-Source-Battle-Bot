@@ -1910,3 +1910,46 @@ def dragonballs():
         dragonballs()
 
         return 0
+####################################################################
+def transfer_account():
+    transfercode = input('Enter your transfer code: ')
+
+    config.AdId = packet.guid()['AdId']
+    config.UniqueId = packet.guid()['UniqueId']
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    data = {'eternal': True, 'old_user_id': '', 'user_account': {
+        'device': 'samsung',
+        'device_model': 'SM-E7000',
+        'os_version': '7.0',
+        'platform': config.platform,
+        'unique_id': config.UniqueId,
+        }}
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/auth/link_codes/' \
+        + str(transfercode)
+    else:
+        url = 'http://ishin-production.aktsk.jp/auth/link_codes/' \
+        + str(transfercode)
+    print('URL: ' + url)
+    r = requests.put(url, data=json.dumps(data), headers=headers)
+    if 'error' in r.json():
+        print(r.json())
+    print(base64.b64decode(r.json()['identifiers']).decode('utf-8'))
+    config.identifier = base64.b64decode(r.json()['identifiers']).decode('utf-8')
+
+    save_account()
+    refresh_client()
+
+
+
+
+
+
