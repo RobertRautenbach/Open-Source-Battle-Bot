@@ -1160,7 +1160,7 @@ def change_team():
                     print(Fore.RED+'No cards selected.')
                     return 0
                 loop = 6 - len(chosen_cards_unique_ids)
-                for i in range(loop):
+                for i in range(int(loop)):
                     chosen_cards_unique_ids.append('0')
                 break
 
@@ -1745,7 +1745,7 @@ def save_account():
 def load_account():
 
     while 1==1:
-        platform = input("What OS platform would you like to use? a:Android i:iOS: ")
+        platform = input("'a'|Android -- 'i'|iOS: ")
         if platform[0].lower() in ['a','i']:
             if platform[0].lower() == 'a':
                 config.platform = 'android'
@@ -1962,12 +1962,12 @@ def user_command_executor(command):
         stage = input('What stage would you like to complete?: ')
         difficulty = input('Enter the difficulty|(0:Easy, 1:Hard etc...): ')
         loop = input('Enter how many times to execute: ')
-        for i in range(loop):
+        for i in range(int(loop)):
             complete_stage(stage,difficulty)
     elif command == 'area':
         area = input('Enter the area to complete: ')
         loop  = input('How many times to complete the entire area: ')
-        for i in range(loop):
+        for i in range(int(loop)):
             complete_area(area)
     elif command == 'gift':
         accept_gifts()
@@ -1976,6 +1976,20 @@ def user_command_executor(command):
         complete_unfinished_quest_stages()
     elif command == 'completeevents':
         complete_unfinished_events()
+    elif command == 'clash':
+        complete_clash()
+    elif command == 'dragonballs':
+        dragonballs()
+    elif command == 'info':
+        get_user_info()
+    elif command == 'team':
+        change_team()
+    elif command == 'transfer':
+        get_transfer_code()
+    elif command == 'capacity':
+        increase_capacity()
+    elif command == 'name':
+        change_name()
     else:
         print('Command not found.')
 

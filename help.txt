@@ -2,4 +2,11 @@
 'area' -> Complete all stages and difficulties in an area.
 'completequest' -> Completes all unfinished quest stages.
 'completeevents' -> Completes all unfinished quest stages.
+'clash' -> Complete ultimate clash if you have enough UR cards.
+'dragonballs' -> Collects Dragonballs and makes wishes.
+'info' -> Print out account information.
+'team' -> Change composition of a deck.
 'gift' -> Accepts gifts and missions.
+'transfer' -> Generates transfer code.
+'capacity' -> Increase card capacity by +5.
+'name' -> Change account name.
