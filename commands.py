@@ -1811,3 +1811,102 @@ def daily_login():
     r = requests.post(url, headers=headers)
     if 'error' in r.json():
         print(r.json())
+####################################################################
+def dragonballs():
+    is_got = 0
+    ###Check for Dragonballs
+    headers = {
+                'User-Agent':'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                'Accept':'*/*',
+                'Authorization': packet.mac('GET', '/dragonball_sets'),
+                'Content-type' : 'application/json',
+                'X-Language':'en',
+                'X-Platform' : config.platform,
+                'X-AssetVersion' : '////',
+                'X-DatabaseVersion' : '////',
+                'X-ClientVersion' : '////'
+              }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/dragonball_sets'
+    else:
+        url = 'http://ishin-production.aktsk.jp/dragonball_sets'
+    r = requests.get(url, headers = headers)
+    if 'error' in r.json():
+        print(Fore.RED+str(r.json()))
+        return 0
+
+    ####Determine which dragonball set is being used
+    set = r.json()['dragonball_sets'][0]['id']
+
+    ### Complete stages and count dragonballs
+    for dragonball in r.json()['dragonball_sets']:
+        for db in reversed(dragonball['dragonballs']):
+            if db['is_got'] == True:
+                is_got += 1
+            elif db['is_got'] == False:
+                is_got += 1
+                complete_stage(str(db['quest_id']),db['difficulties'][0])
+
+    ### If all dragonballs found then wish
+    if is_got == 7:
+        headers = {
+                    'User-Agent':'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                    'Accept':'*/*',
+                    'Authorization': packet.mac('GET', '/dragonball_sets/'+str(set)+'/wishes'),
+                    'Content-type' : 'application/json',
+                    'X-Language':'en',
+                    'X-Platform' : config.platform,
+                    'X-AssetVersion' : '////',
+                    'X-DatabaseVersion' : '////',
+                    'X-ClientVersion' : '////'
+                  }
+        if config.client == 'global':
+            url = 'https://ishin-global.aktsk.com/dragonball_sets/'+str(set)+'/wishes'
+        else:
+            url = 'http://ishin-production.aktsk.jp/dragonball_sets/'+str(set)+'/wishes'
+
+        r = requests.get(url, headers = headers)
+        if 'error' in r.json():
+            print(Fore.RED+str(r.json()))
+            return 0
+        wish_ids = []
+        for wish in r.json()['dragonball_wishes']:
+            if wish['is_wishable']:
+                print('#########################')
+                print('Wish ID: ' + str(wish['id']))
+                wish_ids.append(str(wish['id']))
+                print(wish['title'])
+                print(wish['description'])
+                print('')
+
+        print(Fore.YELLOW+'What wish would you like to ask shenron for? ID: ', end='')
+        choice = input()
+        while choice not in wish_ids:
+            print("Shenron did not understand you! ID: ",end='')
+            choice = input()
+        wish_ids[:] = []
+        headers = {
+                'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                'Accept': '*/*',
+                'Authorization': packet.mac('POST', '/dragonball_sets/'+str(set)+'/wishes'),
+                'Content-type': 'application/json',
+                'X-Platform': config.platform,
+                'X-AssetVersion': '////',
+                'X-DatabaseVersion': '////',
+                'X-ClientVersion': '////',
+                }
+        if config.client == 'global':
+            url = 'https://ishin-global.aktsk.com/dragonball_sets/'+str(set)+'/wishes'
+        else:
+            url = 'http://ishin-production.aktsk.jp/dragonball_sets/'+str(set)+'/wishes'
+        data = {'dragonball_wish_ids': [int(choice)]}
+        r = requests.post(url, data=json.dumps(data), headers=headers)
+        if 'error' in r.json():
+            print(Fore.RED+str(r.json()))
+        else:
+            print(Fore.YELLOW+'Wish granted!')
+            print('')
+
+        dragonballs()
+
+        return 0
