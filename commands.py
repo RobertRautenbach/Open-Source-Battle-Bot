@@ -1769,6 +1769,7 @@ def load_account():
             break
         else:
             print(Fore.RED + "Could not find "+save_name)
+    refresh_client()
 ####################################################################
 
 def daily_login():
