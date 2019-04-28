@@ -1769,3 +1769,45 @@ def load_account():
             break
         else:
             print(Fore.RED + "Could not find "+save_name)
+####################################################################
+
+def daily_login():
+
+    # ## Accepts Outstanding Login Bonuses
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/resources/home?apologies=true&banners=true&bonus_schedules=true&budokai=true&comeback_campaigns=true&gifts=true&login_bonuses=true&rmbattles=true'),
+        'X-Language': 'en',
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/resources/home?apologies=true&banners=true&bonus_schedules=true&budokai=true&comeback_campaigns=true&gifts=true&login_bonuses=true&rmbattles=true'
+    else:
+        url = 'http://ishin-production.aktsk.jp/resources/home?apologies=true&banners=true&bonus_schedules=true&budokai=true&comeback_campaigns=true&gifts=true&login_bonuses=true&rmbattles=true'
+    r = requests.get(url, headers=headers)
+    if 'error' in r.json():
+        print(r.json())
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('POST', '/login_bonuses/accept'),
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/login_bonuses/accept'
+    else:
+        url = 'http://ishin-production.aktsk.jp/login_bonuses/accept'
+
+    r = requests.post(url, headers=headers)
+    if 'error' in r.json():
+        print(r.json())
