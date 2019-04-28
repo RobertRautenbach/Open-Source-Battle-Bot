@@ -1948,6 +1948,37 @@ def transfer_account():
 
     save_account()
     refresh_client()
+####################################################################
+def user_command_executor(command):
+
+    if command == 'help':
+        if os.path.exists('help.txt'):
+            f = open(os.path.join('help.txt'), 'r')
+            help_text = f.read()
+            print(help_text)
+        else:
+            print(Fore.RED+'help.txt does not exist.')
+    elif command == 'stage':
+        stage = input('What stage would you like to complete?: ')
+        difficulty = input('Enter the difficulty|(0:Easy, 1:Hard etc...): ')
+        loop = input('Enter how many times to execute: ')
+        for i in range(loop):
+            complete_stage(stage,difficulty)
+    elif command == 'area':
+        area = input('Enter the area to complete: ')
+        loop  = input('How many times to complete the entire area: ')
+        for i in range(loop):
+            complete_area(area)
+    elif command == 'gift':
+        accept_gifts()
+        accept_missions()
+    elif command == 'completequests':
+        complete_unfinished_quest_stages()
+    elif command == 'completeevents':
+        complete_unfinished_events()
+    else:
+        print('Command not found.')
+
 
 
 

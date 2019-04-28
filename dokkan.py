@@ -5,16 +5,25 @@ import config
 print('0:| New Account')
 print('1:| Transfer Account To The Bot')
 print('2:| Load A Save')
-command = input('Command ->: ')
+command = input('Enter a choice ->: ')
+while True:
+    if command == '0':
+        config.identifier = commands.signup()
+        commands.save_account()
+        config.access_token,config.secret = commands.signin(config.identifier)
+        break
+    elif command == '1':
+        commands.transfer_account()
+        break
+    elif command == '2':
+        commands.load_account()
+        break
+    else:
+        print("Command not understood")
 
-if command == '0':
-    config.identifier = commands.signup()
-    commands.save_account()
-    config.access_token,config.secret = commands.signin(config.identifier)
-if command == '1':
-    commands.transfer_account()
-if command == '2':
-    commands.load_account()
+commands.user_command_executor('help')
+
+
 
 commands.get_transfer_code()
 commands.complete_unfinished_quest_stages()

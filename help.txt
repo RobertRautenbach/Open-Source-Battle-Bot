@@ -1,0 +1,5 @@
+'stage' -> Completes stage given ID or name.
+'area' -> Complete all stages and difficulties in an area.
+'completequest' -> Completes all unfinished quest stages.
+'completeevents' -> Completes all unfinished quest stages.
+'gift' -> Accepts gifts and missions.
