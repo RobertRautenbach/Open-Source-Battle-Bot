@@ -3,3 +3,6 @@
 .DS_Store
 *.db
 Saves/
+dist/
+pyinstaller/
+dokkan.spec
