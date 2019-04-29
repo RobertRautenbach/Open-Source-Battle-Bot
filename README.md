@@ -12,3 +12,13 @@ The dokkan module is where the command line/UI will be implemented, and will cal
 
 The decryptor module uses: https://github.com/bssthu/pysqlsimplecipher
 Although it's slow I preferred this code over pysqlcipher simply because it's easier to package it for distribution without running into issues.
+
+# Installation
+
+```
+easy_install nose
+easy_install tornado
+pip install colorama
+pip install orator
+pip install PySimpleGUI
+```
