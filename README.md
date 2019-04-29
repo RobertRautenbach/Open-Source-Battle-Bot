@@ -8,7 +8,7 @@ There shouldn't be too much reason to add to this file beyond fixing bugs.
   
 The commands module is where the bulk of the code will be written for adding new features.
 
-The dokkan module is where the command line/UI/saves will be implemented, and will call the functions in the commands module.
+The dokkan module is where the command line/UI will be implemented, and will call the functions in the commands module.
 
 The decryptor module uses: https://github.com/bssthu/pysqlsimplecipher
 Although it's slow I preferred this code over pysqlcipher simply because it's easier to package it for distribution without running into issues.
