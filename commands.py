@@ -1980,7 +1980,7 @@ def user_command_executor(command):
     elif command == 'gift':
         accept_gifts()
         accept_missions()
-    elif command == 'omegafarm'
+    elif command == 'omegafarm':
         accept_gifts()
         accept_missions()
         complete_unfinished_quest_stages()
