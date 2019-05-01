@@ -15,10 +15,18 @@ Although it's slow I preferred this code over pysqlcipher simply because it's ea
 
 # Installation
 
+You might need to use sudo before every pip3 command.
+
 ```
-easy_install nose
-easy_install tornado
-pip install colorama
-pip install orator
-pip install PySimpleGUI
+pip3 install six
+pip3 install pyinstaller
+pip3 install colorama
+pip3 install orator
+pip3 install pycryptodome
+pip3 install pysimplegui 
+pip3 install requests
 ```
+
+Then go to folder where your dokkan.py file is and: python3 dokkan.py
+
+Happy testing!
