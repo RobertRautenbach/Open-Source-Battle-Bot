@@ -6,6 +6,7 @@ To stop a command from executing, hold ctrl + c
 'completeevents' -> Completes all unfinished quest stages.
 'clash' -> Complete ultimate clash if you have enough UR cards.
 'dragonballs' -> Collects Dragonballs and makes wishes.
+'omegafarm' -> Completes everything (story, events, zbattle)
 'info' -> Print out account information.
 'team' -> Change composition of a deck.
 'gift' -> Accepts gifts and missions.
