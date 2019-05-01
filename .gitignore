@@ -1,3 +1,4 @@
+
 .vscode
 *.pyc
 .DS_Store
@@ -12,3 +13,4 @@ __pycache__
 commands.spec
 physqlsimplecipher
 .vscode
+.gitattributes
