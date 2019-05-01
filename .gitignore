@@ -6,3 +6,5 @@ Saves/
 dist/
 pyinstaller/
 dokkan.spec
+build
+__pycache__
