@@ -15,6 +15,8 @@ Although it's slow I preferred this code over pysqlcipher simply because it's ea
 
 # ToDo (lacking from paid bot)
 
+
+```
 [x] Omega farm (doing everything)
 [x] Finish zbattle
 [] Daily logins
@@ -57,7 +59,7 @@ Although it's slow I preferred this code over pysqlcipher simply because it's ea
 [] 'refresh' to reauthenticate client that has been idle...
 [] 'exit' to terminate
 [] 'list' to print master list of stages
-
+```
 
 
 # Installation
