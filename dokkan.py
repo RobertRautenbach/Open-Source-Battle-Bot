@@ -2,12 +2,11 @@ import commands
 import config
 import sys
 
-
-print('0:| New Account')
-print('1:| Transfer Account To The Bot')
-print('2:| Load A Save')
-command = input('Enter a choice ->: ')
 while True:
+    print('0:| New Account')
+    print('1:| Transfer Account To The Bot')
+    print('2:| Load A Save')
+    command = input('Enter a choice ->: ')
     if command == '0':
         config.identifier = commands.signup()
         commands.save_account()
@@ -27,6 +26,7 @@ while True:
         break
     else:
         print("Command not understood")
+
 
 
 while True:

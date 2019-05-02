@@ -1734,6 +1734,7 @@ def save_account():
                 f.write(str(config.AdId) + '\n')
                 f.write(str(config.UniqueId) + '\n')
                 f.write(str(config.platform) + '\n')
+                f.write(str(config.client) + '\n')
                 f.close()
                 print('--------------------------------------------')
                 print(Fore.BLUE + 'Written details to file: ' + save_name)
@@ -1765,9 +1766,15 @@ def load_account():
                 config.AdId = f.readline().rstrip()
                 config.UniqueId = f.readline().rstrip()
                 config.platform = f.readline().rstrip()
+                client = f.readline().rstrip()
+                if config.client == client:
+                    break
+                else:
+                    print(Fore.RED+'Save does not match client version.')
+
             except Exception as e:
                 print(e)
-            break
+            
         else:
             print(Fore.RED + "Could not find "+save_name)
     refresh_client()
