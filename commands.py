@@ -1986,7 +1986,7 @@ def user_command_executor(command):
         complete_unfinished_events()
         complete_unfinished_zbattles()
         complete_clash()
-    ## When this will get updated, we shall add :finishzbattle,30, + sell + sellhercule + baba(?)
+    ## When this will get updated, we shall add:sell + sellhercule + baba(?)
     elif command == 'completequests':
         complete_unfinished_quest_stages()
     elif command == 'completeevents':
