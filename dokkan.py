@@ -49,9 +49,3 @@ while True:
 
 
 
-
-#commands.db_download()
-#commands.get_kagi_id('310001')
-
-
-
