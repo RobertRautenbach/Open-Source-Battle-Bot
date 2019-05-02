@@ -1496,8 +1496,7 @@ def complete_clash():
     headers = {
         'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
-        'Authorization': packet.mac('POST', '/rmbattles/'+str(clash_id)+'/stages/dropout', MacId,
-                                secret),
+        'Authorization': packet.mac('POST', '/rmbattles/'+str(clash_id)+'/stages/dropout', MacId, secret),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -1980,6 +1979,13 @@ def user_command_executor(command):
     elif command == 'gift':
         accept_gifts()
         accept_missions()
+    elif command == 'omegafarm':
+        accept_gifts()
+        accept_missions()
+        complete_unfinished_quest_stages()
+        complete_unfinished_events()
+        complete_clash()
+    ## When this will get updated, we shall add :finishzbattle,30, + sell + sellhercule + baba(?)
     elif command == 'completequests':
         complete_unfinished_quest_stages()
     elif command == 'completeevents':

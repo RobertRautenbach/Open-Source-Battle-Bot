@@ -1,4 +1,5 @@
 
+.vscode
 *.pyc
 .DS_Store
 *.db
@@ -6,3 +7,10 @@ Saves/
 dist/
 pyinstaller/
 dokkan.spec
+build
+__pycache__
+*.spec
+commands.spec
+physqlsimplecipher
+.vscode
+.gitattributes
