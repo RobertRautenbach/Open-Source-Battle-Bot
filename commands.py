@@ -1984,12 +1984,15 @@ def user_command_executor(command):
         accept_missions()
         complete_unfinished_quest_stages()
         complete_unfinished_events()
+        complete_unfinished_zbattles()
         complete_clash()
     ## When this will get updated, we shall add :finishzbattle,30, + sell + sellhercule + baba(?)
     elif command == 'completequests':
         complete_unfinished_quest_stages()
     elif command == 'completeevents':
         complete_unfinished_events()
+    elif command == 'completezbattles':
+        complete_unfinished_zbattles()
     elif command == 'clash':
         complete_clash()
     elif command == 'dragonballs':
@@ -2007,7 +2010,272 @@ def user_command_executor(command):
     else:
         print('Command not found.')
 
+####################################################################
+def complete_unfinished_zbattles(kagi = False):
+    headers = {
+            'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+            'Accept': '*/*',
+            'Authorization': packet.mac('GET', '/events'),
+            'Content-type': 'application/json',
+            'X-Language': 'en',
+            'X-Platform': config.platform,
+            'X-AssetVersion': '////',
+            'X-DatabaseVersion': '////',
+            'X-ClientVersion': '////',
+            }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/events'
+    else:
+        url = 'http://ishin-production.aktsk.jp/events'
+    r = requests.get(url, headers=headers)
+    events = r.json()
+    try:
+        for event in events['z_battle_stages']:
+            print(config.ZBattles.where('z_battle_stage_id','=',event['id']).first().enemy_name,end='')
+            print(Fore.BLUE+' | ID: ' + str(event['id']))
+            # Get Max cleared level
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                'Accept': '*/*',
+                'Authorization': packet.mac('GET', '/z_battles/'+str(event['id'])+'/rankings'),
+                'Content-type': 'application/json',
+                'X-Platform': config.platform,
+                'X-AssetVersion': '////',
+                'X-DatabaseVersion': '////',
+                'X-ClientVersion': '////',
+                }
+            if config.client == 'global':
+                url = 'https://ishin-global.aktsk.com/z_battles/'+str(event['id'])+'/rankings'
+            else:
+                url = 'http://ishin-production.aktsk.jp/z_battles/'+str(event['id'])+'/rankings'   
+            r = requests.get(url, headers=headers)
+            
+            # Determine the current stage
+            if len(r.json()['friends']) == 0:
+                level = 1
+            else:
+                level = int(r.json()['friends'][0]['max_clear_level']) + 1
+            
+            # Stop at level 30 !! This may not work for all zbattle e.g kid gohan
+            while level < 31:
+                ##Get supporters
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                    'Accept': '*/*',
+                    'Authorization': packet.mac('GET', '/z_battles/'+str(event['id'])+'/supporters'),
+                    'Content-type': 'application/json',
+                    'X-Platform': config.platform,
+                    'X-AssetVersion': '////',
+                    'X-DatabaseVersion': '////',
+                    'X-ClientVersion': '////',
+                    }
+                if config.client == 'global':
+                    url = 'https://ishin-global.aktsk.com/z_battles/'+str(event['id'])+'/supporters'
+                else:
+                    url = 'http://ishin-production.aktsk.jp/z_battles/'+str(event['id'])+'/supporters'   
+                r = requests.get(url, headers=headers)
+                if 'supporters' in r.json():
+                    supporter = r.json()['supporters'][0]['id']
+                elif 'error' in r.json():
+                    print(Fore.RED+r.json())
+                    return 0
+                else:
+                    print(Fore.RED+'Problem with ZBattle')
+                    print(r.raw())
+                    return 0
 
+                ###Send first request
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                    'Accept': '*/*',
+                    'Authorization': packet.mac('POST', '/z_battles/'+str(event['id'])+'/start'),
+                    'Content-type': 'application/json',
+                    'X-Platform': config.platform,
+                    'X-AssetVersion': '////',
+                    'X-DatabaseVersion': '////',
+                    'X-ClientVersion': '////',
+                    }
+
+
+                if kagi == True:
+                    sign = json.dumps({
+                            'friend_id': supporter,
+                            'level': level,
+                            'selected_team_num': config.deck,
+                            'eventkagi_item_id': 5
+                            })
+                else:
+                    sign = json.dumps({
+                            'friend_id': supporter,
+                            'level': level,
+                            'selected_team_num': config.deck,
+                            })
+
+                enc_sign = packet.encrypt_sign(sign)
+                data = {'sign': enc_sign}
+                if config.client == 'global':
+                    url = 'https://ishin-global.aktsk.com/z_battles/'+str(event['id'])+'/start'
+                else:
+                    url = 'http://ishin-production.aktsk.jp/z_battles/'+str(event['id'])+'/start'
+                r = requests.post(url, data=json.dumps(data), headers=headers)
+
+                if 'sign' in r.json():
+                    dec_sign = packet.decrypt_sign(r.json()['sign'])
+                elif 'error' in r.json():
+                    print(r.json())
+                    return 0
+                else:
+                    print(Fore.RED+'Problem with ZBattle')
+                    print(r.raw())
+                    return 0
+
+                finish_time = int(round(time.time(), 0)+2000)
+                start_time = finish_time - randint(6200000, 8200000)
+
+                data = {
+                    'elapsed_time': finish_time - start_time,
+                    'is_cleared': True,
+                    'level': level,
+                    's': 'rGAX18h84InCwFGbd/4zr1FvDNKfmo/TJ02pd6onclk=',
+                    't': 'eyJzdW1tYXJ5Ijp7ImVuZW15X2F0dGFjayI6MTAwMzg2LCJlbmVteV9hdHRhY2tfY291bnQiOjUsImVuZW15X2hlYWxfY291bnRzIjpbMF0sImVuZW15X2hlYWxzIjpbMF0sImVuZW15X21heF9hdHRhY2siOjEwMDAwMCwiZW5lbXlfbWluX2F0dGFjayI6NTAwMDAsInBsYXllcl9hdHRhY2tfY291bnRzIjpbMTBdLCJwbGF5ZXJfYXR0YWNrcyI6WzMwNjYwNTJdLCJwbGF5ZXJfaGVhbCI6MCwicGxheWVyX2hlYWxfY291bnQiOjAsInBsYXllcl9tYXhfYXR0YWNrcyI6WzEyMzY4NTBdLCJwbGF5ZXJfbWluX2F0dGFja3MiOls0NzcxOThdLCJ0eXBlIjoic3VtbWFyeSJ9fQ==',
+                    'token': dec_sign['token'],
+                    'used_items': [],
+                    'z_battle_finished_at_ms': finish_time,
+                    'z_battle_started_at_ms': start_time,
+                    }
+                #enc_sign = encrypt_sign(sign)
+
+                headers = {
+                    'User-Agent': 'Android',
+                    'Accept': '*/*',
+                    'Authorization': packet.mac('POST', '/z_battles/'+str(event['id'])+'/finish'),
+                    'Content-type': 'application/json',
+                    'X-Platform': config.platform,
+                    'X-AssetVersion': '////',
+                    'X-DatabaseVersion': '////',
+                    'X-ClientVersion': '////',
+                    }
+                if config.client == 'global':
+                    url = 'https://ishin-global.aktsk.com/z_battles/'+str(event['id'])+'/finish'
+                else:
+                    url = 'http://ishin-production.aktsk.jp/z_battles/'+str(event['id'])+'/finish'   
+                
+                r = requests.post(url, data=json.dumps(data), headers=headers)
+                r3 = packet.decrypt_sign(r.json()['sign'])
+                # ## Print out Items from Database
+                print('Level: '+str(level))
+                if 'items' in r3:
+                    supportitems = []
+                    awakeningitems = []
+                    trainingitems = []
+                    potentialitems = []
+                    treasureitems = []
+                    carditems = []
+                    trainingfields = []
+                    stones = 0
+                    supportitemsset = set()
+                    awakeningitemsset = set()
+                    trainingitemsset = set()
+                    potentialitemsset = set()
+                    treasureitemsset = set()
+                    carditemsset = set()
+                    trainingfieldsset = set()
+                    print('Items:')
+                    print('-------------------------')
+                    if 'quest_clear_rewards' in r3:
+                        for x in r3['quest_clear_rewards']:
+                            if x['item_type'] == 'Point::Stone':
+                                stones += x['amount']
+                    for x in r3['items']:
+                        if x['item_type'] == 'SupportItem':
+
+                            # print('' + SupportItems.find(x['item_id']).name + ' x '+str(x['quantity']))
+
+                            for i in range(x['quantity']):
+                                supportitems.append(x['item_id'])
+                            supportitemsset.add(x['item_id'])
+                        elif x['item_type'] == 'PotentialItem':
+
+                            # print('' + PotentialItems.find(x['item_id']).name + ' x '+str(x['quantity']))
+
+                            for i in range(x['quantity']):
+                                potentialitems.append(x['item_id'])
+                            potentialitemsset.add(x['item_id'])
+                        elif x['item_type'] == 'TrainingItem':
+
+                            # print('' + TrainingItems.find(x['item_id']).name + ' x '+str(x['quantity']))
+
+                            for i in range(x['quantity']):
+                                trainingitems.append(x['item_id'])
+                            trainingitemsset.add(x['item_id'])
+                        elif x['item_type'] == 'AwakeningItem':
+
+                            # print('' + AwakeningItems.find(x['item_id']).name + ' x '+str(x['quantity']))
+
+                            for i in range(x['quantity']):
+                                awakeningitems.append(x['item_id'])
+                            awakeningitemsset.add(x['item_id'])
+                        elif x['item_type'] == 'TreasureItem':
+
+                            # print('' + TreasureItems.find(x['item_id']).name + ' x '+str(x['quantity']))
+
+                            for i in range(x['quantity']):
+                                treasureitems.append(x['item_id'])
+                            treasureitemsset.add(x['item_id'])
+                        elif x['item_type'] == 'Card':
+
+                            # card = Cards.find(x['item_id'])
+
+                            carditems.append(x['item_id'])
+                            carditemsset.add(x['item_id'])
+                        elif x['item_type'] == 'Point::Stone':
+
+            #                print('' + card.name + '['+rarity+']'+ ' x '+str(x['quantity']))
+                            # print('' + TreasureItems.find(x['item_id']).name + ' x '+str(x['quantity']))
+
+                            stones += 1
+                        elif x['item_type'] == 'TrainingField':
+
+                            # card = Cards.find(x['item_id'])
+
+                            for i in range(x['quantity']):
+                                trainingfields.append(x['item_id'])
+                            trainingfieldsset.add(x['item_id'])
+                        else:
+                            print(x['item_type'])
+                    for x in supportitemsset:
+                        print(Fore.CYAN + config.SupportItems.find(x).name + ' x' \
+                            + str(supportitems.count(x)))
+                    for x in awakeningitemsset:
+                        print(Fore.MAGENTA + config.AwakeningItems.find(x).name + ' x' \
+                            + str(awakeningitems.count(x)))
+                    for x in trainingitemsset:
+                        print(Fore.RED + config.TrainingItems.find(x).name + ' x' \
+                            + str(trainingitems.count(x)))
+                    for x in potentialitemsset:
+                        print(config.PotentialItems.find(x).name + ' x' \
+                            + str(potentialitems.count(x)))
+                    for x in treasureitemsset:
+                        print(Fore.GREEN + config.TreasureItems.find(x).name + ' x' \
+                            + str(treasureitems.count(x)))
+                    for x in trainingfieldsset:
+                        print(config.TrainingFields.find(x).name + ' x' \
+                            + str(trainingfields.count(x)))
+                    for x in carditemsset:
+                        print(config.Cards.find(x).name + ' x' + str(carditems.count(x)))
+                    print(Fore.YELLOW + Style.BRIGHT + 'Stones x' + str(stones))
+
+                if 'gasha_point' in r3:
+                    print('Friend Points: ' + str(r3['gasha_point']))
+
+                print('--------------------------')
+                print('##############################################')
+                level += 1
+            refresh_client()
+
+    except Exception as e:
+        print(Fore.RED+str(e))
+        print(Fore.RED+'Trouble finding new Z-Battle events')
 
 
 
