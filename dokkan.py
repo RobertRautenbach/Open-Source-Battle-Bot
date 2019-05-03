@@ -2,12 +2,11 @@ import commands
 import config
 import sys
 
-
-print('0:| New Account')
-print('1:| Transfer Account To The Bot')
-print('2:| Load A Save')
-command = input('Enter a choice ->: ')
 while True:
+    print('0:| New Account')
+    print('1:| Transfer Account To The Bot')
+    print('2:| Load A Save')
+    command = input('Enter a choice ->: ')
     if command == '0':
         config.identifier = commands.signup()
         commands.save_account()
@@ -29,6 +28,7 @@ while True:
         print("Command not understood")
 
 
+
 while True:
     print("Type 'help' to view all commands.")
 
@@ -46,12 +46,6 @@ while True:
         print('User interrupted process.')
     except Exception as e:
         print(repr(e))
-
-
-
-
-#commands.db_download()
-#commands.get_kagi_id('310001')
 
 
 
