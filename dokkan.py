@@ -3,7 +3,7 @@ import config
 import sys
 
 while True:
-    db = input("Download new DB's? Y/N: ")
+    db = input("Check for new databases? Y/N: ")
     if db.lower() == 'y':
         commands.db_download()
         break

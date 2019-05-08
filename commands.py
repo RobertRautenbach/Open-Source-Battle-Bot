@@ -804,7 +804,24 @@ def tutorial():
     print(Fore.RED + 'TUTORIAL COMPLETE')
 ####################################################################
 def db_download():
-    ## Download each database.
+    #
+    jp_out_of_date = False
+    glb_out_of_date = False
+    #Check local DB versions
+    while True:
+        if os.path.isfile('help.txt'):
+            f = open(os.path.join('help.txt'), 'r')
+            local_version_glb = f.readline().rstrip()
+            local_version_jp = f.readline().rstrip()
+            f.close()
+            break
+        else:
+            f = open(os.path.join('help.txt'), 'w')
+            f.write('111\n')
+            f.write('111\n')
+            f.close()
+
+    # Download each database.
     original_client = config.client
 
     # Set first db to download to global.
@@ -827,11 +844,19 @@ def db_download():
         url = 'https://ishin-global.aktsk.com/client_assets/database'
     else:
         url = 'http://ishin-production.aktsk.jp/client_assets/database'
-    print(Fore.RED + 'Downloading New '+ config.client+' Database Version...')
+    
     r = requests.get(url, allow_redirects=True,headers = headers)
-    url = r.json()['url']
-    r = requests.get(url, allow_redirects=True)
-    open('dataenc_glb.db', 'wb').write(r.content)
+    if local_version_glb != str(r.json()['version']):
+        #print(Fore.RED + 'Downloading New '+ config.client.upper()+' Database Version...')
+        glb_out_of_date = True
+        glb_current = r.json()['version']
+        
+
+        print(Fore.RED + 'GLB DB out of date...')
+        print(Fore.RED + 'Downloading...')
+        url = r.json()['url']
+        r = requests.get(url, allow_redirects=True)
+        open('dataenc_glb.db', 'wb').write(r.content)
 
 
     # Set second db to download to jp.
@@ -854,30 +879,45 @@ def db_download():
         url = 'https://ishin-global.aktsk.com/client_assets/database'
     else:
         url = 'http://ishin-production.aktsk.jp/client_assets/database'
-    print(Fore.RED + 'Downloading New '+ config.client+' Database Version...')
+    
     r = requests.get(url, allow_redirects=True,headers = headers)
-    url = r.json()['url']
-    r = requests.get(url, allow_redirects=True)
-    open('dataenc_jp.db', 'wb').write(r.content)
+    if local_version_jp != str(r.json()['version']):
+        #print(Fore.RED + 'Downloading New '+ config.client.upper()+' Database Version...')
+        jp_out_of_date = True
+        jp_current = r.json()['version']
+        
+        print(Fore.RED + 'JP DB out of date...')
+        print(Fore.RED + 'Downloading...')
+        url = r.json()['url']
+        r = requests.get(url, allow_redirects=True)
+        open('dataenc_jp.db', 'wb').write(r.content)
 
     # Revert client to original
-    config.client == original_client
+    config.client = original_client
 
     print(Fore.RED \
         + 'Decrypting Latest Databases... This can take a few minutes...')
 
     # ## Calling database decrypt script
-    print('Decrypting Global Database')
-    decryptor.main()
-    print('Decrypting JP Database')
-    decryptor.main(p = '2db857e837e0a81706e86ea66e2d1633')
+    if glb_out_of_date:
+        print('Decrypting Global Database')
+        decryptor.main()
+        with open('help.txt', 'r') as file:
+            data = file.readlines()
+            data[0] = str(glb_current) + '\n'
+        with open('help.txt', 'w') as file:
+            file.writelines(data)
 
-    # Gonna need to rename that main later^
-    # ## JP decrypt: 2db857e837e0a81706e86ea66e2d1633
+    if jp_out_of_date:
+        print('Decrypting JP Database')
+        decryptor.main(p = '2db857e837e0a81706e86ea66e2d1633')
+        with open('help.txt', 'r') as file:
+            data = file.readlines()
+            data[1] = str(jp_current) + '\n'
+        with open('help.txt', 'w') as file:
+            file.writelines(data)
+
     print(Fore.GREEN + 'Database update complete.')
-    
-
-
 ####################################################################
 def accept_missions():
     # Accept all remaining missions
