@@ -3,6 +3,27 @@ import config
 import sys
 
 while True:
+    db = input("Download new DB's? Y/N: ")
+    if db.lower() == 'y':
+        commands.db_download()
+        break
+    elif db.lower() == 'n':
+        break
+    else:
+        continue
+
+while True:
+    client = input("JP or GLB? J/G: ")
+    if client.lower() == 'j':
+        config.client = 'japan'
+        break
+    elif client.lower() == 'g':
+        config.client = 'global'
+        break
+    else:
+        continue
+
+while True:
     print('0:| New Account')
     print('1:| Transfer Account To The Bot')
     print('2:| Load A Save')

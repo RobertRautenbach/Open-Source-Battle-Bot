@@ -16,10 +16,15 @@ def usage():
 
 
 def main(p = '9bf9c6ed9d537c399a6c4513e92ab24717e1a488381e3338593abd923fc8a13b'): 
-    filename_in = 'dataenc.db'
+    
     password = bytearray(p.encode('utf8'))
-    filename_out = 'database.db'
-
+    if p == '9bf9c6ed9d537c399a6c4513e92ab24717e1a488381e3338593abd923fc8a13b':
+        filename_in = 'dataenc_glb.db'
+        filename_out = 'glb.db'
+    else:
+        filename_in = 'dataenc_jp.db'
+        filename_out = 'jp.db'
+    
     decryptor.decrypt_file(filename_in, password, filename_out)
 
 

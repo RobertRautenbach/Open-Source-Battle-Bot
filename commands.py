@@ -804,8 +804,40 @@ def tutorial():
     print(Fore.RED + 'TUTORIAL COMPLETE')
 ####################################################################
 def db_download():
+    ## Download each database.
+    original_client = config.client
 
-    # ## Check DB version, download latest DB and decrypt it.
+    # Set first db to download to global.
+    config.client = 'global'
+    config.identifier = signup()
+    config.access_token,config.secret = signin(config.identifier)
+    
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/client_assets/database'),
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        'X-Language': 'en',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/client_assets/database'
+    else:
+        url = 'http://ishin-production.aktsk.jp/client_assets/database'
+    print(Fore.RED + 'Downloading New '+ config.client+' Database Version...')
+    r = requests.get(url, allow_redirects=True,headers = headers)
+    url = r.json()['url']
+    r = requests.get(url, allow_redirects=True)
+    open('dataenc_glb.db', 'wb').write(r.content)
+
+
+    # Set second db to download to jp.
+    config.client = 'japan'
+    config.identifier = signup()
+    config.access_token,config.secret = signin(config.identifier)
 
     headers = {
         'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
@@ -822,20 +854,23 @@ def db_download():
         url = 'https://ishin-global.aktsk.com/client_assets/database'
     else:
         url = 'http://ishin-production.aktsk.jp/client_assets/database'
-    r = requests.get(url, headers=headers)
-
+    print(Fore.RED + 'Downloading New '+ config.client+' Database Version...')
+    r = requests.get(url, allow_redirects=True,headers = headers)
     url = r.json()['url']
-    print(Fore.RED + 'Downloading New Database Version...')
     r = requests.get(url, allow_redirects=True)
-    open('dataenc.db', 'wb').write(r.content)
+    open('dataenc_jp.db', 'wb').write(r.content)
+
+    # Revert client to original
+    config.client == original_client
+
     print(Fore.RED \
-        + 'Decrypting Latest Database... This can take a few minutes...')
+        + 'Decrypting Latest Databases... This can take a few minutes...')
 
     # ## Calling database decrypt script
-    if config.client == 'global':
-        decryptor.main()
-    else:
-        decryptor.main(p = '2db857e837e0a81706e86ea66e2d1633')
+    print('Decrypting Global Database')
+    decryptor.main()
+    print('Decrypting JP Database')
+    decryptor.main(p = '2db857e837e0a81706e86ea66e2d1633')
 
     # Gonna need to rename that main later^
     # ## JP decrypt: 2db857e837e0a81706e86ea66e2d1633
@@ -1496,7 +1531,7 @@ def complete_clash():
     headers = {
         'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
-        'Authorization': packet.mac('POST', '/rmbattles/'+str(clash_id)+'/stages/dropout', MacId, secret),
+        'Authorization': packet.mac('POST', '/rmbattles/'+str(clash_id)+'/stages/dropout'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -1993,7 +2028,7 @@ def user_command_executor(command):
         complete_unfinished_events()
         complete_unfinished_zbattles()
         complete_clash()
-    ## When this will get updated, we shall add:sell + sellhercule + baba(?)
+    ## When this will get updated, we shall add :finishzbattle,30, + sell + sellhercule + baba(?)
     elif command == 'completequests':
         complete_unfinished_quest_stages()
     elif command == 'completeevents':
