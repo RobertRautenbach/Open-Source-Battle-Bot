@@ -1371,7 +1371,7 @@ def complete_unfinished_quest_stages():
 
     i = 0
     while i == 0:
-        print(maps)
+        #print(maps)
         for map in maps:
             complete_stage(str(map['sugoroku_map_id'])[:-1], str(map['sugoroku_map_id'])[-1])
 
