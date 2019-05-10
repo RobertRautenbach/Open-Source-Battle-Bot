@@ -22,7 +22,6 @@ init(autoreset=True)
 def complete_stage(stage_id, difficulty, kagi = None):
     # Completes a given stage stage name or ID has been supplied as a string
     # kagi must be correct kagi item ID if used
-
     # Check if user has supplied a stage name and searches DB for correct stage id
     if not stage_id.isnumeric():
         try:
@@ -35,8 +34,7 @@ def complete_stage(stage_id, difficulty, kagi = None):
 
     #Retrieve correct stage name to print 
     try:
-        print('Begin stage: ' + stage_id + ' ' \
-                + config.Quests.find(int(stage_id)).name + ' | Difficulty: ' \
+        print('Begin stage: ' + stage_id + ' | Difficulty: ' \
                 + str(difficulty) + ' Deck: ' + str(config.deck))
     except:
         print(Fore.RED + 'Does this quest exist?')
@@ -1373,7 +1371,7 @@ def complete_unfinished_quest_stages():
 
     i = 0
     while i == 0:
-        #print(maps)
+        print(maps)
         for map in maps:
             complete_stage(str(map['sugoroku_map_id'])[:-1], str(map['sugoroku_map_id'])[-1])
 
@@ -1706,7 +1704,7 @@ def complete_clash():
         finish_time = int(round(time.time(), 0)+2000)
         start_time = finish_time - randint(40000000, 50000000)
         if 'sign' in r.json():
-            dec_sign = decrypt_sign(r.json()['sign'])
+            dec_sign = packet.decrypt_sign(r.json()['sign'])
         enemy_hp = 0
         try:
             for enemy in dec_sign['enemies']:
