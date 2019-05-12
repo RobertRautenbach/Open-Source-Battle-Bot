@@ -13,13 +13,11 @@ allow_stamina_refill = True
 
 
 ### Database Config
-config = {'mysql': {'driver': 'sqlite', 'database': 'database.db'}}
 jp_config = {'mysql': {'driver': 'sqlite', 'database': 'jp.db'}}
 glb_config = {'mysql': {'driver': 'sqlite', 'database': 'glb.db'}}
-db = DatabaseManager(config)
 db_glb = DatabaseManager(glb_config)
 db_jp = DatabaseManager(jp_config)
-Model.set_connection_resolver(db)
+Model.set_connection_resolver(db_glb)
 
 class LinkSkills(Model):
 

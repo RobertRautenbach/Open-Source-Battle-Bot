@@ -584,10 +584,15 @@ def sell_cards(card_list):
     
 ####################################################################
 def signup():
-
     # returns string identifier to be formatted and used by SignIn function
+
+    # Set platform to use
+    set_platform()
+
+    # Generate AdId and Unique ID to send to Bandai
     config.AdId = packet.guid()['AdId']
     config.UniqueId = packet.guid()['UniqueId']
+
     user_acc = {
         'ad_id': config.AdId,
         'country': 'AU',
@@ -2070,6 +2075,10 @@ def dragonballs():
         return 0
 ####################################################################
 def transfer_account():
+
+    # Determine correct platform to use
+    set_platform()
+
     transfercode = input('Enter your transfer code: ')
 
     config.AdId = packet.guid()['AdId']
@@ -2496,8 +2505,18 @@ def complete_unfinished_zbattles(kagi = False):
     except Exception as e:
         print(Fore.RED+str(e))
         print(Fore.RED+'Trouble finding new Z-Battle events')
-
-
+####################################################################
+def set_platform():
+    while 1==1:
+        platform = input("'a'|Android -- 'i'|iOS: ")
+        if platform[0].lower() in ['a','i']:
+            if platform[0].lower() == 'a':
+                config.platform = 'android'
+            else:
+                config.platform = 'ios'
+            break
+        else:
+            print(Fore.RED+'Could not identify correct platform to use.')
 
 
 
