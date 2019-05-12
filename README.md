@@ -33,3 +33,18 @@ pip3 install requests
 Then go to folder where your dokkan.py file is and: python3 dokkan.py
 
 Happy testing!
+
+# Pull Requests
+Very happy to merge pull requests.
+Until I can develop some tests be careful to make sure that all new commands that you implement accurately support JP translation.
+
+e.g Check that you read from the global database, and if the data doesn't exist, read from the jp database.
+
+```
+try:
+    config.Model.set_connection_resolver(config.db_glb)
+    config.Quests.find_or_fail(int(stage_id))
+except:
+    config.Model.set_connection_resolver(config.db_jp)
+    config.Quests.find_or_fail(int(stage_id))
+```

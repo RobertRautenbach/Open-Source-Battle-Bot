@@ -24,14 +24,18 @@ def complete_stage(stage_id, difficulty, kagi = None):
     # kagi must be correct kagi item ID if used
     # Check if user has supplied a stage name and searches DB for correct stage id
     if not stage_id.isnumeric():
+
         try:
+            config.Model.set_connection_resolver(config.db_glb)
+            stage_id = str(config.Quests.where('name', 'like', '%' + stage_id
+                                        + '%').first().id)
+        except AttributeError:
+            config.Model.set_connection_resolver(config.db_jp)
             stage_id = str(config.Quests.where('name', 'like', '%' + stage_id
                                         + '%').first().id)
         except:
-            print(Fore.RED \
-                + 'Could not match event, try typing the name more accurately...')
+            print(Fore.RED+"Could not find stage name in databases")
             return 0
-
     # Retrieve correct stage name to print
     # Check if GLB database has id, if not try JP DB.
     
