@@ -40,7 +40,7 @@ Until I can develop some tests be careful to make sure that all new commands tha
 
 e.g Check that you read from the global database, and if the data doesn't exist, read from the jp database.
 
-```
+```python
 try:
     config.Model.set_connection_resolver(config.db_glb)
     config.Quests.find_or_fail(int(stage_id))
