@@ -2168,6 +2168,7 @@ def user_command_executor(command):
 
 ####################################################################
 def complete_unfinished_zbattles(kagi = False):
+    # JP Translated
     headers = {
             'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
             'Accept': '*/*',
@@ -2187,6 +2188,11 @@ def complete_unfinished_zbattles(kagi = False):
     events = r.json()
     try:
         for event in events['z_battle_stages']:
+            try:
+                config.Model.set_connection_resolver(config.db_glb)
+                x = config.ZBattles.where('z_battle_stage_id','=',event['id']).first().enemy_name
+            except:
+                config.Model.set_connection_resolver(config.db_jp)
             print(config.ZBattles.where('z_battle_stage_id','=',event['id']).first().enemy_name,end='')
             print(Fore.BLUE+' | ID: ' + str(event['id']))
             # Get Max cleared level
@@ -2317,10 +2323,11 @@ def complete_unfinished_zbattles(kagi = False):
                     url = 'http://ishin-production.aktsk.jp/z_battles/'+str(event['id'])+'/finish'   
                 
                 r = requests.post(url, data=json.dumps(data), headers=headers)
-                r3 = packet.decrypt_sign(r.json()['sign'])
+                dec_sign = packet.decrypt_sign(r.json()['sign'])
                 # ## Print out Items from Database
                 print('Level: '+str(level))
-                if 'items' in r3:
+                # ## Print out Items from Database
+                if 'items' in dec_sign:
                     supportitems = []
                     awakeningitems = []
                     trainingitems = []
@@ -2338,11 +2345,11 @@ def complete_unfinished_zbattles(kagi = False):
                     trainingfieldsset = set()
                     print('Items:')
                     print('-------------------------')
-                    if 'quest_clear_rewards' in r3:
-                        for x in r3['quest_clear_rewards']:
+                    if 'quest_clear_rewards' in dec_sign:
+                        for x in dec_sign['quest_clear_rewards']:
                             if x['item_type'] == 'Point::Stone':
                                 stones += x['amount']
-                    for x in r3['items']:
+                    for x in dec_sign['items']:
                         if x['item_type'] == 'SupportItem':
 
                             # print('' + SupportItems.find(x['item_id']).name + ' x '+str(x['quantity']))
@@ -2399,30 +2406,87 @@ def complete_unfinished_zbattles(kagi = False):
                             trainingfieldsset.add(x['item_id'])
                         else:
                             print(x['item_type'])
+
+                    # Print items
                     for x in supportitemsset:
+                        # JP Translation
+                        try:
+                            config.Model.set_connection_resolver(config.db_glb)
+                            config.SupportItems.find_or_fail(x).name
+                        except:
+                            config.Model.set_connection_resolver(config.db_jp)
+
+                        # Print name and item count
                         print(Fore.CYAN + config.SupportItems.find(x).name + ' x' \
                             + str(supportitems.count(x)))
                     for x in awakeningitemsset:
+                        # JP Translation
+                        try:
+                            config.Model.set_connection_resolver(config.db_glb)
+                            config.AwakeningItems.find_or_fail(x).name
+                        except:
+                            config.Model.set_connection_resolver(config.db_jp)
+
+                        # Print name and item count
                         print(Fore.MAGENTA + config.AwakeningItems.find(x).name + ' x' \
                             + str(awakeningitems.count(x)))
                     for x in trainingitemsset:
+                        # JP Translation
+                        try:
+                            config.Model.set_connection_resolver(config.db_glb)
+                            config.TrainingItems.find_or_fail(x).name
+                        except:
+                            config.Model.set_connection_resolver(config.db_jp)
+
+                        # Print name and item count
                         print(Fore.RED + config.TrainingItems.find(x).name + ' x' \
                             + str(trainingitems.count(x)))
                     for x in potentialitemsset:
-                        print(config.PotentialItems.find(x).name + ' x' \
+                        # JP Translation
+                        try:
+                            config.Model.set_connection_resolver(config.db_glb)
+                            config.PotentialItems.find_or_fail(x).name
+                        except:
+                            config.Model.set_connection_resolver(config.db_jp)
+
+                        # Print name and item count
+                        print(config.PotentialItems.find_or_fail(x).name + ' x' \
                             + str(potentialitems.count(x)))
                     for x in treasureitemsset:
+                        # JP Translation
+                        try:
+                            config.Model.set_connection_resolver(config.db_glb)
+                            config.TreasureItems.find_or_fail(x).name
+                        except:
+                            config.Model.set_connection_resolver(config.db_jp)
+
+                        # Print name and item count
                         print(Fore.GREEN + config.TreasureItems.find(x).name + ' x' \
                             + str(treasureitems.count(x)))
                     for x in trainingfieldsset:
+                        # JP Translation
+                        try:
+                            config.Model.set_connection_resolver(config.db_glb)
+                            config.TrainingFields.find_or_fail(x).name
+                        except:
+                            config.Model.set_connection_resolver(config.db_jp)
+
+                        # Print name and item count
                         print(config.TrainingFields.find(x).name + ' x' \
                             + str(trainingfields.count(x)))
                     for x in carditemsset:
+                        # JP Translation
+                        try:
+                            config.Model.set_connection_resolver(config.db_glb)
+                            config.Cards.find_or_fail(x).name
+                        except:
+                            config.Model.set_connection_resolver(config.db_jp)
+
+                        # Print name and item count
                         print(config.Cards.find(x).name + ' x' + str(carditems.count(x)))
                     print(Fore.YELLOW + Style.BRIGHT + 'Stones x' + str(stones))
-
-                if 'gasha_point' in r3:
-                    print('Friend Points: ' + str(r3['gasha_point']))
+                if 'gasha_point' in dec_sign:
+                    print('Friend Points: ' + str(dec_sign['gasha_point']))
 
                 print('--------------------------')
                 print('##############################################')
