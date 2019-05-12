@@ -22,6 +22,7 @@ init(autoreset=True)
 def complete_stage(stage_id, difficulty, kagi = None):
     # Completes a given stage stage name or ID has been supplied as a string
     # kagi must be correct kagi item ID if used
+    # JP Translated
 
     # Check if user has supplied a stage name and searches DB for correct stage id
     if not stage_id.isnumeric():
@@ -33,7 +34,16 @@ def complete_stage(stage_id, difficulty, kagi = None):
                 + 'Could not match event, try typing the name more accurately...')
             return 0
 
-    #Retrieve correct stage name to print 
+    # Retrieve correct stage name to print
+    # Check if GLB database has id, if not try JP DB.
+    
+    try:
+        config.Model.set_connection_resolver(config.db_glb)
+        config.Quests.find_or_fail(int(stage_id))
+    except:
+        config.Model.set_connection_resolver(config.db_jp)
+        config.Quests.find_or_fail(int(stage_id))
+
     try:
         print('Begin stage: ' + stage_id + ' ' \
                 + config.Quests.find(int(stage_id)).name + ' | Difficulty: ' \
@@ -255,25 +265,83 @@ def complete_stage(stage_id, difficulty, kagi = None):
                 trainingfieldsset.add(x['item_id'])
             else:
                 print(x['item_type'])
+
+        # Print items
         for x in supportitemsset:
+            # JP Translation
+            try:
+                config.Model.set_connection_resolver(config.db_glb)
+                config.SupportItems.find_or_fail(x).name
+            except:
+                config.Model.set_connection_resolver(config.db_jp)
+
+            # Print name and item count
             print(Fore.CYAN + config.SupportItems.find(x).name + ' x' \
                 + str(supportitems.count(x)))
         for x in awakeningitemsset:
+            # JP Translation
+            try:
+                config.Model.set_connection_resolver(config.db_glb)
+                config.AwakeningItems.find_or_fail(x).name
+            except:
+                config.Model.set_connection_resolver(config.db_jp)
+
+            # Print name and item count
             print(Fore.MAGENTA + config.AwakeningItems.find(x).name + ' x' \
                 + str(awakeningitems.count(x)))
         for x in trainingitemsset:
+            # JP Translation
+            try:
+                config.Model.set_connection_resolver(config.db_glb)
+                config.TrainingItems.find_or_fail(x).name
+            except:
+                config.Model.set_connection_resolver(config.db_jp)
+
+            # Print name and item count
             print(Fore.RED + config.TrainingItems.find(x).name + ' x' \
                 + str(trainingitems.count(x)))
         for x in potentialitemsset:
-            print(config.PotentialItems.find(x).name + ' x' \
+            # JP Translation
+            try:
+                config.Model.set_connection_resolver(config.db_glb)
+                config.PotentialItems.find_or_fail(x).name
+            except:
+                config.Model.set_connection_resolver(config.db_jp)
+
+            # Print name and item count
+            print(config.PotentialItems.find_or_fail(x).name + ' x' \
                 + str(potentialitems.count(x)))
         for x in treasureitemsset:
+            # JP Translation
+            try:
+                config.Model.set_connection_resolver(config.db_glb)
+                config.TreasureItems.find_or_fail(x).name
+            except:
+                config.Model.set_connection_resolver(config.db_jp)
+
+            # Print name and item count
             print(Fore.GREEN + config.TreasureItems.find(x).name + ' x' \
                 + str(treasureitems.count(x)))
         for x in trainingfieldsset:
+            # JP Translation
+            try:
+                config.Model.set_connection_resolver(config.db_glb)
+                config.TrainingFields.find_or_fail(x).name
+            except:
+                config.Model.set_connection_resolver(config.db_jp)
+
+            # Print name and item count
             print(config.TrainingFields.find(x).name + ' x' \
                 + str(trainingfields.count(x)))
         for x in carditemsset:
+            # JP Translation
+            try:
+                config.Model.set_connection_resolver(config.db_glb)
+                config.Cards.find_or_fail(x).name
+            except:
+                config.Model.set_connection_resolver(config.db_jp)
+
+            # Print name and item count
             print(config.Cards.find(x).name + ' x' + str(carditems.count(x)))
         print(Fore.YELLOW + Style.BRIGHT + 'Stones x' + str(stones))
     zeni = '{:,}'.format(dec_sign['zeni'])
@@ -807,7 +875,8 @@ def db_download():
     #
     jp_out_of_date = False
     glb_out_of_date = False
-    #Check local DB versions
+
+    #Check local DB versions in help.txt
     while True:
         if os.path.isfile('help.txt'):
             f = open(os.path.join('help.txt'), 'r')
@@ -821,7 +890,7 @@ def db_download():
             f.write('111\n')
             f.close()
 
-    # Download each database.
+    # Check what is the current client this may end up being unnecessary
     original_client = config.client
 
     # Set first db to download to global.
@@ -847,7 +916,6 @@ def db_download():
     
     r = requests.get(url, allow_redirects=True,headers = headers)
     if local_version_glb != str(r.json()['version']):
-        #print(Fore.RED + 'Downloading New '+ config.client.upper()+' Database Version...')
         glb_out_of_date = True
         glb_current = r.json()['version']
         
@@ -882,7 +950,6 @@ def db_download():
     
     r = requests.get(url, allow_redirects=True,headers = headers)
     if local_version_jp != str(r.json()['version']):
-        #print(Fore.RED + 'Downloading New '+ config.client.upper()+' Database Version...')
         jp_out_of_date = True
         jp_current = r.json()['version']
         
@@ -898,7 +965,7 @@ def db_download():
     print(Fore.RED \
         + 'Decrypting Latest Databases... This can take a few minutes...')
 
-    # ## Calling database decrypt script
+    # Calling database decrypt script
     if glb_out_of_date:
         print('Decrypting Global Database')
         decryptor.main()
@@ -1432,7 +1499,7 @@ def change_name():
 ####################################################################
 def increase_capacity():
 
-    # ## Increases account card capacity by 5 every time it is called
+    # Increases account card capacity by 5 every time it is called
 
     headers = {
         'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
@@ -1769,14 +1836,24 @@ def complete_clash():
 ####################################################################
 def complete_area(area_id):
     # completes all stages and difficulties of a given area.
+    # JP Translated
 
+
+    # Check if GLB database has id, if not try JP DB.    
+    config.Model.set_connection_resolver(config.db_glb)
     quests = config.Quests.where('area_id', '=', area_id).get()
+    if  len(quests) == 0:
+        config.Model.set_connection_resolver(config.db_jp)
+        quests = config.Quests.where('area_id', '=', area_id).get()
+
     total = 0
     for quest in quests:
+        config.Model.set_connection_resolver(config.db_jp)
         sugorokus = config.Sugoroku.where('quest_id', '=', quest.id).get()
         total += len(sugorokus)
     i = 1
     for quest in quests:
+        config.Model.set_connection_resolver(config.db_jp)
         sugorokus = config.Sugoroku.where('quest_id', '=', quest.id).get()
         difficulties = []
         for sugoroku in sugorokus:

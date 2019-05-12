@@ -60,7 +60,7 @@ while True:
         sys.stdin = sys.__stdin__
         command = input()
 
-    # Pass command to command executor and hand keyboard interrupts.
+    # Pass command to command executor and handle keyboard interrupts.
     try:
         commands.user_command_executor(command)
     except KeyboardInterrupt:
