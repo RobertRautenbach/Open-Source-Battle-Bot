@@ -10,6 +10,7 @@ To stop a command from executing, hold ctrl + c
 'completeevents' -> Completes all unfinished quest stages.
 'completezbattles' -> Completes all unfinished zbattles to stage 30.
 'clash' -> Complete ultimate clash if you have enough UR cards.
+'listevents' -> Prints a list of all currently available events.
 'dragonballs' -> Collects Dragonballs and makes wishes.
 'omegafarm' -> Completes everything (story, events, zbattle)
 'info' -> Print out account information.

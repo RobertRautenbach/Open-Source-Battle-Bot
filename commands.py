@@ -2164,6 +2164,8 @@ def user_command_executor(command):
         complete_unfinished_zbattles()
     elif command == 'clash':
         complete_clash()
+    elif command == 'listevents':
+        list_events()
     elif command == 'dragonballs':
         dragonballs()
     elif command == 'info':
@@ -2511,7 +2513,7 @@ def complete_unfinished_zbattles(kagi = False):
         print(Fore.RED+'Trouble finding new Z-Battle events')
 ####################################################################
 def set_platform():
-    while 1==1:
+    while True:
         platform = input("'a'|Android -- 'i'|iOS: ")
         if platform[0].lower() in ['a','i']:
             if platform[0].lower() == 'a':
@@ -2521,6 +2523,56 @@ def set_platform():
             break
         else:
             print(Fore.RED+'Could not identify correct platform to use.')
+
+####################################################################
+def list_events():
+    # Prints all currently available events
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/events'),
+        'Content-type': 'application/json',
+        'X-Language': 'en',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/events'
+    else:
+        url = 'http://ishin-production.aktsk.jp/events'
+    r = requests.get(url, headers=headers)
+    events = r.json()
+
+    area_id = None
+    for event in events['events']:
+        for quest in event['quests']:
+            if str(event['id']) != area_id:
+                area_id = str(event['id'])
+                try:
+                    config.Model.set_connection_resolver(config.db_glb)
+                    area_name = str(config.Area.where('id', '=',area_id).first().name)
+                except:
+                    config.Model.set_connection_resolver(config.db_jp)
+                    area_name = str(config.Area.where('id', '=',area_id).first().name)
+                print('--------------------------------------------')
+                print(Back.BLUE + Fore.WHITE + Style.BRIGHT \
+                    + area_name)
+                print('--------------------------------------------')
+
+            ids = quest['id']
+            config.Model.set_connection_resolver(config.db_glb)
+            sugorokus = config.Sugoroku.where('quest_id', '=',int(ids)).get()
+            if len(sugorokus) < 1:
+                config.Model.set_connection_resolver(config.db_jp)
+                sugorokus = config.Sugoroku.where('quest_id', '=',int(ids)).get()
+            difficulties = []
+            for sugoroku in sugorokus:
+                difficulties.append(sugoroku.difficulty)
+            print(config.Quests.find(ids).name  + ' ' + str(ids) \
+                + ' Difficulties: ' + str(difficulties) \
+                + ' AreaID: ' + str(event['id']))
 
 
 
