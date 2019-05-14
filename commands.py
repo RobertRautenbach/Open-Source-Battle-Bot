@@ -1090,6 +1090,8 @@ def accept_gifts():
 
 ####################################################################
 def change_team():
+    # Needs to have translation properly implemented!
+
     ###Get user deck to change
     chosen_deck = int(input("Enter the deck number you would like to change: "))
 
@@ -2166,6 +2168,8 @@ def user_command_executor(command):
         complete_clash()
     elif command == 'listevents':
         list_events()
+    elif command == 'chooseevents':
+        event_viewer()
     elif command == 'dragonballs':
         dragonballs()
     elif command == 'info':
@@ -2527,6 +2531,7 @@ def set_platform():
 ####################################################################
 def list_events():
     # Prints all currently available events
+    # JP Translated
     headers = {
         'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
@@ -2573,6 +2578,112 @@ def list_events():
             print(config.Quests.find(ids).name  + ' ' + str(ids) \
                 + ' Difficulties: ' + str(difficulties) \
                 + ' AreaID: ' + str(event['id']))
+####################################################################
+def event_viewer():
+    #Event GUI with options to complete stage.
+    #JP Translation needs work
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/events'),
+        'Content-type': 'application/json',
+        'X-Language': 'en',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/events'
+    else:
+        url = 'http://ishin-production.aktsk.jp/events'
+    r = requests.get(url, headers=headers)
+    events = r.json()
+
+    # Build areas list
+    areas_to_display = []
+    area_id = None
+    for event in events['events']:
+        for quest in event['quests']:
+            if str(event['id']) != area_id:
+                area_id = str(event['id'])
+                try:
+                    config.Model.set_connection_resolver(config.db_glb)
+                    area_name = area_id + ' | ' + str(config.Area.where('id', '=',area_id).first().name)
+                except:
+                    config.Model.set_connection_resolver(config.db_jp)
+                    area_name = area_id + ' | ' + str(config.Area.where('id', '=',area_id).first().name)
+                areas_to_display.append(area_name)
+
+
+
+    stages_to_display = []
+    difficulties = [0]
+    stage_name = ''
+
+    col1 = [[sg.Listbox(values=(sorted(areas_to_display)),change_submits = True,size = (30,20),key='AREAS')]]
+    col2 = [[sg.Listbox(values=(sorted(stages_to_display)),change_submits = True,size = (30,20),key = 'STAGES')]]
+    col3 = [[sg.Text('Name',key = 'STAGE_NAME',size = (30,2))],
+            [sg.Text('Difficulty: '),sg.Combo(difficulties,key = 'DIFFICULTIES',size=(6,3),readonly=True)],
+            [sg.Text('How many times to complete:')
+            ,sg.Spin([i for i in range(1,999)], key = 'LOOP',initial_value=1,size=(3,3))],
+            [sg.Button(button_text = 'Complete Stage',key = 'COMPLETE_STAGE')]]
+
+    layout = [[sg.Column(col1),sg.Column(col2),sg.Column(col3)]]
+    window = sg.Window('Event Viewer').Layout(layout)
+
+    while True:
+        event,values = window.Read()
+        print(event)
+        print(values)
+        if event == None:
+            return 0
+
+        if event == 'AREAS' and len(values['AREAS']) > 0:
+            stages_to_display[:] = []
+            # Check if GLB database has id, if not try JP DB.   
+            area_id = values['AREAS'][0].split(' | ')[0]
+            print(area_id)
+            config.Model.set_connection_resolver(config.db_glb)
+            quests = config.Quests.where('area_id', '=', area_id).get()
+            if len(quests) == 0:
+                config.Model.set_connection_resolver(config.db_jp)
+                quests = config.Quests.where('area_id', '=', area_id).get()
+
+            
+            for quest in quests:
+                stages_to_display.append(quest.name + ' | ' + str(quest.id))
+
+        if event == 'STAGES' and len(values['STAGES']) > 0:
+            difficulties[:] = []
+            stage_id = values['STAGES'][0].split(' | ')[1]
+            stage_name = values['STAGES'][0].split(' | ')[0]
+            print(stage_id)
+            sugorokus = config.Sugoroku.where('quest_id', '=',str(stage_id)).get()
+            difficulties = []
+            for sugoroku in sugorokus:
+                difficulties.append(str(sugoroku.difficulty))
+            window.FindElement('DIFFICULTIES').Update(values=difficulties)
+            window.FindElement('STAGE_NAME').Update(stage_name)
+
+        if event == 'COMPLETE_STAGE' and stage_name != '':
+            for i in range(int(values['LOOP'])):
+                complete_stage(stage_id,values['DIFFICULTIES'])
+                
+
+        window.FindElement('STAGES').Update(values=stages_to_display)
+
+
+
+
+
+
+
+
+
+
+
 
 
 
