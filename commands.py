@@ -2240,6 +2240,13 @@ def user_command_executor(command):
         complete_unfinished_zbattles()
     elif command == 'clash':
         complete_clash()
+    elif command == 'daily':
+        complete_stage('130001', 0)
+        complete_stage('131001', 0)
+        complete_stage('132001', 0)
+        complete_potential()
+        accept_gifts()
+        accept_missions()
     elif command == 'listevents':
         list_events()
     elif command == 'chooseevents':
@@ -2256,6 +2263,8 @@ def user_command_executor(command):
         increase_capacity()
     elif command == 'name':
         change_name()
+    elif command == 'refresh':
+        refresh_client()
     else:
         print('Command not found.')
 
@@ -2709,8 +2718,6 @@ def event_viewer():
 
     while True:
         event,values = window.Read()
-        print(event)
-        print(values)
         if event == None:
             return 0
 
@@ -2718,7 +2725,6 @@ def event_viewer():
             stages_to_display[:] = []
             # Check if GLB database has id, if not try JP DB.   
             area_id = values['AREAS'][0].split(' | ')[0]
-            print(area_id)
             config.Model.set_connection_resolver(config.db_glb)
             quests = config.Quests.where('area_id', '=', area_id).get()
             if len(quests) == 0:
@@ -2733,7 +2739,6 @@ def event_viewer():
             difficulties[:] = []
             stage_id = values['STAGES'][0].split(' | ')[1]
             stage_name = values['STAGES'][0].split(' | ')[0]
-            print(stage_id)
             sugorokus = config.Sugoroku.where('quest_id', '=',str(stage_id)).get()
             difficulties = []
             for sugoroku in sugorokus:
@@ -2742,13 +2747,44 @@ def event_viewer():
             window.FindElement('STAGE_NAME').Update(stage_name)
 
         if event == 'COMPLETE_STAGE' and stage_name != '':
+            window.Hide()
+            window.Refresh()
             for i in range(int(values['LOOP'])):
                 complete_stage(stage_id,values['DIFFICULTIES'])
-                
+            window.UnHide()
+            window.Refresh()
 
         window.FindElement('STAGES').Update(values=stages_to_display)
 ####################################################################
-
+def complete_potential():
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/events'),
+        'Content-type': 'application/json',
+        'X-Language': 'en',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/events'
+    else:
+        url = 'http://ishin-production.aktsk.jp/events'
+    r = requests.get(url, headers=headers)
+    events = r.json()
+    for event in events['events']:
+        if event['id'] >= 140 and event['id'] < 145:
+            for quest in event['quests']:
+                ids = quest['id']
+                config.Model.set_connection_resolver(config.db_jp)
+                sugorokus = config.Sugoroku.where('quest_id', '=',
+                        int(ids)).get()
+                difficulties = []
+                for sugoroku in sugorokus:
+                    config.Model.set_connection_resolver(config.db_jp)
+                    complete_stage(str(ids),sugoroku.difficulty)
 
 
 

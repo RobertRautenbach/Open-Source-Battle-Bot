@@ -20,4 +20,5 @@ To stop a command from executing, hold ctrl + c
 'transfer' -> Generates transfer code.
 'capacity' -> Increase card capacity by +5.
 'name' -> Change account name.
+'refresh' -> Reauthenticates the client.
 ############################################################################
