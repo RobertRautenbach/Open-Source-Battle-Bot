@@ -5,6 +5,7 @@ import decryptor
 import io
 import json
 from orator import DatabaseManager, Model
+from orator.exceptions.orm import ModelNotFound
 import os
 import packet
 import PySimpleGUI as sg
@@ -1121,7 +1122,13 @@ def change_team():
     card_list = []
     for card in master_cards:
         ###Get card collection object from database 
-        db_card = config.Cards.where('id','=',card['card_id']).first()
+        try:
+            config.Model.set_connection_resolver(config.db_glb)
+            db_card = config.Cards.find_or_fail(card['card_id'])
+        except:
+            config.Model.set_connection_resolver(config.db_jp)
+            db_card = config.Cards.find_or_fail(card['card_id'])
+        #db_card = config.Cards.where('id','=',card['card_id']).first()
 
         ###Get card rarity
         if db_card.rarity == 0:
@@ -1155,38 +1162,93 @@ def change_team():
                 
         try:
             for category in card_card_categories:
-                categories.append(config.CardCategories.find(
+                try:
+                    config.Model.set_connection_resolver(config.db_glb)
+                    categories.append(config.CardCategories.find(
+                                  category.card_category_id).name)
+                except:
+                    config.Model.set_connection_resolver(config.db_jp)
+                    categories.append(config.CardCategories.find(
                                   category.card_category_id).name)
         except:
             None
         ###Get card link_skills list
         link_skills = []
         try:
+            config.Model.set_connection_resolver(config.db_glb)
             link_skills.append(config.LinkSkills.find(db_card.link_skill1_id).name)
+        except AttributeError:
+            try:
+                config.Model.set_connection_resolver(config.db_jp)
+                link_skills.append(config.LinkSkills.find(db_card.link_skill1_id).name)
+            except:
+                None
         except:
             None
         try:
+            config.Model.set_connection_resolver(config.db_glb)
             link_skills.append(config.LinkSkills.find(db_card.link_skill2_id).name)
+        except AttributeError:
+            try:
+                config.Model.set_connection_resolver(config.db_jp)
+                link_skills.append(config.LinkSkills.find(db_card.link_skill2_id).name)
+            except:
+                None
         except:
             None
         try:
+            config.Model.set_connection_resolver(config.db_glb)
             link_skills.append(config.LinkSkills.find(db_card.link_skill3_id).name)
+        except AttributeError:
+            try:
+                config.Model.set_connection_resolver(config.db_jp)
+                link_skills.append(config.LinkSkills.find(db_card.link_skill3_id).name)
+            except:
+                None
         except:
             None
         try:
+            config.Model.set_connection_resolver(config.db_glb)
             link_skills.append(config.LinkSkills.find(db_card.link_skill4_id).name)
+        except AttributeError:
+            try:
+                config.Model.set_connection_resolver(config.db_jp)
+                link_skills.append(config.LinkSkills.find(db_card.link_skill4_id).name)
+            except:
+                None
         except:
             None
         try:
+            config.Model.set_connection_resolver(config.db_glb)
             link_skills.append(config.LinkSkills.find(db_card.link_skill5_id).name)
+        except AttributeError:
+            try:
+                config.Model.set_connection_resolver(config.db_jp)
+                link_skills.append(config.LinkSkills.find(db_card.link_skill5_id).name)
+            except:
+                None
         except:
             None
         try:
+            config.Model.set_connection_resolver(config.db_glb)
             link_skills.append(config.LinkSkills.find(db_card.link_skill6_id).name)
+        except AttributeError:
+            try:
+                config.Model.set_connection_resolver(config.db_jp)
+                link_skills.append(config.LinkSkills.find(db_card.link_skill6_id).name)
+            except:
+                None
         except:
             None
         try:
+            config.Model.set_connection_resolver(config.db_glb)
             link_skills.append(config.LinkSkills.find(db_card.link_skill7_id).name)
+        except AttributeError:
+            try:
+                config.Model.set_connection_resolver(config.db_jp)
+                link_skills.append(config.LinkSkills.find(db_card.link_skill7_id).name)
+            except:
+                None
         except:
             None
 
@@ -1211,7 +1273,6 @@ def change_team():
     card_list = sorted(card_list, key=lambda k: k['Rarity'])
     card_list = sorted(card_list, key=lambda k: k['Cost'])
     print(Fore.GREEN + "Done...")
-
     ###Define cards to display
     cards_to_display_dicts = []
     cards_to_display = []
@@ -1223,15 +1284,28 @@ def change_team():
 
     ###Define links to display
     links_master = []
+    config.Model.set_connection_resolver(config.db_jp)
     for link in config.LinkSkills.all():
         links_master.append(link.name)
+        try:
+            config.Model.set_connection_resolver(config.db_glb)
+            links_master.append(config.LinkSkills.find_or_fail(link.id).name)
+        except:
+            config.Model.set_connection_resolver(config.db_jp)
+            links_master.append(config.LinkSkills.find_or_fail(link.id).name)
     
     links_to_display = sorted(links_master)
 
     ###Define categories to display
     categories_master = []
+    config.Model.set_connection_resolver(config.db_jp)
     for category in config.CardCategories.all():
-        categories_master.append(category.name)
+        try:
+            config.Model.set_connection_resolver(config.db_glb)
+            categories_master.append(config.CardCategories.find_or_fail(category.id).name)
+        except:
+            config.Model.set_connection_resolver(config.db_jp)
+            categories_master.append(config.CardCategories.find_or_fail(category.id).name)
     
     categories_to_display = sorted(categories_master)
 
@@ -2673,6 +2747,7 @@ def event_viewer():
                 
 
         window.FindElement('STAGES').Update(values=stages_to_display)
+####################################################################
 
 
 
