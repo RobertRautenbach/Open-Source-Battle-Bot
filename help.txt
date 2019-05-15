@@ -16,6 +16,7 @@ To stop a command from executing, hold ctrl + c
 'omegafarm' -> Completes everything (story, events, zbattle)
 'info' -> Print out account information.
 'team' -> Change composition of a deck.
+'deck' -> Select a deck to be the default.
 'gift' -> Accepts gifts and missions.
 'transfer' -> Generates transfer code.
 'capacity' -> Increase card capacity by +5.

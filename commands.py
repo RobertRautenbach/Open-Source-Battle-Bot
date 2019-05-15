@@ -2257,6 +2257,8 @@ def user_command_executor(command):
         get_user_info()
     elif command == 'team':
         change_team()
+    elif command == 'deck':
+        config.deck = int(input('Enter a deck number to use: '))
     elif command == 'transfer':
         get_transfer_code()
     elif command == 'capacity':
