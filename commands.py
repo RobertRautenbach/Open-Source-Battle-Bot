@@ -2252,6 +2252,8 @@ def user_command_executor(command):
         list_events()
     elif command == 'chooseevents':
         event_viewer()
+    elif command == 'summon':
+        summon()   
     elif command == 'listsummons':
         list_summons()
     elif command == 'dragonballs':
@@ -2797,7 +2799,7 @@ def list_summons():
     # Prints current available summons, could be formatted better but meh
 
     headers = {
-        'User-Agent': 'Android',
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/gashas'),
         'Content-type': 'application/json',
@@ -2820,6 +2822,163 @@ def list_summons():
         if len(gasha['description'])>0:
             print(Fore.YELLOW+re.sub(r'\{[^{}]*\}', "", gasha['description']).replace('\n',' '))
 
+####################################################################
+def summon():
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/gashas'),
+        'Content-type': 'application/json',
+        'X-Language': 'en',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/gashas'
+    else:
+        url = 'http://ishin-production.aktsk.jp/gashas'
+    r = requests.get(url, headers=headers)
+    gashas = []
+    for gasha in r.json()['gashas']:
+        gashas.append(gasha['name'] + ' | ' + str(gasha['id']))
+
+    layout = [[sg.Listbox(values=(gashas),size = (30,20),key = 'GASHAS')],
+              [sg.Radio('Multi', "TYPE", default=True), sg.Radio('Single', "TYPE")],
+              [sg.Spin([i for i in range(1,999)], key = 'LOOP',initial_value=1,size=(3,3))],
+              [sg.Button(button_text= 'Summon!',key='SUMMON')]]
+    window = sg.Window('Event Viewer').Layout(layout)
+
+    while True:
+        event,values = window.Read()
+        if event == None:
+            return 0
+
+        if event == 'SUMMON' and len(values['GASHAS']) > 0:
+            summon_id = values['GASHAS'][0].split(' | ')[1]
+            if values[0]:
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                    'Accept': '*/*',
+                    'Authorization': packet.mac('POST', '/gashas/' + str(summon_id)
+                                            + '/courses/2/draw'),
+                    'Content-type': 'application/json',
+                    'X-Platform': config.platform,
+                    'X-AssetVersion': '////',
+                    'X-DatabaseVersion': '////',
+                    'X-ClientVersion': '////',
+                    }
+                if config.client == 'global':
+                    url = 'https://ishin-global.aktsk.com/gashas/' + str(summon_id) \
+                                                                   + '/courses/2/draw'
+                else:
+                    url = 'http://ishin-production.aktsk.jp/gashas/' + str(summon_id) \
+                    + '/courses/2/draw'
+                for i in range(int(values['LOOP'])):
+                    r = requests.post(url, headers=headers).json()
+                    if 'error' in r:
+                        print(r)
+                        window.Close()
+                        return 0
+                    card_list = []
+                    for card in r['gasha_items']:
+                        try:
+                            config.Model.set_connection_resolver(config.db_glb)
+                            config.Cards.find_or_fail(int(card['item_id'])).rarity
+                        except:
+                            config.Model.set_connection_resolver(config.db_jp)
+                            config.Cards.find_or_fail(int(card['item_id'])).rarity
+
+                        if config.Cards.find(int(card['item_id'])).rarity == 0:
+                            rarity = Fore.RED + 'N'+ Style.RESET_ALL
+                        elif config.Cards.find(int(card['item_id'])).rarity == 1:
+                            rarity = Fore.RED + 'R'+ Style.RESET_ALL
+                        elif config.Cards.find(int(card['item_id'])).rarity == 2:
+                            rarity = Fore.RED + 'SR'+ Style.RESET_ALL
+                        elif config.Cards.find(int(card['item_id'])).rarity == 3:
+                            rarity = Fore.YELLOW + 'SSR' + Style.RESET_ALL
+                        elif config.Cards.find(int(card['item_id'])).rarity == 4:
+                            rarity = Fore.MAGENTA + 'UR'+ Style.RESET_ALL
+                        elif config.Cards.find(int(card['item_id'])).rarity == 5:
+                            rarity = Fore.CYAN + 'LR'+ Style.RESET_ALL
+                        if str(config.Cards.find(int(card['item_id'])).element)[-1] == '0':
+                            type = Fore.BLUE + 'AGL '
+                        elif str(config.Cards.find(int(card['item_id'])).element)[-1] == '1':
+                            type = Fore.GREEN + 'TEQ '
+                        elif str(config.Cards.find(int(card['item_id'])).element)[-1] == '2':
+                            type = Fore.MAGENTA + 'INT '
+                        elif str(config.Cards.find(int(card['item_id'])).element)[-1] == '3':
+                            type = Fore.RED + 'STR '
+                        elif str(config.Cards.find(int(card['item_id'])).element)[-1] == '4':
+                            type = Fore.YELLOW + 'PHY '
+                        card_list.append(type + config.Cards.find(int(card['item_id'
+                                         ])).name + ' ' +rarity)
+                    for card in card_list:
+                        print(card)
+
+
+            else:
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                    'Accept': '*/*',
+                    'Authorization': packet.mac('POST', '/gashas/' + str(summon_id)
+                                            + '/courses/1/draw'),
+                    'Content-type': 'application/json',
+                    'X-Platform': config.platform,
+                    'X-AssetVersion': '////',
+                    'X-DatabaseVersion': '////',
+                    'X-ClientVersion': '////',
+                    }
+                if config.client == 'global':
+                    url = 'https://ishin-global.aktsk.com/gashas/' + str(summon_id) \
+                                                                   + '/courses/1/draw'
+                else:
+                    url = 'http://ishin-production.aktsk.jp/gashas/' + str(summon_id) \
+                    + '/courses/1/draw'
+                for i in range(int(values['LOOP'])):
+                    r = requests.post(url, headers=headers).json()
+                    if 'error' in r:
+                        print(r)
+                        window.Close()
+                        return 0
+                    card_list = []
+                    for card in r['gasha_items']:
+                        try:
+                            config.Model.set_connection_resolver(config.db_glb)
+                            config.Cards.find_or_fail(int(card['item_id'])).rarity
+                        except:
+                            config.Model.set_connection_resolver(config.db_jp)
+                            config.Cards.find_or_fail(int(card['item_id'])).rarity
+
+                        if config.Cards.find(int(card['item_id'])).rarity == 0:
+                            rarity = Fore.RED + 'N'+ Style.RESET_ALL
+                        elif config.Cards.find(int(card['item_id'])).rarity == 1:
+                            rarity = Fore.RED + 'R'+ Style.RESET_ALL
+                        elif config.Cards.find(int(card['item_id'])).rarity == 2:
+                            rarity = Fore.RED + 'SR'+ Style.RESET_ALL
+                        elif config.Cards.find(int(card['item_id'])).rarity == 3:
+                            rarity = Fore.YELLOW + 'SSR' + Style.RESET_ALL
+                        elif config.Cards.find(int(card['item_id'])).rarity == 4:
+                            rarity = Fore.MAGENTA + 'UR'+ Style.RESET_ALL
+                        elif config.Cards.find(int(card['item_id'])).rarity == 5:
+                            rarity = Fore.CYAN + 'LR'+ Style.RESET_ALL
+                        if str(config.Cards.find(int(card['item_id'])).element)[-1] == '0':
+                            type = Fore.BLUE + 'AGL '
+                        elif str(config.Cards.find(int(card['item_id'])).element)[-1] == '1':
+                            type = Fore.GREEN + 'TEQ '
+                        elif str(config.Cards.find(int(card['item_id'])).element)[-1] == '2':
+                            type = Fore.MAGENTA + 'INT '
+                        elif str(config.Cards.find(int(card['item_id'])).element)[-1] == '3':
+                            type = Fore.RED + 'STR '
+                        elif str(config.Cards.find(int(card['item_id'])).element)[-1] == '4':
+                            type = Fore.YELLOW + 'PHY '
+                        card_list.append(type + config.Cards.find(int(card['item_id'
+                                         ])).name + ' ' +rarity)
+                    for card in card_list:
+                        print(card)
+            print('------------------------------------------')
 
 
 
