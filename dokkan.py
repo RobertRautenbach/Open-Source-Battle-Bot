@@ -1,7 +1,14 @@
+from colorama import init, Fore, Back, Style
 import commands
 import config
 import sys
+
+# Coloroma autoreset
+init(autoreset=True)
+
+
 while True:
+    # Database Check.
     while True:
         db = input("Check for new databases? Y/N: ")
         if db.lower() == 'y':
@@ -12,6 +19,7 @@ while True:
         else:
             continue
 
+    # Decide which client to use.
     while True:
         client = input("JP or GLB? J/G: ")
         if client.lower() == 'j':
@@ -22,7 +30,7 @@ while True:
             break
         else:
             continue
-
+    # User Options
     while True:
         print('0:| New Account')
         print('1:| Transfer Account To The Bot')
@@ -49,9 +57,10 @@ while True:
             print("Command not understood")
 
 
-
+    # User commands.
     while True:
-        print("Type 'help' to view all commands.")
+        print('---------------------------------')
+        print("Type"+Fore.YELLOW+" 'help'"+Style.RESET_ALL+" to view all commands.")
 
         # Set up comma separated chain commands. Handled via stdin
         try:
