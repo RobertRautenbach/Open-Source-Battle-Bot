@@ -11,6 +11,7 @@ import packet
 import PySimpleGUI as sg
 from random import choice
 from random import randint
+import re
 import requests
 from string import ascii_uppercase
 import sys
@@ -2251,6 +2252,8 @@ def user_command_executor(command):
         list_events()
     elif command == 'chooseevents':
         event_viewer()
+    elif command == 'listsummons':
+        list_summons()
     elif command == 'dragonballs':
         dragonballs()
     elif command == 'info':
@@ -2787,6 +2790,35 @@ def complete_potential():
                 for sugoroku in sugorokus:
                     config.Model.set_connection_resolver(config.db_jp)
                     complete_stage(str(ids),sugoroku.difficulty)
+####################################################################
+
+def list_summons():
+
+    # Prints current available summons, could be formatted better but meh
+
+    headers = {
+        'User-Agent': 'Android',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/gashas'),
+        'Content-type': 'application/json',
+        'X-Language': 'en',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/gashas'
+    else:
+        url = 'http://ishin-production.aktsk.jp/gashas'
+
+    r = requests.get(url, headers=headers)
+
+    for gasha in r.json()['gashas']:
+        print(gasha['name'].replace('\n',' ') + ' ' + str(gasha['id']))
+        if len(gasha['description'])>0:
+            print(Fore.YELLOW+re.sub(r'\{[^{}]*\}', "", gasha['description']).replace('\n',' '))
 
 
 
