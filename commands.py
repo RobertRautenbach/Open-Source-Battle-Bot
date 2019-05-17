@@ -44,12 +44,14 @@ def complete_stage(stage_id, difficulty, kagi = None):
     try:
         config.Model.set_connection_resolver(config.db_glb)
         config.Quests.find_or_fail(int(stage_id))
+        stage_name = config.Quests.find_or_fail(int(stage_id)).name
     except:
         config.Model.set_connection_resolver(config.db_jp)
         config.Quests.find_or_fail(int(stage_id))
+        stage_name = config.Quests.find_or_fail(int(stage_id)).name
 
     try:
-        print('Begin stage: ' + stage_id + ' | Difficulty: ' \
+        print('Begin stage: ' + stage_name + ' ' + stage_id + ' | Difficulty: ' \
                 + str(difficulty) + ' Deck: ' + str(config.deck))
     except:
         print(Fore.RED + 'Does this quest exist?')
