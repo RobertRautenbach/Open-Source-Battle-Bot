@@ -3015,11 +3015,18 @@ def sell_cards__bulk_GUI():
         url = 'http://ishin-production.aktsk.jp/cards'
     r = requests.get(url, headers=headers)
 
-
     cards_master_dict = []
     for card in r.json()['cards']:
+        # Avoid selling favourited cards
+        if card['is_favorite'] == True:
+            continue
         try:
             config.Model.set_connection_resolver(config.db_glb)
+            # Quick and dirty way to exclude elder kais from sell
+            hp_max = config.Cards.find_or_fail(card['card_id']).hp_max
+            if hp_max == 1:
+                continue
+
             card_name = config.Cards.find_or_fail(card['card_id']).name
             rarity = config.Cards.find_or_fail(card['card_id']).rarity
             cards_master_dict.append({
@@ -3030,6 +3037,12 @@ def sell_cards__bulk_GUI():
                         })
         except:
             config.Model.set_connection_resolver(config.db_jp)
+            # Quick and dirty way to exclude elder kais from sell
+            hp_max = config.Cards.find_or_fail(card['card_id']).hp_max
+            if hp_max == '1':
+                print('max')
+                continue
+
             card_name = config.Cards.find_or_fail(card['card_id']).name
             rarity = config.Cards.find_or_fail(card['card_id']).rarity
             cards_master_dict.append({
@@ -3092,20 +3105,15 @@ def sell_cards__bulk_GUI():
 
     col1 = [[sg.Checkbox('N',default=True, key = 'N',change_submits = True)],
             [sg.Checkbox('R',default=True, key = 'R',change_submits = True)],
-            [sg.Checkbox('SR',default=False, key = 'SR',change_submits = True)],
-            [sg.Checkbox('SSR',default=False, key = 'SSR',change_submits = True)]]
+            [sg.Checkbox('SR',default=True, key = 'SR',change_submits = True)],
+            [sg.Checkbox('SSR',default=True, key = 'SSR',change_submits = True)]]
     col2 = [[sg.Listbox(values=(cards_to_display),size = (30,20),key = 'CARDS')]]
     layout = [[sg.Column(col1),sg.Column(col2)],[sg.Button(button_text= 'Sell!',key='SELL')]]
     window = sg.Window('Sell Cards').Layout(layout)
-
-    cards = config.Cards.all()
-
     while True:
         event,values = window.Read()
-        print(event)
-        print(values)
 
-        if event in ['N','R','SR','SSR']:
+        if event in ['N','R','SR','SSR','SELL']:
             accepted_rarities = []
             if values['N']:
                 accepted_rarities.append(0)
@@ -3119,9 +3127,25 @@ def sell_cards__bulk_GUI():
             cards_to_display[:] = []
             cards_to_display_dicts[:] = []
             for card in cards_master_dict:
-                if card['rarity'] in accepted_rarities and card['card_id'] not in team_cards:
+                if card['rarity'] in accepted_rarities and card['unique_id'] not in team_cards:
                     cards_to_display.append(card['name'])
                     cards_to_display_dicts.append(card)
+
+        if event == 'SELL':
+            cards_to_sell = []
+            window.Hide()
+            window.Refresh()
+            for card in cards_to_display_dicts:
+                cards_to_sell.append(card['unique_id'])
+                cards_master_dict.remove(card)
+            sell_cards(cards_to_sell)
+            cards_to_display[:] = []
+            cards_to_display_dicts[:] = cards_master_dict
+            for card in cards_to_display_dicts:
+                cards_to_display.append(card['name'])
+            window.UnHide()
+            window.Refresh()
+            
 
         window.FindElement('CARDS').Update(values=cards_to_display)
 
