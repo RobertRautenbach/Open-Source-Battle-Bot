@@ -2939,6 +2939,8 @@ def summon():
                 else:
                     url = 'http://ishin-production.aktsk.jp/gashas/' + str(summon_id) \
                     + '/courses/1/draw'
+                window.Hide()
+                window.Refresh()
                 for i in range(int(values['LOOP'])):
                     r = requests.post(url, headers=headers).json()
                     if 'error' in r:
@@ -2980,6 +2982,8 @@ def summon():
                                          ])).name + ' ' +rarity)
                     for card in card_list:
                         print(card)
+                window.UnHide()
+                window.Refresh()
             print('------------------------------------------')
 
 
