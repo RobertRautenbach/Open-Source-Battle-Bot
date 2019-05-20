@@ -504,14 +504,14 @@ def refill_stamina():
         headers = {
             'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
             'Accept': '*/*',
-            'Authorization': packet.mac('PUT', '/user/recover_act'),
+            'Authorization': packet.mac('PUT', '/user/recover_act_with_stone'),
             'Content-type': 'application/json',
             'X-Platform': config.platform,
             'X-AssetVersion': '////',
             'X-DatabaseVersion': '////',
             'X-ClientVersion': '////',
             }
-        url = 'https://ishin-global.aktsk.com/user/recover_act'
+        url = 'https://ishin-global.aktsk.com/user/recover_act_with_stone'
     else:
         headers = {
             'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
@@ -3000,8 +3000,6 @@ def summon():
 ####################################################################
 def sell_cards__bulk_GUI():
     #Provides a GUI to select a range of cards to sell.
-
-
     headers = {
         'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
@@ -3119,7 +3117,7 @@ def sell_cards__bulk_GUI():
     window = sg.Window('Sell Cards').Layout(layout)
     while True:
         event,values = window.Read()
-        
+
         if event == None:
             window.Close()
             return 0
