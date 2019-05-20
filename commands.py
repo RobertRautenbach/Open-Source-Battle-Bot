@@ -2886,6 +2886,8 @@ def summon():
                 else:
                     url = 'http://ishin-production.aktsk.jp/gashas/' + str(summon_id) \
                     + '/courses/2/draw'
+                window.Hide()
+                window.Refresh()
                 for i in range(int(values['LOOP'])):
                     r = requests.post(url, headers=headers).json()
                     if 'error' in r:
@@ -2927,6 +2929,8 @@ def summon():
                                          ])).name + ' ' +rarity)
                     for card in card_list:
                         print(card)
+                window.UnHide()
+                window.Refresh()
 
 
             else:
@@ -2997,61 +3001,6 @@ def summon():
 def sell_cards__bulk_GUI():
     #Provides a GUI to select a range of cards to sell.
 
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
-        'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/cards'),
-        'Content-type': 'application/json',
-        'X-Language': 'en',
-        'X-Platform': config.platform,
-        'X-AssetVersion': '////',
-        'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
-        }
-
-    if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/cards'
-    else:
-        url = 'http://ishin-production.aktsk.jp/cards'
-    r = requests.get(url, headers=headers)
-
-    cards_master_dict = []
-    for card in r.json()['cards']:
-        # Avoid selling favourited cards
-        if card['is_favorite'] == True:
-            continue
-        try:
-            config.Model.set_connection_resolver(config.db_glb)
-            # Quick and dirty way to exclude elder kais from sell
-            hp_max = config.Cards.find_or_fail(card['card_id']).hp_max
-            if hp_max == 1:
-                continue
-
-            card_name = config.Cards.find_or_fail(card['card_id']).name
-            rarity = config.Cards.find_or_fail(card['card_id']).rarity
-            cards_master_dict.append({
-                          'card_id' : card['card_id'],
-                          'unique_id' : card['id'],
-                          'name' : card_name,
-                          'rarity' : rarity
-                        })
-        except:
-            config.Model.set_connection_resolver(config.db_jp)
-            # Quick and dirty way to exclude elder kais from sell
-            hp_max = config.Cards.find_or_fail(card['card_id']).hp_max
-            if hp_max == '1':
-                print('max')
-                continue
-
-            card_name = config.Cards.find_or_fail(card['card_id']).name
-            rarity = config.Cards.find_or_fail(card['card_id']).rarity
-            cards_master_dict.append({
-                          'card_id' : card['card_id'],
-                          'unique_id' : card['id'],
-                          'name' : card_name,
-                          'rarity' : rarity
-                        })
-
 
     headers = {
         'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
@@ -3096,6 +3045,64 @@ def sell_cards__bulk_GUI():
     team_cards.extend(r.json()['support_leader_ids'])
 
 
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/cards'),
+        'Content-type': 'application/json',
+        'X-Language': 'en',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/cards'
+    else:
+        url = 'http://ishin-production.aktsk.jp/cards'
+    r = requests.get(url, headers=headers)
+
+    cards_master_dict = []
+    for card in r.json()['cards']:
+        # Avoid selling favourited cards
+        if card['is_favorite'] == True:
+            continue
+        try:
+            config.Model.set_connection_resolver(config.db_glb)
+            # Quick and dirty way to exclude elder kais from sell
+            hp_max = config.Cards.find_or_fail(card['card_id']).hp_max
+            if hp_max == 1:
+                continue
+
+            card_name = config.Cards.find_or_fail(card['card_id']).name
+            rarity = config.Cards.find_or_fail(card['card_id']).rarity
+            if card['id'] not in team_cards:
+                cards_master_dict.append({
+                              'card_id' : card['card_id'],
+                              'unique_id' : card['id'],
+                              'name' : card_name,
+                              'rarity' : rarity
+                            })
+        except:
+            config.Model.set_connection_resolver(config.db_jp)
+            # Quick and dirty way to exclude elder kais from sell
+            hp_max = config.Cards.find_or_fail(card['card_id']).hp_max
+            if hp_max == '1':
+                print('max')
+                continue
+
+            card_name = config.Cards.find_or_fail(card['card_id']).name
+            rarity = config.Cards.find_or_fail(card['card_id']).rarity
+            if card['id'] not in team_cards:
+                cards_master_dict.append({
+                              'card_id' : card['card_id'],
+                              'unique_id' : card['id'],
+                              'name' : card_name,
+                              'rarity' : rarity
+                            })
+
+
     cards_to_display_dicts = []
     cards_to_display_dicts = cards_master_dict[:]
 
@@ -3103,15 +3110,19 @@ def sell_cards__bulk_GUI():
     for card in cards_to_display_dicts:
         cards_to_display.append(card['name'])
 
-    col1 = [[sg.Checkbox('N',default=True, key = 'N',change_submits = True)],
-            [sg.Checkbox('R',default=True, key = 'R',change_submits = True)],
-            [sg.Checkbox('SR',default=True, key = 'SR',change_submits = True)],
-            [sg.Checkbox('SSR',default=True, key = 'SSR',change_submits = True)]]
-    col2 = [[sg.Listbox(values=(cards_to_display),size = (30,20),key = 'CARDS')]]
+    col1 = [[sg.Checkbox('N',default=False, key = 'N',change_submits = True)],
+            [sg.Checkbox('R',default=False, key = 'R',change_submits = True)],
+            [sg.Checkbox('SR',default=False, key = 'SR',change_submits = True)],
+            [sg.Checkbox('SSR',default=False, key = 'SSR',change_submits = True)]]
+    col2 = [[sg.Listbox(values=([]),size = (30,20),key = 'CARDS')]]
     layout = [[sg.Column(col1),sg.Column(col2)],[sg.Button(button_text= 'Sell!',key='SELL')]]
     window = sg.Window('Sell Cards').Layout(layout)
     while True:
         event,values = window.Read()
+        
+        if event == None:
+            window.Close()
+            return 0
 
         if event in ['N','R','SR','SSR','SELL']:
             accepted_rarities = []
@@ -3127,7 +3138,7 @@ def sell_cards__bulk_GUI():
             cards_to_display[:] = []
             cards_to_display_dicts[:] = []
             for card in cards_master_dict:
-                if card['rarity'] in accepted_rarities and card['unique_id'] not in team_cards:
+                if card['rarity'] in accepted_rarities:
                     cards_to_display.append(card['name'])
                     cards_to_display_dicts.append(card)
 
@@ -3140,18 +3151,16 @@ def sell_cards__bulk_GUI():
                 cards_master_dict.remove(card)
             sell_cards(cards_to_sell)
             cards_to_display[:] = []
+            cards_to_display_dicts[:] = []
             cards_to_display_dicts[:] = cards_master_dict
             for card in cards_to_display_dicts:
-                cards_to_display.append(card['name'])
+                if card['rarity'] in accepted_rarities:
+                    cards_to_display.append(card['name'])
             window.UnHide()
             window.Refresh()
             
 
         window.FindElement('CARDS').Update(values=cards_to_display)
-
-
-        if event == None:
-            return 0
 
     return 0
 

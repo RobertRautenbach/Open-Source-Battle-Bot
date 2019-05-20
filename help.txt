@@ -1,5 +1,5 @@
-1557388373
-1557713560
+111
+111
 
 ############################################################################
 To stop a command from executing, hold ctrl + c
@@ -17,6 +17,7 @@ To stop a command from executing, hold ctrl + c
 'dragonballs' -> Collects Dragonballs and makes wishes.
 'omegafarm' -> Completes everything (story, events, zbattle)
 'info' -> Print out account information.
+'sell' -> Provides a GUI to sell cards.
 'team' -> Change composition of a deck.
 'deck' -> Select a deck to be the default.
 'gift' -> Accepts gifts and missions.
