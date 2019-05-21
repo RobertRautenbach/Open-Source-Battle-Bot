@@ -145,7 +145,7 @@ def complete_stage(stage_id, difficulty, kagi = None):
 
     # Hercule punching bag event damage
     if str(stage_id)[0:3] == '711':
-        damage = randint(78000000, 79000000)
+        damage = randint(101000000, 100000000)
 
     sign = {
         'actual_steps': steps,
@@ -155,7 +155,8 @@ def complete_stage(stage_id, difficulty, kagi = None):
         'has_player_been_taken_damage': False,
         'is_cheat_user': False,
         'is_cleared': True,
-        'is_player_special_attack_only': False,
+        'is_defeated_boss': True,
+        'is_player_special_attack_only': True,
         'max_damage_to_boss': damage,
         'min_turn_in_boss_battle': 0,
         'quest_finished_at_ms': finish_time,
@@ -2268,6 +2269,8 @@ def user_command_executor(command):
         dragonballs()
     elif command == 'info':
         get_user_info()
+    elif command == 'items':
+        items_viewer()
     elif command == 'sell':
         sell_cards__bulk_GUI()
     elif command == 'team':
@@ -3161,7 +3164,115 @@ def sell_cards__bulk_GUI():
         window.FindElement('CARDS').Update(values=cards_to_display)
 
     return 0
+####################################################################
+def items_viewer():
 
+    # ## Accepts Outstanding Login Bonuses
+    headers = {
+        'User-Agent': 'Android',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/resources/login?potential_items=true&training_items=true&support_items=true&treasure_items=true&special_items=true'),
+        'X-Language': 'en',
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/resources/login?potential_items=true&training_items=true&support_items=true&treasure_items=true&special_items=true'
+    else:
+        url = 'http://ishin-production.aktsk.jp/resources/login?potential_items=true&training_items=true&support_items=true&treasure_items=true&special_items=true'
+    r = requests.get(url, headers=headers)
+    
+    col1 = [[sg.Checkbox('Support Items',default=False, key = 'SUPPORT',change_submits = True)],
+            [sg.Checkbox('Training Items',default=False, key = 'TRAINING',change_submits = True)],
+            [sg.Checkbox('Potential Items',default=False, key = 'POTENTIAL',change_submits = True)],
+            [sg.Checkbox('Treasure Items',default=False, key = 'TREASURE',change_submits = True)],
+            [sg.Checkbox('Special Items',default=False, key = 'SPECIAL',change_submits = True)]]
+    col2 = [[sg.Output(size = (40,30))]]
+    layout = [[sg.Column(col1),sg.Column(col2)]]
+    window = sg.Window('Items').Layout(layout)
+    while True:
+        event,values = window.Read()
+
+        if event == None:
+            window.Close()
+            return 0
+
+        if event in ['SUPPORT','TRAINING','POTENTIAL','TREASURE','SPECIAL']:
+            os.system('cls' if os.name == 'nt' else 'clear')
+            if values['SUPPORT']:
+                print('\n##########################')
+                print('Support Items -')
+                print('##########################')
+                window.Refresh()
+                for item in r.json()['support_items']['items']:
+                    try:
+                        config.Model.set_connection_resolver(config.db_glb)
+                        print(str(config.SupportItems.find_or_fail(item['item_id']).name)+' x'+str(item['quantity']))
+                    except:
+                        config.Model.set_connection_resolver(config.db_jp)
+                        print(str(config.SupportItems.find_or_fail(item['item_id']).name)+' x'+str(item['quantity']))
+                window.Refresh()
+            if values['TRAINING']:
+                print('\n##########################')
+                print('Training Items -')
+                print('##########################')
+                window.Refresh()
+                for item in r.json()['training_items']:
+                    try:
+                        config.Model.set_connection_resolver(config.db_glb)
+                        print(str(config.TrainingItems.find(item['training_item_id']).name)+' x'+str(item['quantity']))
+                    except:
+                        config.Model.set_connection_resolver(config.db_jp)
+                        print(str(config.TrainingItems.find(item['training_item_id']).name)+' x'+str(item['quantity']))
+                window.Refresh()
+            if values['POTENTIAL']:
+                print('\n##########################')
+                print('Potential Items -')
+                print('##########################')
+                window.Refresh()
+                for item in reversed(r.json()['potential_items']['user_potential_items']):
+                    try:
+                        config.Model.set_connection_resolver(config.db_glb)
+                        print(str(config.PotentialItems.find(item['potential_item_id']).name)+' x'+str(item['quantity']))
+                        print(config.PotentialItems.find(item['potential_item_id']).description)
+                    except:
+                        config.Model.set_connection_resolver(config.db_jp)
+                        print(str(config.PotentialItems.find(item['potential_item_id']).name)+' x'+str(item['quantity']))
+                        print(config.PotentialItems.find(item['potential_item_id']).description)
+                window.Refresh()
+            if values['TREASURE']:
+                print('\n##########################')
+                print('Treasure Items -')
+                print('##########################')
+                window.Refresh()
+                for item in r.json()['treasure_items']['user_treasure_items']:
+                    try:
+                        config.Model.set_connection_resolver(config.db_glb)
+                        print(str(config.TreasureItems.find(item['treasure_item_id']).name)+' x'+str(item['quantity']))
+                    except:
+                        config.Model.set_connection_resolver(config.db_jp)
+                        print(str(config.TreasureItems.find(item['treasure_item_id']).name)+' x'+str(item['quantity']))
+                window.Refresh()
+            if values['SPECIAL']:
+                print('\n##########################')
+                print('Special Items -')
+                print('##########################')
+                window.Refresh()
+                for item in r.json()['special_items']:
+                    try:
+                        config.Model.set_connection_resolver(config.db_glb)
+                        print(str(config.SpecialItems.find(item['special_item_id']).name)+' x'+str(item['quantity']))
+                    except:
+                        config.Model.set_connection_resolver(config.db_jp)
+                        print(str(config.SpecialItems.find(item['special_item_id']).name)+' x'+str(item['quantity']))
+                window.Refresh()
+
+
+            
+    
 
 
 
