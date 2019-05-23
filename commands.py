@@ -1930,10 +1930,11 @@ def complete_area(area_id):
     # JP Translated
 
 
-    # Check if GLB database has id, if not try JP DB.    
-    config.Model.set_connection_resolver(config.db_glb)
-    quests = config.Quests.where('area_id', '=', area_id).get()
-    if  len(quests) == 0:
+    # Check if GLB database has id, if not try JP DB. 
+    if config.client == 'global':  
+        config.Model.set_connection_resolver(config.db_glb)
+        quests = config.Quests.where('area_id', '=', area_id).get()
+    else:
         config.Model.set_connection_resolver(config.db_jp)
         quests = config.Quests.where('area_id', '=', area_id).get()
 
