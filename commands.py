@@ -2386,10 +2386,7 @@ def complete_unfinished_zbattles(kagi=False):
                     tempuser = tempr.json()
                     if str(r.json()['friends'][i]['name']) == str(tempuser['user']['name']):
                         level = int(r.json()['friends'][i]['max_clear_level']) + 1
-                        print(level)
                     i = i + 1
-
-            print(str(r.json()))
 
             # Stop at level 30 !! This may not work for all zbattle e.g kid gohan
             while level < 31:
@@ -2451,10 +2448,6 @@ def complete_unfinished_zbattles(kagi=False):
                     url = 'https://ishin-global.aktsk.com/z_battles/' + str(event['id']) + '/start'
                 else:
                     url = 'http://ishin-production.aktsk.jp/z_battles/' + str(event['id']) + '/start'
-
-                print(str(url))
-                print(str(json.dumps(data)))
-                print(str(headers))
 
                 r = requests.post(url, data=json.dumps(data), headers=headers)
 
