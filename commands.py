@@ -5,7 +5,6 @@ import decryptor
 import io
 import json
 from orator import DatabaseManager, Model
-from orator.exceptions.orm import ModelNotFound
 import os
 import packet
 import PySimpleGUI as sg
@@ -2706,20 +2705,22 @@ def event_viewer():
 
     # Build areas list
     areas_to_display = []
-    area_id = None
+    stage_ids = []
+    areas = {}
+
     for event in events['events']:
+        area_id = str(event['id'])
+        try:
+            config.Model.set_connection_resolver(config.db_glb)
+            area_name = area_id + ' | ' + str(config.Area.where('id', '=',area_id).first().name)
+        except:
+            config.Model.set_connection_resolver(config.db_jp)
+            area_name = area_id + ' | ' + str(config.Area.where('id', '=',area_id).first().name)
+        areas_to_display.append(area_name)
+        stage_ids[:] = []
         for quest in event['quests']:
-            if str(event['id']) != area_id:
-                area_id = str(event['id'])
-                try:
-                    config.Model.set_connection_resolver(config.db_glb)
-                    area_name = area_id + ' | ' + str(config.Area.where('id', '=',area_id).first().name)
-                except:
-                    config.Model.set_connection_resolver(config.db_jp)
-                    area_name = area_id + ' | ' + str(config.Area.where('id', '=',area_id).first().name)
-                areas_to_display.append(area_name)
-
-
+            stage_ids.append(quest['id'])
+        areas[area_id] = stage_ids[:]
 
     stages_to_display = []
     difficulties = [0]
@@ -2745,15 +2746,15 @@ def event_viewer():
             stages_to_display[:] = []
             # Check if GLB database has id, if not try JP DB.   
             area_id = values['AREAS'][0].split(' | ')[0]
-            config.Model.set_connection_resolver(config.db_glb)
-            quests = config.Quests.where('area_id', '=', area_id).get()
-            if len(quests) == 0:
-                config.Model.set_connection_resolver(config.db_jp)
-                quests = config.Quests.where('area_id', '=', area_id).get()
-
-            
-            for quest in quests:
-                stages_to_display.append(quest.name + ' | ' + str(quest.id))
+                        
+            for stage_id in areas[area_id]:
+                try:
+                    config.Model.set_connection_resolver(config.db_glb)
+                    stage_name = config.Quests.find_or_fail(stage_id).name
+                except:
+                    config.Model.set_connection_resolver(config.db_jp)
+                    stage_name = config.Quests.find_or_fail(stage_id).name
+                stages_to_display.append(stage_name + ' | ' + str(stage_id))
 
         if event == 'STAGES' and len(values['STAGES']) > 0:
             difficulties[:] = []
