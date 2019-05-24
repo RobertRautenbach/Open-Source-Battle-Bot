@@ -2352,6 +2352,7 @@ def complete_unfinished_zbattles(kagi = False):
                     }
                 if config.client == 'global':
                     tempurl = 'https://ishin-global.aktsk.com/user'
+                    tempr = requests.get(tempurl, headers=tempheaders)
                 else:
                     tempurl = 'http://ishin-production.aktsk.jp/user'
                     tempr = requests.get(tempurl, headers=tempheaders)
