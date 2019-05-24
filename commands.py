@@ -35,7 +35,7 @@ def complete_stage(stage_id, difficulty, kagi = None):
             stage_id = str(config.Quests.where('name', 'like', '%' + stage_id
                                         + '%').first().id)
         except:
-            print(Fore.RED+"Could not find stage name in databases")
+            print(Fore.RED + Style.BRIGHT+"Could not find stage name in databases")
             return 0
     # Retrieve correct stage name to print
     # Check if GLB database has id, if not try JP DB.
@@ -53,7 +53,7 @@ def complete_stage(stage_id, difficulty, kagi = None):
         print('Begin stage: ' + stage_name + ' ' + stage_id + ' | Difficulty: ' \
                 + str(difficulty) + ' Deck: ' + str(config.deck))
     except:
-        print(Fore.RED + 'Does this quest exist?')
+        print(Fore.RED + Style.BRIGHT + 'Does this quest exist?')
         return 0
         
 
@@ -109,7 +109,7 @@ def complete_stage(stage_id, difficulty, kagi = None):
     if 'sign' in r.json():
         dec_sign = packet.decrypt_sign(r.json()['sign'])
     elif 'error' in r.json():
-        print(Fore.RED + str(r.json()['error']))
+        print(Fore.RED + Style.BRIGHT + str(r.json()['error']))
         # Check if error was due to lack of stamina
         if r.json()['error']['code'] == 'act_is_not_enough':
             # Check if allowed to refill stamina
@@ -118,18 +118,18 @@ def complete_stage(stage_id, difficulty, kagi = None):
                 r = requests.post(url, data=json.dumps(data),
                               headers=headers)
             else:
-                print(Fore.RED + 'Stamina refill not allowed.')
+                print(Fore.RED + Style.BRIGHT + 'Stamina refill not allowed.')
                 return 0
         elif r.json()['error']['code'] == 'active_record/record_not_found':
             return 0
         elif r.json()['error']['code'] == 'invalid_area_conditions_potential_releasable':
-            print(Fore.RED + 'You do not meet the coniditions to complete potential events')
+            print(Fore.RED + Style.BRIGHT + 'You do not meet the coniditions to complete potential events')
             return 0
         else:
-            print(Fore.RED + str(r.json()['error']))
+            print(Fore.RED + Style.BRIGHT + str(r.json()['error']))
             return 0
     else:
-        print(Fore.RED + str(r.json()))
+        print(Fore.RED + Style.BRIGHT + str(r.json()))
         return 0
     if 'sign' in r.json():
         dec_sign = packet.decrypt_sign(r.json()['sign'])
@@ -281,7 +281,7 @@ def complete_stage(stage_id, difficulty, kagi = None):
                 config.Model.set_connection_resolver(config.db_jp)
 
             # Print name and item count
-            print(Fore.CYAN + config.SupportItems.find(x).name + ' x' \
+            print(Fore.CYAN + Style.BRIGHT + config.SupportItems.find(x).name + ' x' \
                 + str(supportitems.count(x)))
         for x in awakeningitemsset:
             # JP Translation
@@ -292,7 +292,7 @@ def complete_stage(stage_id, difficulty, kagi = None):
                 config.Model.set_connection_resolver(config.db_jp)
 
             # Print name and item count
-            print(Fore.MAGENTA + config.AwakeningItems.find(x).name + ' x' \
+            print(Fore.MAGENTA + Style.BRIGHT + config.AwakeningItems.find(x).name + ' x' \
                 + str(awakeningitems.count(x)))
         for x in trainingitemsset:
             # JP Translation
@@ -303,7 +303,7 @@ def complete_stage(stage_id, difficulty, kagi = None):
                 config.Model.set_connection_resolver(config.db_jp)
 
             # Print name and item count
-            print(Fore.RED + config.TrainingItems.find(x).name + ' x' \
+            print(Fore.RED + Style.BRIGHT + config.TrainingItems.find(x).name + ' x' \
                 + str(trainingitems.count(x)))
         for x in potentialitemsset:
             # JP Translation
@@ -325,7 +325,7 @@ def complete_stage(stage_id, difficulty, kagi = None):
                 config.Model.set_connection_resolver(config.db_jp)
 
             # Print name and item count
-            print(Fore.GREEN + config.TreasureItems.find(x).name + ' x' \
+            print(Fore.GREEN + Style.BRIGHT + config.TreasureItems.find(x).name + ' x' \
                 + str(treasureitems.count(x)))
         for x in trainingfieldsset:
             # JP Translation
@@ -376,7 +376,7 @@ def complete_stage(stage_id, difficulty, kagi = None):
 
     # #### COMPLETED STAGE
 
-    print(Fore.GREEN + 'Completed stage: ' + str(stage_id) + ' in ' \
+    print(Fore.GREEN + Style.BRIGHT + 'Completed stage: ' + str(stage_id) + ' in ' \
         + str(timer_total) + ' seconds')
     print('##############################################')
 
@@ -498,7 +498,7 @@ def refill_stamina():
 
     stones = get_user()['user']['stone']
     if stones < 1:
-        print(Fore.RED + 'You have no stones left...')
+        print(Fore.RED + Style.BRIGHT + 'You have no stones left...')
         return 0
     if config.client == 'global':
         headers = {
@@ -526,7 +526,7 @@ def refill_stamina():
         url = 'http://ishin-production.aktsk.jp/user/recover_act_with_stone'
     
     r = requests.put(url, headers=headers)
-    print(Fore.GREEN + 'STAMINA RESTORED')
+    print(Fore.GREEN + Style.BRIGHT + 'STAMINA RESTORED')
 ####################################################################
 def get_user():
 
@@ -629,13 +629,13 @@ def signup():
     # ## It is now necessary to solve the captcha. Opens browser window
     # ## in order to solve it. Script waits for user input before continuing
     if 'captcha_url' not in r.json():
-        print(Fore.RED+'Captcha could not be loaded...')
+        print(Fore.RED + Style.BRIGHT+'Captcha could not be loaded...')
         return None
 
     url = r.json()['captcha_url']
     webbrowser.open(url, new=2)
     captcha_session_key = r.json()['captcha_session_key']
-    print('Opening captcha in browser. Press'+ Fore.RED+' ENTER '+Style.RESET_ALL +'once you have solved it...')
+    print('Opening captcha in browser. Press'+ Fore.RED + Style.BRIGHT+' ENTER '+Style.RESET_ALL +'once you have solved it...')
     input()
 
     # ## Query sign up again passing the captcha session key.
@@ -700,11 +700,11 @@ def signin(identifier):
         url = r.json()['captcha_url']
         webbrowser.open(url, new=2)
         captcha_session_key = r.json()['captcha_session_key']
-        print('Opening captcha in browser. Press'+ Fore.RED+' ENTER '+Style.RESET_ALL +'once you have solved it...')
+        print('Opening captcha in browser. Press'+ Fore.RED + Style.BRIGHT+' ENTER '+Style.RESET_ALL +'once you have solved it...')
         input()
         r = requests.post(url, data=data, headers=headers)
 
-    print(Fore.RED + 'SIGN IN COMPLETE' + Style.RESET_ALL)
+    print(Fore.RED + Style.BRIGHT + 'SIGN IN COMPLETE' + Style.RESET_ALL)
 
     try:
         return (r.json()['access_token'],r.json()['secret'])
@@ -742,7 +742,7 @@ def tutorial():
 
     # ##Progress NULL TUTORIAL FINISH
 
-    print(Fore.BLUE + 'Tutorial Progress: 1/8')
+    print(Fore.CYAN + Style.BRIGHT + 'Tutorial Progress: 1/8')
     headers = {
         'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
@@ -776,7 +776,7 @@ def tutorial():
     else:
         url = 'http://ishin-production.aktsk.jp/tutorial/gasha'
     r = requests.post(url, headers=headers)
-    print(Fore.BLUE + 'Tutorial Progress: 2/8')
+    print(Fore.CYAN + Style.BRIGHT + 'Tutorial Progress: 2/8')
 
     # ##Progress to 999%
 
@@ -796,7 +796,7 @@ def tutorial():
     else:
         url = 'http://ishin-production.aktsk.jp/tutorial'
     r = requests.put(url, data=json.dumps(progress), headers=headers)
-    print(Fore.BLUE + 'Tutorial Progress: 3/8')
+    print(Fore.CYAN + Style.BRIGHT + 'Tutorial Progress: 3/8')
 
     # ##Change User name
 
@@ -816,7 +816,7 @@ def tutorial():
     else:
         url = 'http://ishin-production.aktsk.jp/user'
     r = requests.put(url, data=json.dumps(user), headers=headers)
-    print(Fore.BLUE + 'Tutorial Progress: 4/8')
+    print(Fore.CYAN + Style.BRIGHT + 'Tutorial Progress: 4/8')
 
     # ##/missions/put_forward
 
@@ -835,7 +835,7 @@ def tutorial():
     else:
         url = 'http://ishin-production.aktsk.jp/missions/put_forward'
     r = requests.post(url, headers=headers)
-    print(Fore.BLUE + 'Tutorial Progress: 5/8')
+    print(Fore.CYAN + Style.BRIGHT + 'Tutorial Progress: 5/8')
 
     # ##Apologies accept
 
@@ -873,13 +873,13 @@ def tutorial():
         url = 'http://ishin-production.aktsk.jp/user'
     data = {'user': {'is_ondemand': True}}
     r = requests.put(url, data=json.dumps(data), headers=headers)
-    print(Fore.BLUE + 'Tutorial Progress: 6/8')
+    print(Fore.CYAN + Style.BRIGHT + 'Tutorial Progress: 6/8')
 
     # ##Hidden potential releasable
 
-    print(Fore.BLUE + 'Tutorial Progress: 7/8')
-    print(Fore.BLUE + 'Tutorial Progress: 8/8')
-    print(Fore.RED + 'TUTORIAL COMPLETE')
+    print(Fore.CYAN + Style.BRIGHT + 'Tutorial Progress: 7/8')
+    print(Fore.CYAN + Style.BRIGHT + 'Tutorial Progress: 8/8')
+    print(Fore.RED + Style.BRIGHT + 'TUTORIAL COMPLETE')
 ####################################################################
 def db_download():
     #
@@ -930,8 +930,8 @@ def db_download():
         glb_current = r.json()['version']
         
 
-        print(Fore.RED + 'GLB DB out of date...')
-        print(Fore.RED + 'Downloading...')
+        print(Fore.RED + Style.BRIGHT + 'GLB DB out of date...')
+        print(Fore.RED + Style.BRIGHT + 'Downloading...')
         url = r.json()['url']
         r = requests.get(url, allow_redirects=True)
         open('dataenc_glb.db', 'wb').write(r.content)
@@ -963,8 +963,8 @@ def db_download():
         jp_out_of_date = True
         jp_current = r.json()['version']
         
-        print(Fore.RED + 'JP DB out of date...')
-        print(Fore.RED + 'Downloading...')
+        print(Fore.RED + Style.BRIGHT + 'JP DB out of date...')
+        print(Fore.RED + Style.BRIGHT + 'Downloading...')
         url = r.json()['url']
         r = requests.get(url, allow_redirects=True)
         open('dataenc_jp.db', 'wb').write(r.content)
@@ -972,7 +972,7 @@ def db_download():
     # Revert client to original
     config.client = original_client
 
-    print(Fore.RED \
+    print(Fore.RED + Style.BRIGHT \
         + 'Decrypting Latest Databases... This can take a few minutes...')
 
     # Calling database decrypt script
@@ -994,7 +994,7 @@ def db_download():
         with open('help.txt', 'w') as file:
             file.writelines(data)
 
-    print(Fore.GREEN + 'Database update complete.')
+    print(Fore.GREEN + Style.BRIGHT + 'Database update complete.')
 ####################################################################
 def accept_missions():
     # Accept all remaining missions
@@ -1037,7 +1037,7 @@ def accept_missions():
     data = {"mission_ids":mission_list}
     r = requests.post(url, data = json.dumps(data),headers = headers)
     if 'error' not in r.json():
-        print(Fore.GREEN+'Accepted missions')
+        print(Fore.GREEN+ Style.BRIGHT+'Accepted missions')
 ####################################################################
 def accept_gifts():
 
@@ -1088,7 +1088,7 @@ def accept_gifts():
         data = {'gift_ids': data}
         r = requests.post(url, data=json.dumps(data), headers=headers)
     if 'error' not in r.json():
-        print(Fore.GREEN + 'Gifts Accepted...')
+        print(Fore.GREEN + Style.BRIGHT +'Gifts Accepted...')
     else:
         print(r.json())
 
@@ -1100,7 +1100,7 @@ def change_team():
     chosen_deck = int(input("Enter the deck number you would like to change: "))
 
     ###Get user cards
-    print(Fore.BLUE + 'Fetching user cards...')
+    print(Fore.CYAN + Style.BRIGHT + 'Fetching user cards...')
     headers = {
         'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
         'Accept': '*/*',
@@ -1118,10 +1118,10 @@ def change_team():
         url = 'http://ishin-production.aktsk.jp/cards'
     r = requests.get(url, headers=headers)
     master_cards = r.json()['cards']
-    print(Fore.GREEN + 'Done...')
+    print(Fore.GREEN + Style.BRIGHT + 'Done...')
 
     ###Sort user cards into a list of dictionaries with attributes
-    print(Fore.BLUE + 'Fetching card attributes...')
+    print(Fore.CYAN + Style.BRIGHT + 'Fetching card attributes...')
     card_list = []
     for card in master_cards:
         ###Get card collection object from database 
@@ -1268,14 +1268,14 @@ def change_team():
                 'UniqueID': card['id']
                 }
         card_list.append(dict)
-    print(Fore.GREEN + "Done...")
+    print(Fore.GREEN + Style.BRIGHT + "Done...")
 
     ###Sort cards
-    print(Fore.BLUE + "Sorting cards...")
+    print(Fore.CYAN + Style.BRIGHT + "Sorting cards...")
     card_list = sorted(card_list, key=lambda k: k['Name'])
     card_list = sorted(card_list, key=lambda k: k['Rarity'])
     card_list = sorted(card_list, key=lambda k: k['Cost'])
-    print(Fore.GREEN + "Done...")
+    print(Fore.GREEN + Style.BRIGHT + "Done...")
     ###Define cards to display
     cards_to_display_dicts = []
     cards_to_display = []
@@ -1392,7 +1392,7 @@ def change_team():
         if event == 'confirm_team':
             if len(chosen_cards_unique_ids) < 6:
                 if len(chosen_cards_unique_ids) == 0:
-                    print(Fore.RED+'No cards selected.')
+                    print(Fore.RED + Style.BRIGHT+'No cards selected.')
                     return 0
                 loop = 6 - len(chosen_cards_unique_ids)
                 for i in range(int(loop)):
@@ -1448,11 +1448,11 @@ def change_team():
     #print(data)
     r = requests.post(url, data = json.dumps(data),headers = headers)
     if 'error' in r.json():
-        print(Fore.RED+str(r.json()))
+        print(Fore.RED + Style.BRIGHT+str(r.json()))
     else:
         #print(r.json())
         print(chosen_cards_names)
-        print(Fore.GREEN+"Deck updated!")
+        print(Fore.GREEN + Style.BRIGHT+"Deck updated!")
 
     return 0
 
@@ -1562,7 +1562,7 @@ def complete_unfinished_quest_stages():
 ####################################################################
 def refresh_client():
     config.access_token,config.secret = signin(config.identifier)
-    print(Fore.GREEN+'Refreshed Token')
+    print(Fore.GREEN + Style.BRIGHT+'Refreshed Token')
 ####################################################################
 def change_name():
     # Changes name associated with account
@@ -1609,9 +1609,9 @@ def increase_capacity():
     
     r = requests.post(url, headers=headers)
     if 'error' in r.json():
-        print(Fore.RED + str(r.json()))
+        print(Fore.RED + Style.BRIGHT + str(r.json()))
     else:
-        print(Fore.GREEN + 'Card capacity +5')
+        print(Fore.GREEN + Style.BRIGHT + 'Card capacity +5')
 ####################################################################
 
 def get_user_info():
@@ -1797,7 +1797,7 @@ def complete_clash():
     available_user_cards= available_user_cards[:99]
 
     if len(available_user_cards) == 0:
-        print(Fore.RED+"Not enough cards to complete Battlefield with!")
+        print(Fore.RED + Style.BRIGHT+"Not enough cards to complete Battlefield with!")
         return 0
 
 
@@ -1960,17 +1960,17 @@ def save_account():
             os.mkdir('Saves/android')
             os.mkdir('Saves/ios')
         except:
-            print(Fore.RED + 'Unable to create saves file')
+            print(Fore.RED + Style.BRIGHT + 'Unable to create saves file')
             return 0
 
     valid_save = False
     while valid_save == False:
         save_name = input("What would you like to name the file?")
         while save_name.isalnum() == 0:
-            print(Fore.RED+"Name not allowed!")
+            print(Fore.RED + Style.BRIGHT+"Name not allowed!")
             save_name = input('What would you like to name this save?: ')
         if os.path.exists('Saves'+os.sep+config.platform+os.sep+save_name):
-            print(Fore.RED + "File by that name already exists.")
+            print(Fore.RED + Style.BRIGHT + "File by that name already exists.")
         else:
             try:
                 f = open(os.path.join('Saves'+os.sep+config.platform+os.sep+save_name), 'w')
@@ -1981,8 +1981,8 @@ def save_account():
                 f.write(str(config.client) + '\n')
                 f.close()
                 print('--------------------------------------------')
-                print(Fore.BLUE + 'Written details to file: ' + save_name)
-                print(Fore.RED + 'If ' + save_name + ' is deleted your account will be lost!')
+                print(Fore.CYAN + Style.BRIGHT + 'Written details to file: ' + save_name)
+                print(Fore.RED + Style.BRIGHT + 'If ' + save_name + ' is deleted your account will be lost!')
                 print('--------------------------------------------')
                 break
             except Exception as e:
@@ -2014,13 +2014,13 @@ def load_account():
                 if config.client == client:
                     break
                 else:
-                    print(Fore.RED+'Save does not match client version.')
+                    print(Fore.RED + Style.BRIGHT+'Save does not match client version.')
 
             except Exception as e:
                 print(e)
             
         else:
-            print(Fore.RED + "Could not find "+save_name)
+            print(Fore.RED + Style.BRIGHT + "Could not find "+save_name)
     refresh_client()
 ####################################################################
 
@@ -2085,7 +2085,7 @@ def dragonballs():
         url = 'http://ishin-production.aktsk.jp/dragonball_sets'
     r = requests.get(url, headers = headers)
     if 'error' in r.json():
-        print(Fore.RED+str(r.json()))
+        print(Fore.RED + Style.BRIGHT+str(r.json()))
         return 0
 
     ####Determine which dragonball set is being used
@@ -2120,7 +2120,7 @@ def dragonballs():
 
         r = requests.get(url, headers = headers)
         if 'error' in r.json():
-            print(Fore.RED+str(r.json()))
+            print(Fore.RED + Style.BRIGHT+str(r.json()))
             return 0
         wish_ids = []
         for wish in r.json()['dragonball_wishes']:
@@ -2155,7 +2155,7 @@ def dragonballs():
         data = {'dragonball_wish_ids': [int(choice)]}
         r = requests.post(url, data=json.dumps(data), headers=headers)
         if 'error' in r.json():
-            print(Fore.RED+str(r.json()))
+            print(Fore.RED + Style.BRIGHT+str(r.json()))
         else:
             print(Fore.YELLOW+'Wish granted!')
             print('')
@@ -2219,7 +2219,7 @@ def user_command_executor(command):
             help_text = f.read()
             print(help_text)
         else:
-            print(Fore.RED+'help.txt does not exist.')
+            print(Fore.RED + Style.BRIGHT+'help.txt does not exist.')
     elif command == 'stage':
         stage = input('What stage would you like to complete?: ')
         difficulty = input('Enter the difficulty|(0:Easy, 1:Hard etc...): ')
@@ -2316,7 +2316,7 @@ def complete_unfinished_zbattles(kagi = False):
             except:
                 config.Model.set_connection_resolver(config.db_jp)
             print(config.ZBattles.where('z_battle_stage_id','=',event['id']).first().enemy_name,end='')
-            print(Fore.BLUE+' | ID: ' + str(event['id']))
+            print(Fore.CYAN + Style.BRIGHT+' | ID: ' + str(event['id']))
             # Get Max cleared level
             headers = {
                 'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
@@ -2380,10 +2380,10 @@ def complete_unfinished_zbattles(kagi = False):
                 if 'supporters' in r.json():
                     supporter = r.json()['supporters'][0]['id']
                 elif 'error' in r.json():
-                    print(Fore.RED+r.json())
+                    print(Fore.RED + Style.BRIGHT+r.json())
                     return 0
                 else:
-                    print(Fore.RED+'Problem with ZBattle')
+                    print(Fore.RED + Style.BRIGHT+'Problem with ZBattle')
                     print(r.raw())
                     return 0
 
@@ -2428,7 +2428,7 @@ def complete_unfinished_zbattles(kagi = False):
                     print(r.json())
                     return 0
                 else:
-                    print(Fore.RED+'Problem with ZBattle')
+                    print(Fore.RED + Style.BRIGHT+'Problem with ZBattle')
                     print(r.raw())
                     return 0
 
@@ -2558,7 +2558,7 @@ def complete_unfinished_zbattles(kagi = False):
                             config.Model.set_connection_resolver(config.db_jp)
 
                         # Print name and item count
-                        print(Fore.CYAN + config.SupportItems.find(x).name + ' x' \
+                        print(Fore.CYAN + Style.BRIGHT+ config.SupportItems.find(x).name + ' x' \
                             + str(supportitems.count(x)))
                     for x in awakeningitemsset:
                         # JP Translation
@@ -2569,7 +2569,7 @@ def complete_unfinished_zbattles(kagi = False):
                             config.Model.set_connection_resolver(config.db_jp)
 
                         # Print name and item count
-                        print(Fore.MAGENTA + config.AwakeningItems.find(x).name + ' x' \
+                        print(Fore.MAGENTA + Style.BRIGHT  + config.AwakeningItems.find(x).name + ' x' \
                             + str(awakeningitems.count(x)))
                     for x in trainingitemsset:
                         # JP Translation
@@ -2580,7 +2580,7 @@ def complete_unfinished_zbattles(kagi = False):
                             config.Model.set_connection_resolver(config.db_jp)
 
                         # Print name and item count
-                        print(Fore.RED + config.TrainingItems.find(x).name + ' x' \
+                        print(Fore.RED + Style.BRIGHT + config.TrainingItems.find(x).name + ' x' \
                             + str(trainingitems.count(x)))
                     for x in potentialitemsset:
                         # JP Translation
@@ -2602,7 +2602,7 @@ def complete_unfinished_zbattles(kagi = False):
                             config.Model.set_connection_resolver(config.db_jp)
 
                         # Print name and item count
-                        print(Fore.GREEN + config.TreasureItems.find(x).name + ' x' \
+                        print(Fore.GREEN + Style.BRIGHT + config.TreasureItems.find(x).name + ' x' \
                             + str(treasureitems.count(x)))
                     for x in trainingfieldsset:
                         # JP Translation
@@ -2635,8 +2635,8 @@ def complete_unfinished_zbattles(kagi = False):
             refresh_client()
 
     except Exception as e:
-        print(Fore.RED+str(e))
-        print(Fore.RED+'Trouble finding new Z-Battle events')
+        print(Fore.RED + Style.BRIGHT+str(e))
+        print(Fore.RED + Style.BRIGHT+'Trouble finding new Z-Battle events')
 ####################################################################
 def set_platform():
     while True:
@@ -2648,7 +2648,7 @@ def set_platform():
                 config.platform = 'ios'
             break
         else:
-            print(Fore.RED+'Could not identify correct platform to use.')
+            print(Fore.RED + Style.BRIGHT+'Could not identify correct platform to use.')
 
 ####################################################################
 def list_events():
@@ -2928,25 +2928,25 @@ def summon():
                             config.Cards.find_or_fail(int(card['item_id'])).rarity
 
                         if config.Cards.find(int(card['item_id'])).rarity == 0:
-                            rarity = Fore.RED + 'N'+ Style.RESET_ALL
+                            rarity = Fore.RED + Style.BRIGHT + 'N'+ Style.RESET_ALL
                         elif config.Cards.find(int(card['item_id'])).rarity == 1:
-                            rarity = Fore.RED + 'R'+ Style.RESET_ALL
+                            rarity = Fore.RED + Style.BRIGHT + 'R'+ Style.RESET_ALL
                         elif config.Cards.find(int(card['item_id'])).rarity == 2:
-                            rarity = Fore.RED + 'SR'+ Style.RESET_ALL
+                            rarity = Fore.RED + Style.BRIGHT + 'SR'+ Style.RESET_ALL
                         elif config.Cards.find(int(card['item_id'])).rarity == 3:
                             rarity = Fore.YELLOW + 'SSR' + Style.RESET_ALL
                         elif config.Cards.find(int(card['item_id'])).rarity == 4:
-                            rarity = Fore.MAGENTA + 'UR'+ Style.RESET_ALL
+                            rarity = Fore.MAGENTA + Style.BRIGHT + 'UR'+ Style.RESET_ALL
                         elif config.Cards.find(int(card['item_id'])).rarity == 5:
                             rarity = Fore.CYAN + 'LR'+ Style.RESET_ALL
                         if str(config.Cards.find(int(card['item_id'])).element)[-1] == '0':
-                            type = Fore.BLUE + 'AGL '
+                            type = Fore.CYAN + Style.BRIGHT + 'AGL '
                         elif str(config.Cards.find(int(card['item_id'])).element)[-1] == '1':
-                            type = Fore.GREEN + 'TEQ '
+                            type = Fore.GREEN + Style.BRIGHT + 'TEQ '
                         elif str(config.Cards.find(int(card['item_id'])).element)[-1] == '2':
-                            type = Fore.MAGENTA + 'INT '
+                            type = Fore.MAGENTA + Style.BRIGHT + 'INT '
                         elif str(config.Cards.find(int(card['item_id'])).element)[-1] == '3':
-                            type = Fore.RED + 'STR '
+                            type = Fore.RED + Style.BRIGHT + 'STR '
                         elif str(config.Cards.find(int(card['item_id'])).element)[-1] == '4':
                             type = Fore.YELLOW + 'PHY '
                         card_list.append(type + config.Cards.find(int(card['item_id'
@@ -2993,25 +2993,25 @@ def summon():
                             config.Cards.find_or_fail(int(card['item_id'])).rarity
 
                         if config.Cards.find(int(card['item_id'])).rarity == 0:
-                            rarity = Fore.RED + 'N'+ Style.RESET_ALL
+                            rarity = Fore.RED + Style.BRIGHT + 'N'+ Style.RESET_ALL
                         elif config.Cards.find(int(card['item_id'])).rarity == 1:
-                            rarity = Fore.RED + 'R'+ Style.RESET_ALL
+                            rarity = Fore.RED + Style.BRIGHT + 'R'+ Style.RESET_ALL
                         elif config.Cards.find(int(card['item_id'])).rarity == 2:
-                            rarity = Fore.RED + 'SR'+ Style.RESET_ALL
+                            rarity = Fore.RED + Style.BRIGHT + 'SR'+ Style.RESET_ALL
                         elif config.Cards.find(int(card['item_id'])).rarity == 3:
                             rarity = Fore.YELLOW + 'SSR' + Style.RESET_ALL
                         elif config.Cards.find(int(card['item_id'])).rarity == 4:
-                            rarity = Fore.MAGENTA + 'UR'+ Style.RESET_ALL
+                            rarity = Fore.MAGENTA + Style.BRIGHT + 'UR'+ Style.RESET_ALL
                         elif config.Cards.find(int(card['item_id'])).rarity == 5:
                             rarity = Fore.CYAN + 'LR'+ Style.RESET_ALL
                         if str(config.Cards.find(int(card['item_id'])).element)[-1] == '0':
-                            type = Fore.BLUE + 'AGL '
+                            type = Fore.CYAN + Style.BRIGHT + 'AGL '
                         elif str(config.Cards.find(int(card['item_id'])).element)[-1] == '1':
-                            type = Fore.GREEN + 'TEQ '
+                            type = Fore.GREEN + Style.BRIGHT + 'TEQ '
                         elif str(config.Cards.find(int(card['item_id'])).element)[-1] == '2':
-                            type = Fore.MAGENTA + 'INT '
+                            type = Fore.MAGENTA + Style.BRIGHT + 'INT '
                         elif str(config.Cards.find(int(card['item_id'])).element)[-1] == '3':
-                            type = Fore.RED + 'STR '
+                            type = Fore.RED + Style.BRIGHT + 'STR '
                         elif str(config.Cards.find(int(card['item_id'])).element)[-1] == '4':
                             type = Fore.YELLOW + 'PHY '
                         card_list.append(type + config.Cards.find(int(card['item_id'

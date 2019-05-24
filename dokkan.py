@@ -60,7 +60,7 @@ while True:
     # User commands.
     while True:
         print('---------------------------------')
-        print("Type"+Fore.YELLOW+" 'help'"+Style.RESET_ALL+" to view all commands.")
+        print("Type" + Fore.YELLOW + Style.BRIGHT + " 'help'" + Style.RESET_ALL + " to view all commands.")
 
         # Set up comma separated chain commands. Handled via stdin
         try:
@@ -75,9 +75,9 @@ while True:
         try:
             commands.user_command_executor(command)
         except KeyboardInterrupt:
-            print('User interrupted process.')
+            print(Fore.CYAN + Style.BRIGHT + 'User interrupted process.')
         except Exception as e:
-            print(repr(e))
+            print(Fore.RED + Style.BRIGHT + repr(e))
 
 
 
