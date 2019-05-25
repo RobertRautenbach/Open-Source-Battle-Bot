@@ -2241,6 +2241,8 @@ def user_command_executor(command):
         complete_unfinished_events()
         complete_unfinished_zbattles()
         complete_clash()
+    elif command =='medalcal':
+        medal_calculator()
     ## When this will get updated, we shall add :finishzbattle,30, + sell + sellhercule + baba(?)
     elif command == 'completequests':
         complete_unfinished_quest_stages()
@@ -3291,6 +3293,616 @@ def items_viewer():
                         config.Model.set_connection_resolver(config.db_jp)
                         print(str(config.SpecialItems.find(item['special_item_id']).name)+' x'+str(item['quantity']))
                 window.Refresh()
+
+                
+####################################################################
+def medal_calculator():
+    # ## Pre Lr Accounts
+
+    print("1. Lr Goku")
+    print("2. Lr Frieza")
+    print("3. Lr Andriods")
+    print("4. Lr Vegito (WIP)")
+    print("5. Summonable Lr ")
+    
+
+    # Lrgoku medals drop as 50% for 7, 20% for 5 or 10, 5% for 15 or 20
+    # Lrfrieza drop is same as goku
+    Select1 = input("Select 1 2 3 4 5   here:")
+    if Select1 == "1":
+        print("-----------------------------------")
+        To = "-"
+        Lrgselect1 = input("Is your Goku SSR, UR, or TUR?:")
+        if Lrgselect1 == "SSR":
+            print("Z-awaken Goku with 50 Gregory, 20 popo, 10 Babidi, 3 North kai, and 1 supreme kai.")
+        if Lrgselect1 == "UR":
+            LRgurhave = input("How many medals do you have?:")
+            LRgurneed = (15 - int(LRgurhave))
+            LRgurstam = (LRgurneed * 25)
+            print("Goku medals needed:", LRgurneed)
+            print("Stamina needed:", LRgurstam)
+            stage = input('What stage would you like to complete(The Real Battle 601002) : ')
+            difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+            loop = input('Enter how many times to execute(15): ')
+            for i in range(int(loop)):
+                complete_stage(stage, difficulty)
+        if Lrgselect1 == "TUR":
+            Lrgselect = input("How many medals do you have?:")
+            Needlrg = 777 - int(Lrgselect)
+            Lrgclearmax = int(Needlrg) / 5
+            Lrgclearmin = int(Needlrg) / 20
+            Lrgstammax = int(Lrgclearmax) * 50
+            Lrgstammin = int(Lrgclearmin) * 50
+            print("Medals needed:", Needlrg)
+            print("Clears needed:", Lrgclearmin, To, Lrgclearmax)
+            print("Stamina needed:", Lrgstammin, To, Lrgstammax)
+            stage = input('What stage would you like to complete(Transcended Warrior 601003) : ')
+            difficulty = input('Enter the difficulty|(3:Super): ')
+            loop = input('Enter how many times to execute: ')
+            for i in range(int(loop)):
+                complete_stage(stage, difficulty)
+
+    if Select1 == "2":
+        print("-----------------------------------")
+        To = "-"
+        Lrfselect1 = input("Is your Frieza SSR, UR, Or TUR?:")
+        if Lrfselect1 == "SSR":
+            print("Z-awaken Frieza with 50 Gregory, 20 Roshi, 10 Bibidi, 3 South kai, 1 Elder kai.")
+        if Lrfselect1 == "UR":
+            LRfurhave = input("How many frieza medals do you need?:")
+            LRfurneed = (15 - int(LRfurhave))
+            LRfurstam = (LRfurneed * 25)
+            print("Freiza medals needed:", LRfurneed)
+            print("Stamina needed", LRfurstam)
+            print("Medals needed:", Needlrg)
+            print("Clears needed:", Lrgclearmin, To, Lrgclearmax)
+            print("Stamina needed:", Lrgstammin, To, Lrgstammax)
+            stage = input('What stage would you like to complete(True Fear 602002) : ')
+            difficulty = input('Enter the difficulty|(2:Z-hard): ')
+            loop = input('Enter how many times to execute(15): ')
+            for i in range(int(loop)):
+                complete_stage(stage, difficulty)
+        if Lrfselect1 == "TUR":
+            Lrfselect = input("How many medals do you have?:")
+            Needlrf = 777 - int(Lrfselect)
+            Lrfclearmin = int(Needlrf) / 20
+            lrfclearmax = int(Needlrf) / 5
+            lrfstammin = int(Lrfclearmin) * 50
+            lrfstammax = int(lrfclearmax) * 50
+            print("Medals needed:", Needlrf)
+            print("Clears needed", Lrfclearmin, To, lrfclearmax)
+            print("Stamina needed", lrfstammin, To, lrfstammax)
+            stage = input('What stage would you like to complete(Summit of the Universe 602003) : ')
+            difficulty = input('Enter the difficulty|(3:Super): ')
+            loop = input('Enter how many times to execute(110): ')
+            for i in range(int(loop)):
+                complete_stage(stage, difficulty)
+
+    if Select1 == "3":
+        print("-----------------------------------")
+        To = "-"
+        LrlevelA = input("Are you READY TO LR andriods  Lr?:")
+        if LrlevelA == "Lr":
+            LrhaveGT = input("How many Gotenks medals do you have?:")
+            LrhaveV = input("How many Super Vegito medals do you have?:")
+            Lrhavebkk = input("How many Blue Kaioken Medals do you have?:")
+            LrhaveBh = input("How many buuhan medals do you have?:")
+            Lrhavegf = input("How many Golden Frieza medals do you have?:")
+            LrhaveBroly = input("How many Broly medals do you have?:")
+            LrhaveCell = input("How many Cell medals do you have?:")
+            LrhaveKidbuu = input("How many Kid Buu medals do you have?:")
+            LrhaveSSJ3G = input("How many SSJ3 Goku medals do you have?:")
+            Lrhavegogeta = input("How many Gogeta medals do you have?:")
+            LrhaveJ = input("How many Janemba medals do you have?:")
+            LrhaveEE = input("How many Evil Emperor medals do you have?:")
+            LrhaveGh = input("How many Gohan medals do you have?:")
+            Lrhavessj3v = input("How many SSJ3 Vegeta medals do you have?:")
+            Lrhavebeerus = input("How many Beerus medals do you have?:")
+            LrneedGT = 77 - int(LrhaveGT)
+            LrneedV = 77 - int(LrhaveV)
+            Lrneedbkk = 77 - int(Lrhavebkk)
+            Lrneedbh = 77 - int(LrhaveBh)
+            Lrneedgf = 77 - int(Lrhavegf)
+            LrneedJ = 7 - int(LrhaveJ)
+            LrneedEE = 7 - int(LrhaveEE)
+            LrneedGh = 7 - int(LrhaveGh)
+            Lrneedssj3v = 7 - int(Lrhavessj3v)
+            Lrneedbeerus = 7 - int(Lrhavebeerus)
+            LrneedSSJ3G = 3 - int(LrhaveSSJ3G)
+            LrneedBroly = 3 - int(LrhaveBroly)
+            LrneedCell = 3 - int(LrhaveCell)
+            LrneedKidBuu = 3 - int(LrhaveKidbuu)
+            LrneedGogeta = 3 - int(Lrhavegogeta)
+
+            Lramedalstotal = (LrneedGT + Lrneedgf + LrneedV + Lrneedbh + Lrneedbkk + Lrneedbeerus + Lrneedssj3v + LrneedGh + LrneedEE + LrneedJ + LrneedGogeta + LrneedBroly + LrneedCell + LrneedSSJ3G + LrneedKidBuu)
+            Lrastam = int(Lramedalstotal * 50)
+            print("-----------------------------------")
+            print("Gotenks medals needed:", LrneedGT)
+            print("Super Vegito medals needed:", LrneedV)
+            print("Blue Kaiken medals needed:", Lrneedbkk)
+            print("Buuhan medals needed:", Lrneedbh)
+            print("Golden Frieza medals needed:", Lrneedgf)
+            print("Janemba medals needed:", LrneedJ)
+            print("Evil Emperor medals needed:", LrneedEE)
+            print("Gohan medals needed:", LrneedGh)
+            print("SSJ3 Vegeta medals needed:", Lrneedssj3v)
+            print("Beerus medals needed:", Lrneedbeerus)
+            print("Broly medals needed:", LrneedBroly)
+            print("Cell medals needed:", LrneedCell)
+            print("Kid Buu medals needed:", LrneedKidBuu)
+            print("SSJ3 Goku medals needed:", LrneedSSJ3G)
+            print("Gogeta medals needed:", LrneedGogeta)
+            print("Stamina needed:", Lrastam)
+            stage = input('What stage would you like to complete(Meet Vegito 512002) : ')
+            difficulty = input('Enter the difficulty|(3:Super): ')
+            loop = input('Enter how many times to execute(11): ')
+            for i in range(int(loop)):
+                complete_stage(stage, difficulty)
+            stage = input('What stage would you like to complete(Super Gotenks 513002) : ')
+            difficulty = input('Enter the difficulty|(3:Super): ')
+            loop = input('Enter how many times to execute(11): ')
+            for i in range(int(loop)):
+                complete_stage(stage, difficulty)
+            "BREAK"
+            stage = input('What stage would you like to complete(Ceaseless Combat 514001) : ')
+            difficulty = input('Enter the difficulty|(3:Super): ')
+            loop = input('Enter how many times to execute(11): ')
+            for i in range(int(loop)):
+                complete_stage(stage, difficulty)
+            stage = input('What stage would you like to complete(Horrendous Majins Onslaught 515002) : ')
+            difficulty = input('Enter the difficulty|(3:Super): ')
+            loop = input('Enter how many times to execute(11): ')
+            for i in range(int(loop)):
+                complete_stage(stage, difficulty)
+            "BREAK"
+            stage = input('What stage would you like to complete(Emperors Obsession 516001) : ')
+            difficulty = input('Enter the difficulty|(3:Super): ')
+            loop = input('Enter how many times to execute(11): ')
+            for i in range(int(loop)):
+                            complete_stage(stage, difficulty)
+            stage = input('What stage would you like to complete(Overwhelming Force of Evil! 506003) : ')
+            difficulty = input('Enter the difficulty|(4:Super2): ')
+            loop = input('Enter how many times to execute(1): ')
+            for i in range(int(loop)):
+                complete_stage(stage, difficulty)
+            "BREAK"
+            stage = input('What stage would you like to complete(Full-Power Final Battle 507002) : ')
+            difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+            loop = input('Enter how many times to execute(7): ')
+            for i in range(int(loop)):
+                complete_stage(stage, difficulty)
+            stage = input('What stage would you like to complete(The Ultimate Form 508003) : ')
+            difficulty = input('Enter the difficulty|(3:Super): ')
+            loop = input('Enter how many times to execute(1): ')
+            for i in range(int(loop)):
+                complete_stage(stage, difficulty)
+            "BREAK"
+            stage = input('What stage would you like to complete(The Most Powerful Blow 510002) : ')
+            difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+            loop = input('Enter how many times to execute(7): ')
+            for i in range(int(loop)):
+                complete_stage(stage, difficulty)
+            stage = input('What stage would you like to complete(God of Destruction Wrath 511002) : ')
+            difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+            loop = input('Enter how many times to execute(7): ')
+            for i in range(int(loop)):
+                    complete_stage(stage, difficulty)
+            "BREAK"
+            stage = input('What stage would you like to complete(The Demon Returns 501001) : ')
+            difficulty = input('Enter the difficulty|(3:Super): ')
+            loop = input('Enter how many times to execute(1): ')
+            for i in range(int(loop)):
+                complete_stage(stage, difficulty)
+            stage = input('What stage would you like to complete(The Extreme Terror 502002) : ')
+            difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+            loop = input('Enter how many times to execute(2): ')
+            for i in range(int(loop)):
+                complete_stage(stage, difficulty)
+            "BREAK"
+            stage = input('What stage would you like to complete(Regression to Evil 503003) : ')
+            difficulty = input('Enter the difficulty|(4:Super2): ')
+            loop = input('Enter how many times to execute(1): ')
+            for i in range(int(loop)):
+                complete_stage(stage, difficulty)
+            stage = input('What stage would you like to complete(Ultimate Finishing Move 504002) : ')
+            difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+            loop = input('Enter how many times to execute(2): ')
+            for i in range(int(loop)):
+                complete_stage(stage, difficulty)
+            "BREAK"
+            stage = input('What stage would you like to complete(Fusion Reborn! 505003) : ')
+            difficulty = input('Enter the difficulty|(4:Super2): ')
+            loop = input('Enter how many times to execute(1): ')
+            for i in range(int(loop)):
+                complete_stage(stage, difficulty)
+
+    if Select1 == "4":
+        LrlevelVB = input("Is your Vegito SSR, UR, or TUR?:")
+        if LrlevelVB == "UR":
+            LRVBURhave = input("How many potara medals do you have?:")
+            LRVBURneed = 30 - int(LRVBURhave)
+            print("Potara medals needed:", LRVBURneed)
+        if LrlevelVB == "TUR":
+            LRVBTURhave = input("How many Potara medals do you have?:")
+            LRVBTURneed = 70 - int(LRVBTURhave)
+            print("Potara medals needed:", LRVBTURneed)
+    if Select1 == "5":
+        LrTrunkRarity = input(" Lr?:")
+        if LrTrunkRarity == "Lr":
+            To = "-"
+            LrTrunksURhave = input("How many Warrior's mark trunks medals do you have?:")
+            LRtcold = input("How many King cold medals do you have?:")
+            LRtMF = input("How many Mecha Freiza medals do you have?:")
+            LRtc = input("How many Chilled medals do you have?:")
+            Lrtt = input("How many Teen Trunks medals do you have?:")
+            Lrtx = input("How many Xeno Trunks medals do you have?:")
+            LrTrunksURneed = 7 - int(LrTrunksURhave)
+            stamneedmin = 22 * int(LrTrunksURneed)
+            stamneedmax = 22 * int(LrTrunksURneed)
+            LRcoldneed = 10 - int(LRtcold)
+            LRtcneed = 10 - int(LRtc)
+            Lrtxneed = 10 - int(Lrtx)
+            Lrttneed = 10 - int(Lrtt)
+            LRtMFneed = 10 - int(LRtMF)
+            Lrttotalmedals = (LRcoldneed + LRtcneed + LRtMFneed + Lrttneed + Lrtxneed)
+            LRtotalmedalss = (Lrttotalmedals / 2)
+            LRtstam = (25 * LRtotalmedalss)
+            print("-----------------------------------")
+            print("Trunks medals needed:", LrTrunksURneed)
+            print("King Cold medals needed:", LRtcneed)
+            print("Chilled medals needed", LRtcneed)
+            print("Xeno Trunks medals needed:", Lrtxneed)
+            print("Teen Trunks medals needed:", Lrttneed)
+            print("Mecha Freiza medals needed:", LRtMFneed)
+            print("Stamina needed:", stamneedmin, To, stamneedmax)
+    print("5. Lr Trunks")       
+    stage = input('What stage would you like to complete(Proud Bloodline 320022) : ')
+    difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+    loop = input('Enter how many times to execute(11): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete(Raging Counterstrike 406003) : ')
+    difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+    loop = input('Enter how many times to execute(5): ')
+    for i in range(int(loop)):
+            complete_stage(stage, difficulty)
+    "BREAK"
+    stage = input('What stage would you like to complete(Dignity of a Clan 408002) : ')
+    difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+    loop = input('Enter how many times to execute(5): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete(The Strongest Space Pirate 420002) : ')
+    difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+    loop = input('Enter how many times to execute(5): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    stage = input('What stage would you like to complete(Warrior of Hope 414002) : ')
+    difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+    loop = input('Enter how many times to execute(5): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete(The Time Patrol Warrior 422002) : ')
+    difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+    loop = input('Enter how many times to execute(5): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    print("Majin Vegeta")
+    stage = input('What stage would you like to complete(The Dark Prince Returns 319022) : ')
+    difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+    loop = input('Enter how many times to execute(15): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete(The Strongest Shadow Dragon 517002) : ')
+    difficulty = input('Enter the difficulty|(3:Super): ')
+    loop = input('Enter how many times to execute(3): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    stage = input('What stage would you like to complete(Dark Nightmare 518002) : ')
+    difficulty = input('Enter the difficulty|(3:Super): ')
+    loop = input('Enter how many times to execute(3): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete(Fusion in Blue 519001) : ')
+    difficulty = input('Enter the difficulty|(3:Super): ')
+    loop = input('Enter how many times to execute(3): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    stage = input('What stage would you like to complete(Rose-Tinted Plot 520001) : ')
+    difficulty = input('Enter the difficulty|(3:Super): ')
+    loop = input('Enter how many times to execute(3): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete(A New Hope 522001) : ')
+    difficulty = input('Enter the difficulty|(3:Super): ')
+    loop = input('Enter how many times to execute(3): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    print(" Lr Super Saiyan Goku & Super Saiyan Vegeta")
+    stage = input('What stage would you like to complete(The Ultimate Pair of the Present World 537001) : ')
+    difficulty = input('Enter the difficulty|(4:Super2): ')
+    loop = input('Enter how many times to execute(11): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete(Ultimate Splendor 512003) : ')
+    difficulty = input('Enter the difficulty|(4:Super2): ')
+    loop = input('Enter how many times to execute(7): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    print("Lr Super Saiyan Broly(teq)")
+    stage = input('What stage would you like to complete(The Demon Returns 501003) : ')
+    difficulty = input('Enter the difficulty|(3:Super): ')
+    loop = input('Enter how many times to execute(7): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete( Go Warriors of the New Generation 552001) : ')
+    difficulty = input('Enter the difficulty|(4:Super2): ')
+    loop = input('Enter how many times to execute(3): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    stage = input('What stage would you like to complete(Blast Family Kamehameha 326006) : ')
+    difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+    loop = input('Enter how many times to execute(20): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    print("Lr Full Power Boujack (Galactic Warrior)")
+    stage = input('What stage would you like to complete( Extreme Peril 306008) : ')
+    difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+    loop = input('Enter how many times to execute(25): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    print("Lr Cell (Perfect Form) & Cell Jr")
+    stage = input('What stage would you like to complete(Waking Nightmare 502003) : ')
+    difficulty = input('Enter the difficulty|(3:Super): ')
+    loop = input('Enter how many times to execute(7): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    print("Lr Trunks (Teen) (Future) & Mai (Future)")
+    stage = input('What stage would you like to complete( The Zero Mortals Plan 328006) : ')
+    difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+    loop = input('Enter how many times to execute(20): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    stage = input('What stage would you like to complete(Dark Nightmare 518002) : ')
+    difficulty = input('Enter the difficulty|(3:Super): ')
+    loop = input('Enter how many times to execute(1): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete( Rose-Tinted Plot 520001) : ')
+    difficulty = input('Enter the difficulty|(3:Super): ')
+    loop = input('Enter how many times to execute(1): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    stage = input('What stage would you like to complete(Fusion in Blue 519001) : ')
+    difficulty = input('Enter the difficulty|(3:Super): ')
+    loop = input('Enter how many times to execute(1): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete( The Epic Battle Begins 524001) : ')
+    difficulty = input('Enter the difficulty|(3:Super): ')
+    loop = input('Enter how many times to execute(1): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    stage = input('What stage would you like to complete(A New Hope 522001) : ')
+    difficulty = input('Enter the difficulty|(3:Super): ')
+    loop = input('Enter how many times to execute(2): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete( Last Judgment...Or Last Hope 523002) : ')
+    difficulty = input('Enter the difficulty|(4:Super2): ')
+    loop = input('Enter how many times to execute(2): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    stage = input('What stage would you like to complete(Searing Rose-Colored Fury 520002) : ')
+    difficulty = input('Enter the difficulty|(4:Super2): ')
+    loop = input('Enter how many times to execute(2): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete( Sublime Blue! 519002) : ')
+    difficulty = input('Enter the difficulty|(4:Super2): ')
+    loop = input('Enter how many times to execute(2): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    print("Lr Beerus & Whis")
+    stage = input('What stage would you like to complete(God of Destruction Wrath 511002) : ')
+    difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+    loop = input('Enter how many times to execute(7): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete(Destruction God Awakens 314001) : ')
+    difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+    loop = input('Enter how many times to execute(4): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    stage = input('What stage would you like to complete(In Search of the Super Saiyan God 314002) : ')
+    difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+    loop = input('Enter how many times to execute(7): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete(Vegeta Pride 314007) : ')
+    difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+    loop = input('Enter how many times to execute(4): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    print("Lr Super Saiyan Gohan (Teen) & Super Saiyan Goten (Kid)")
+    stage = input('What stage would you like to complete(Go! Warriors of the New Generation 552001) : ')
+    difficulty = input('Enter the difficulty|(4:Super2): ')
+    loop = input('Enter how many times to execute(10): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete(Blast! Family Kamehameha! 326006) : ')
+    difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+    loop = input('Enter how many times to execute(20): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    print("Lr Super Saiyan Goku (Angel) & Super Saiyan Vegeta (Angel)")
+    stage = input('What stage would you like to complete(The Ultimate Pair of the Otherworld 536001) : ')
+    difficulty = input('Enter the difficulty|(4:Super2): ')
+    loop = input('Enter how many times to execute(10): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete(Fusion Reborn! 326006) : ')
+    difficulty = input('Enter the difficulty|(4:Super2): ')
+    loop = input('Enter how many times to execute(7): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    print("Lr Trunks (Kid) & Goten (Kid)")
+    stage = input('What stage would you like to complete(An Unexpectedly Powerful Man! 411002) : ')
+    difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+    loop = input('Enter how many times to execute(5): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete(Super Gotenks! 513002) : ')
+    difficulty = input('Enter the difficulty|(3:Super): ')
+    loop = input('Enter how many times to execute(3): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    stage = input('What stage would you like to complete(One Powerful Super Fusion! 513003) : ')
+    difficulty = input('Enter the difficulty|(4:Super2): ')
+    loop = input('Enter how many times to execute(3): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    print("18. Lr Super Saiyan 2 Gohan")
+    stage = input('What stage would you like to complete(Waking Nightmare 502003) : ')
+    difficulty = input('Enter the difficulty|(3:Super): ')
+    loop = input('Enter how many times to execute(11): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    print("19. Lr Super Saiyan 3 Goku")
+    stage = input('What stage would you like to complete(Super Saiyan Goku 403002) : ')
+    difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+    loop = input('Enter how many times to execute(5): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete(Phantom Majin Resurrected! 535002) : ')
+    difficulty = input('Enter the difficulty|(4:Super2): ')
+    loop = input('Enter how many times to execute(3): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    stage = input('What stage would you like to complete(Mighty Warrior: 24-Hour Revival 528001) : ')
+    difficulty = input('Enter the difficulty|(4:Super2): ')
+    loop = input('Enter how many times to execute(3): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete(Ultimate Finishing Move 504002) : ')
+    difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+    loop = input('Enter how many times to execute(4): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    print("Lr Bardock")
+    stage = input('What stage would you like to complete(Saiyans from Planet Vegeta 347001) : ')
+    difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+    loop = input('Enter how many times to execute(10): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete( 534001 The Unknown Battle) : ')
+    difficulty = input('Enter the difficulty|(4:Super2): ')
+    loop = input('Enter how many times to execute(3): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    stage = input('What stage would you like to complete(347007 A Lone Warriors Last Battle) : ')
+    difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+    loop = input('Enter how many times to execute(3): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete( 602002 True Fear) : ')
+    difficulty = input('Enter the difficulty|(2:Z-Hard): ')
+    loop = input('Enter how many times to execute(3): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    stage = input('What stage would you like to complete(602003 Summit of the Universe) : ')
+    difficulty = input('Enter the difficulty|(3:Super): ')
+    loop = input('Enter how many times to execute(5): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    print("21. Lr Goku Black (Super Saiyan Rosé) & Zamasu")
+    stage = input('What stage would you like to complete( 518002 Dark Nightmare) : ')
+    difficulty = input('Enter the difficulty|(3:Super): ')
+    loop = input('Enter how many times to execute(11): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    stage = input('What stage would you like to complete(519001 Fusion in Blue) : ')
+    difficulty = input('Enter the difficulty|(3:Super): ')
+    loop = input('Enter how many times to execute(3): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete( 520001 Rose-Tinted Plot) : ')
+    difficulty = input('Enter the difficulty|(3:Super): ')
+    loop = input('Enter how many times to execute(3): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    stage = input('What stage would you like to complete(522001 A New Hope) : ')
+    difficulty = input('Enter the difficulty|(3:Super): ')
+    loop = input('Enter how many times to execute(3): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete(  523002 Last Judgment...Or Last Hope) : ')
+    difficulty = input('Enter the difficulty|(3:Super): ')
+    loop = input('Enter how many times to execute(3): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    stage = input('What stage would you like to complete(524001 The Epic Battle Begins) : ')
+    difficulty = input('Enter the difficulty|(3:Super): ')
+    loop = input('Enter how many times to execute(3): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    print("Lr Goku & Frieza (Final Form) (Angel)")
+    stage = input('What stage would you like to complete( 544001 Ever-Evolving Power) : ')
+    difficulty = input('Enter the difficulty|(4:Super2): ')
+    loop = input('Enter how many times to execute(5): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    stage = input('What stage would you like to complete(Ever-Evolving Evil) : ')
+    difficulty = input('Enter the difficulty|(4:Super2): ')
+    loop = input('Enter how many times to execute(5): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    stage = input('What stage would you like to complete(538001 Kaboom! Ultra Instinct) : ')
+    difficulty = input('Enter the difficulty|(4:Super2): ')
+    loop = input('Enter how many times to execute(5): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    "BREAK"
+    stage = input('What stage would you like to complete(533002 The True Golden Frieza) : ')
+    difficulty = input('Enter the difficulty|(4:Super2): ')
+    loop = input('Enter how many times to execute(5): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+    print("23. Lr Legendary Super Saiyan Broly")
+    stage = input('What stage would you like to complete(501003 The Demon Returns) : ')
+    difficulty = input('Enter the difficulty|(3:Super): ')
+    loop = input('Enter how many times to execute(11): ')
+    for i in range(int(loop)):
+        complete_stage(stage, difficulty)
+        return 0
+
 
 
             
