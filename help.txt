@@ -6,6 +6,7 @@ To stop a command from executing, hold ctrl + c
 
 'stage' -> Completes stage given ID or name.
 'area' -> Complete all stages and difficulties in an area.
+'cards' -> Provides a GUI to view card information.
 'completequests' -> Completes all unfinished quest stages.
 'completeevents' -> Completes all unfinished quest stages.
 'completezbattles' -> Completes all unfinished zbattles to stage 30.

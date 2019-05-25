@@ -3389,20 +3389,21 @@ def list_cards():
     for card in cards_sort:
         cards_to_display.append(card['type']+' '+str(card['cost'])+' '+card['name'] + ' | ' + str(card['id']))
 
-    col1 = [[sg.Listbox(values = (cards_to_display),size = (30,30), key = 'CARDS',change_submits = True,font = ('Courier', 15, ''))]]
-    col2 = [[sg.Text('Type', key = 'TYPE'),sg.Text('Name', key = 'NAME', size = (None,2),auto_size_text = True)],
-            [sg.Text('Cost',key = 'COST')],
-            [sg.Text('Leader Skill',key = 'LEADERSKILLNAME',size = (None,2))],
-            [sg.Text('Leader Skill Description',key = 'LEADERSKILLDESC',size = (None,6))],
-            [sg.Text('Passive',key = 'PASSIVESKILLNAME',size = (None,2))],
-            [sg.Text('Passive Description',key = 'PASSIVESKILLDESC',size = (None,6))],
-            [sg.Text('Link Skill',key = 'LINKSKILL1',size = (None,2))],
-            [sg.Text('Link Skill',key = 'LINKSKILL2',size = (None,2))],
-            [sg.Text('Link Skill',key = 'LINKSKILL3',size = (None,2))],
-            [sg.Text('Link Skill',key = 'LINKSKILL4',size = (None,2))],
-            [sg.Text('Link Skill',key = 'LINKSKILL5',size = (None,2))],
-            [sg.Text('Link Skill',key = 'LINKSKILL6',size = (None,2))],
-            [sg.Text('Link Skill',key = 'LINKSKILL7',size = (None,2))]]
+    col1 = [[sg.Listbox(values = (cards_to_display),size = (30,30), key = 'CARDS',change_submits = True,font = ('Courier', 15, 'bold'))]]
+    col2 = [[sg.Text('Type', key = 'TYPE',font = ('', 15, 'bold'),auto_size_text = True),
+             sg.Text('Name', key = 'NAME', size = (None,3),font = ('', 15, 'bold'),auto_size_text = True)],
+            [sg.Text('Cost',key = 'COST',font = ('', 10, 'bold'))],
+            [sg.Text('Leader Skill',key = 'LEADERSKILLNAME',size = (None,1),font = ('', 12, 'bold underline'))],
+            [sg.Text('Leader Skill Description',key = 'LEADERSKILLDESC',size = (None,4),font = ('', 10, 'bold'))],
+            [sg.Text('Passive',key = 'PASSIVESKILLNAME',size = (None,2),font = ('', 12, 'bold underline'))],
+            [sg.Text('Passive Description',key = 'PASSIVESKILLDESC',size = (None,5),font = ('', 10, 'bold'))],
+            [sg.Text('Link Skill',key = 'LINKSKILL1',size = (None,1),font = ('', 10, 'bold'))],
+            [sg.Text('Link Skill',key = 'LINKSKILL2',size = (None,1),font = ('', 10, 'bold'))],
+            [sg.Text('Link Skill',key = 'LINKSKILL3',size = (None,1),font = ('', 10, 'bold'))],
+            [sg.Text('Link Skill',key = 'LINKSKILL4',size = (None,1),font = ('', 10, 'bold'))],
+            [sg.Text('Link Skill',key = 'LINKSKILL5',size = (None,1),font = ('', 10, 'bold'))],
+            [sg.Text('Link Skill',key = 'LINKSKILL6',size = (None,1),font = ('', 10, 'bold'))],
+            [sg.Text('Link Skill',key = 'LINKSKILL7',size = (None,1),font = ('', 10, 'bold'))]]
 
     layout = [[sg.Column(col1),sg.Column(col2)]]
     window = sg.Window('Items').Layout(layout)
@@ -3514,7 +3515,7 @@ def list_cards():
                     ls7 = 'Link Skill'
 
             window.FindElement('NAME').Update(value = cards[card_id]['name'].replace('\n',' '))
-            window.FindElement('TYPE').Update(value = cards[card_id]['type'],text_color = colour)
+            window.FindElement('TYPE').Update(value = '['+cards[card_id]['type']+']',text_color = colour)
             window.FindElement('COST').Update(value = 'COST: ' + str(cards[card_id]['cost']))
             window.FindElement('LEADERSKILLNAME').Update(value = leader_skill_name)
             window.FindElement('LEADERSKILLDESC').Update(value = leader_skill_desc)
