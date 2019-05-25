@@ -3342,6 +3342,7 @@ def list_cards():
             config.Model.set_connection_resolver(config.db_glb)
             cost = config.Cards.find_or_fail(card['card_id']).cost
             leader_skill_id = config.Cards.find_or_fail(card['card_id']).leader_skill_id
+            passive_skill_id = config.Cards.find_or_fail(card['card_id']).passive_skill_set_id
             links_skill_ids = []
             links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill1_id)
             links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill2_id)
@@ -3355,6 +3356,7 @@ def list_cards():
             config.Model.set_connection_resolver(config.db_jp)
             cost = config.Cards.find_or_fail(card['card_id']).cost
             leader_skill_id = config.Cards.find_or_fail(card['card_id']).leader_skill_id
+            passive_skill_id = config.Cards.find_or_fail(card['card_id']).passive_skill_set_id
             links_skill_ids = []
             links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill1_id)
             links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill2_id)
@@ -3371,7 +3373,8 @@ def list_cards():
                                   'type' : element,
                                   'cost' : cost,
                                   'leader_skill_id' : leader_skill_id,
-                                  'link_skill_ids' : links_skill_ids
+                                  'link_skill_ids' : links_skill_ids,
+                                  'passive_skill_id' : passive_skill_id
                                  }
     cards_sort = []
     for item in cards:
@@ -3391,6 +3394,8 @@ def list_cards():
             [sg.Text('Cost',key = 'COST')],
             [sg.Text('Leader Skill',key = 'LEADERSKILLNAME',size = (None,2))],
             [sg.Text('Leader Skill Description',key = 'LEADERSKILLDESC',size = (None,6))],
+            [sg.Text('Passive',key = 'PASSIVESKILLNAME',size = (None,2))],
+            [sg.Text('Passive Description',key = 'PASSIVESKILLDESC',size = (None,6))],
             [sg.Text('Link Skill',key = 'LINKSKILL1',size = (None,2))],
             [sg.Text('Link Skill',key = 'LINKSKILL2',size = (None,2))],
             [sg.Text('Link Skill',key = 'LINKSKILL3',size = (None,2))],
@@ -3437,6 +3442,22 @@ def list_cards():
                 leader_skill_name = config.LeaderSkills.find_or_fail(cards[card_id]['leader_skill_id']).name.replace('\n',' ')
                 leader_skill_desc = config.LeaderSkills.find_or_fail(cards[card_id]['leader_skill_id']).description.replace('\n',' ')
 
+            # Retrieve passive skill
+            if cards[card_id]['passive_skill_id'] == None:
+                passive_skill_name = 'None'
+                passive_skill_desc = 'None'
+            else:
+                try:
+                    config.Model.set_connection_resolver(config.db_glb)
+                    passive_skill_name = config.Passives.find_or_fail(cards[card_id]['passive_skill_id']).name.replace('\n',' ')
+                    passive_skill_desc = config.Passives.find_or_fail(cards[card_id]['passive_skill_id']).description.replace('\n',' ')
+
+                except:
+                    config.Model.set_connection_resolver(config.db_jp)
+                    passive_skill_name = config.Passives.find_or_fail(cards[card_id]['passive_skill_id']).name.replace('\n',' ')
+                    passive_skill_desc = config.Passives.find_or_fail(cards[card_id]['passive_skill_id']).description.replace('\n',' ')
+
+
             # Retrieve link skills from DB
             ls1 = None
             ls2 = None
@@ -3459,10 +3480,16 @@ def list_cards():
                     ls4 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][3]).name.replace('\n',' ')
                 if config.LinkSkills.find(cards[card_id]['link_skill_ids'][4]) != None:
                     ls5 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][4]).name.replace('\n',' ')
+                else:
+                    ls5 = 'Link Skill'
                 if config.LinkSkills.find(cards[card_id]['link_skill_ids'][5]) != None:
                     ls6 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][5]).name.replace('\n',' ')
+                else:
+                    ls6 = 'Link Skill'
                 if config.LinkSkills.find(cards[card_id]['link_skill_ids'][6]) != None:
                     ls7 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][6]).name.replace('\n',' ')
+                else:
+                    ls7 = 'Link Skill'
             except:
                 config.Model.set_connection_resolver(config.db_jp)
                 if config.LinkSkills.find(cards[card_id]['link_skill_ids'][0]) != None:
@@ -3475,16 +3502,24 @@ def list_cards():
                     ls4 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][3]).name.replace('\n',' ')
                 if config.LinkSkills.find(cards[card_id]['link_skill_ids'][4]) != None:
                     ls5 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][4]).name.replace('\n',' ')
+                else:
+                    ls5 = 'Link Skill'
                 if config.LinkSkills.find(cards[card_id]['link_skill_ids'][5]) != None:
                     ls6 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][5]).name.replace('\n',' ')
+                else:
+                    ls6 = 'Link Skill'
                 if config.LinkSkills.find(cards[card_id]['link_skill_ids'][6]) != None:
                     ls7 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][6]).name.replace('\n',' ')
+                else:
+                    ls7 = 'Link Skill'
 
             window.FindElement('NAME').Update(value = cards[card_id]['name'].replace('\n',' '))
             window.FindElement('TYPE').Update(value = cards[card_id]['type'],text_color = colour)
             window.FindElement('COST').Update(value = 'COST: ' + str(cards[card_id]['cost']))
             window.FindElement('LEADERSKILLNAME').Update(value = leader_skill_name)
             window.FindElement('LEADERSKILLDESC').Update(value = leader_skill_desc)
+            window.FindElement('PASSIVESKILLNAME').Update(value = passive_skill_name)
+            window.FindElement('PASSIVESKILLDESC').Update(value = passive_skill_desc)
             window.FindElement('LINKSKILL1').Update(value = ls1)
             window.FindElement('LINKSKILL2').Update(value = ls2)
             window.FindElement('LINKSKILL3').Update(value = ls3)
