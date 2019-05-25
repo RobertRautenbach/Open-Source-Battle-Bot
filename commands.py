@@ -2271,6 +2271,8 @@ def user_command_executor(command):
         get_user_info()
     elif command == 'items':
         items_viewer()
+    elif command == 'medals':
+        sell_medals()
     elif command == 'sell':
         sell_cards__bulk_GUI()
     elif command == 'cards':
@@ -3529,11 +3531,133 @@ def list_cards():
             window.FindElement('LINKSKILL6').Update(value = ls6)
             window.FindElement('LINKSKILL7').Update(value = ls7)
 
+####################################################################
+def sell_medals():
+    # Get Medals
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/awakening_items'),
+        'Content-type': 'application/json',
+        'X-Language': 'en',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        config.Model.set_connection_resolver(config.db_glb)
+        url = 'https://ishin-global.aktsk.com/awakening_items'
+    else:
+        config.Model.set_connection_resolver(config.db_jp)
+        url = 'http://ishin-production.aktsk.jp/awakening_items'
+    r = requests.get(url, headers=headers)
     
+    # Create list with ID for listbox
+    medal_list = []
+    for medal in reversed(r.json()['awakening_items']):
+        try:
+            config.Model.set_connection_resolver(config.db_glb)
+            item = config.Medal.find_or_fail(int(medal['awakening_item_id']))
+        except:
+            config.Model.set_connection_resolver(config.db_jp)
+            item = config.Medal.find_or_fail(int(medal['awakening_item_id']))
 
+        medal_list.append(item.name +' [x'+str(medal['quantity']) + '] | ' + str(item.id))
 
+    layout = [[sg.Text('Select a medal-')],
+              [sg.Listbox(values=(medal_list),size = (None,15),key = 'medal_tally',font = ('',15,'bold'))],
+              [sg.Text('Amount'),sg.Spin([i for i in range(1,999)], initial_value=1, size=(5, None))],
+              [sg.Button(button_text = 'Sell',key='Medal')]]
 
+    window = sg.Window('Medal List',keep_on_top = True).Layout(layout)
+    while True:
+        event,values = window.Read()
 
+        if event == None:
+            window.Close()
+            return 0
+        
+        # Check if medal selected and sell
+        if event == 'Medal':
+            if len(values[0]) == 0:
+                print(Fore.RED + Style.BRIGHT + "You did not select a medal.")
+                continue
+
+            value = values['medal_tally'][0]
+            medal = value.split(' | ')
+            medalo = medal[1]
+            amount = values[0]    
+
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                'Accept': '*/*',
+                'Authorization': packet.mac('POST', '/awakening_items/exchange'),
+                'Content-type': 'application/json',
+                'X-Platform': config.platform,
+                'X-AssetVersion': '////',
+                'X-DatabaseVersion': '////',
+                'X-ClientVersion': '////',
+                }
+            if config.client == 'global':
+                url = 'https://ishin-global.aktsk.com/awakening_items/exchange'
+            else:
+                url = 'http://ishin-production.aktsk.jp/awakening_items/exchange'
+            
+            medal_id = int(medalo)
+            chunk = int(amount) // 99
+            remainder = int(amount) % 99
+
+            window.Hide()
+            window.Refresh()
+            for i in range(chunk):
+                data = {'awakening_item_id': medal_id, 'quantity': 99}
+                r = requests.post(url, data=json.dumps(data), headers=headers)
+                if 'error' in r.json():
+                    print(Fore.RED+Style.BRIGHT+str(r.json))
+                else:
+                    print(Fore.GREEN + Style.BRIGHT + 'Sold Medals x' + str(99))
+
+            if remainder > 0:
+                data = {'awakening_item_id': medal_id, 'quantity': remainder}
+                r = requests.post(url, data=json.dumps(data), headers=headers)
+                if 'error' in r.json():
+                    print(Fore.RED+Style.BRIGHT+str(r.json))
+                else:
+                    print(Fore.GREEN + Style.BRIGHT + 'Sold Medals x' + str(remainder))
+
+            # New medal list 
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                'Accept': '*/*',
+                'Authorization': packet.mac('GET', '/awakening_items'),
+                'Content-type': 'application/json',
+                'X-Language': 'en',
+                'X-Platform': config.platform,
+                'X-AssetVersion': '////',
+                'X-DatabaseVersion': '////',
+                'X-ClientVersion': '////',
+                }
+            if config.client == 'global':
+                url = 'https://ishin-global.aktsk.com/awakening_items'
+            else:
+                url = 'http://ishin-production.aktsk.jp/awakening_items'
+            r = requests.get(url, headers=headers)
+
+            medal_list[:] = []
+            for medal in reversed(r.json()['awakening_items']):
+                try:
+                    config.Model.set_connection_resolver(config.db_glb)
+                    item = config.Medal.find_or_fail(int(medal['awakening_item_id']))
+                except:
+                    config.Model.set_connection_resolver(config.db_jp)
+                    item = config.Medal.find_or_fail(int(medal['awakening_item_id']))
+                    
+                medal_list.append(item.name +' [x'+str(medal['quantity'])+']' + ' | ' + str(item.id))
+            
+            window.FindElement('medal_tally').Update(values = medal_list)
+            window.UnHide()
+            window.Refresh()
 
 
 
