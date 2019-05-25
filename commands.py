@@ -2321,49 +2321,39 @@ def complete_unfinished_zbattles(kagi = False):
                 config.Model.set_connection_resolver(config.db_jp)
             print(config.ZBattles.where('z_battle_stage_id','=',event['id']).first().enemy_name,end='')
             print(Fore.CYAN + Style.BRIGHT+' | ID: ' + str(event['id']))
-            # Get Max cleared level
+
+            # Get current zbattle level
             headers = {
                 'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
                 'Accept': '*/*',
-                'Authorization': packet.mac('GET', '/z_battles/'+str(event['id'])+'/rankings'),
+                'Authorization': packet.mac('GET', '/user_areas'),
                 'Content-type': 'application/json',
+                'X-Language': 'en',
                 'X-Platform': config.platform,
                 'X-AssetVersion': '////',
                 'X-DatabaseVersion': '////',
                 'X-ClientVersion': '////',
                 }
             if config.client == 'global':
-                url = 'https://ishin-global.aktsk.com/z_battles/'+str(event['id'])+'/rankings'
+                url = 'https://ishin-global.aktsk.com/user_areas'
             else:
-                url = 'http://ishin-production.aktsk.jp/z_battles/'+str(event['id'])+'/rankings'   
+                url = 'http://ishin-production.aktsk.jp/user_areas'
             r = requests.get(url, headers=headers)
-
-            # Determine the current stage
-            if len(r.json()['friends']) == 0:
-                level = 1
+            if 'user_z_battles' in r.json():
+                zbattles = r.json()['user_z_battles']
+                if zbattles == []:
+                    zbattles = 0
             else:
-                # Find user_id in response and selects the max_clear_level
-                i = 0
-                tempheaders = {
-                        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
-                        'Accept': '*/*',
-                        'Authorization': packet.mac('GET', '/user'),
-                        'Content-type': 'application/json',
-                        'X-Platform': config.platform,
-                        'X-AssetVersion': '////',
-                        'X-DatabaseVersion': '////',
-                        'X-ClientVersion': '////',
-                    }
-                if config.client == 'global':
-                    tempurl = 'https://ishin-global.aktsk.com/user'
-                    tempr = requests.get(tempurl, headers=tempheaders)
-                else:
-                    tempurl = 'http://ishin-production.aktsk.jp/user'
-                    tempr = requests.get(tempurl, headers=tempheaders)
-                for names in r.json()['friends']:
-                    if str(r.json()['friends'][i]['user_id']) == str(tempr.json()['user']['id']):
-                        level = int(r.json()['friends'][i]['max_clear_level']) + 1
-                    i = i + 1
+                zbattles = 0
+
+            level = 1
+            for zbattle in zbattles:
+                if int(zbattle['z_battle_stage_id']) == int(event['id']):
+                    level = zbattle['max_clear_level'] + 1
+                    print('Current EZA Level: ' + str(level))
+            
+
+
             # Stop at level 30 !! This may not work for all zbattle e.g kid gohan
             while level < 31:
                 ##Get supporters
@@ -3652,7 +3642,7 @@ def sell_medals():
                 except:
                     config.Model.set_connection_resolver(config.db_jp)
                     item = config.Medal.find_or_fail(int(medal['awakening_item_id']))
-                    
+
                 medal_list.append(item.name +' [x'+str(medal['quantity'])+']' + ' | ' + str(item.id))
             
             window.FindElement('medal_tally').Update(values = medal_list)
