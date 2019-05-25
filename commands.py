@@ -2273,6 +2273,8 @@ def user_command_executor(command):
         items_viewer()
     elif command == 'sell':
         sell_cards__bulk_GUI()
+    elif command == 'cards':
+        list_cards()
     elif command == 'team':
         change_team()
     elif command == 'deck':
@@ -3291,9 +3293,206 @@ def items_viewer():
                         config.Model.set_connection_resolver(config.db_jp)
                         print(str(config.SpecialItems.find(item['special_item_id']).name)+' x'+str(item['quantity']))
                 window.Refresh()
+####################################################################
+def list_cards():
+    headers = {
+            'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+            'Accept': '*/*',
+            'Authorization': packet.mac('GET', '/cards'),
+            'Content-type': 'application/json',
+            'X-Language': 'en',
+            'X-Platform': config.platform,
+            'X-AssetVersion': '////',
+            'X-DatabaseVersion': '////',
+            'X-ClientVersion': '////',
+            }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/cards'
+    else:
+        url = 'http://ishin-production.aktsk.jp/cards'
+    r = requests.get(url, headers=headers)
+    cards = {}
+    for card in r.json()['cards']:
+        try:
+            config.Model.set_connection_resolver(config.db_glb)
+            name = config.Cards.find_or_fail(card['card_id']).name
+        except:
+            config.Model.set_connection_resolver(config.db_jp)
+            name = config.Cards.find_or_fail(card['card_id']).name
+
+        try:
+            config.Model.set_connection_resolver(config.db_glb)
+            element = str(config.Cards.find_or_fail(card['card_id']).element)
+        except:
+            config.Model.set_connection_resolver(config.db_jp)
+            element = str(config.Cards.find_or_fail(card['card_id']).element)
+
+        if element[-1] == '0':
+            element = 'AGL'
+        elif element[-1] == '1':
+            element = 'TEQ'
+        elif element[-1] == '2':
+            element = 'INT'
+        elif element[-1] == '3':
+            element = 'STR'
+        elif element[-1] == '4':
+            element = 'PHY'
+
+        try:
+            config.Model.set_connection_resolver(config.db_glb)
+            cost = config.Cards.find_or_fail(card['card_id']).cost
+            leader_skill_id = config.Cards.find_or_fail(card['card_id']).leader_skill_id
+            links_skill_ids = []
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill1_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill2_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill3_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill4_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill5_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill6_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill7_id)
+
+        except:
+            config.Model.set_connection_resolver(config.db_jp)
+            cost = config.Cards.find_or_fail(card['card_id']).cost
+            leader_skill_id = config.Cards.find_or_fail(card['card_id']).leader_skill_id
+            links_skill_ids = []
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill1_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill2_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill3_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill4_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill5_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill6_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill7_id)
+
+        cards[card['card_id']] = {
+                                  'id' : card['card_id'],
+                                  'unique_id' : card['id'],
+                                  'name' : name,
+                                  'type' : element,
+                                  'cost' : cost,
+                                  'leader_skill_id' : leader_skill_id,
+                                  'link_skill_ids' : links_skill_ids
+                                 }
+    cards_sort = []
+    for item in cards:
+        cards_sort.append(cards[item])
+
+    # Sort cards for listbox
+    cards_sort = sorted(cards_sort, key = lambda k:k['name'])
+    cards_sort = sorted(cards_sort, key = lambda k:k['cost'])
+
+    # Card strings to for listbox value
+    cards_to_display = []
+    for card in cards_sort:
+        cards_to_display.append(card['type']+' '+str(card['cost'])+' '+card['name'] + ' | ' + str(card['id']))
+
+    col1 = [[sg.Listbox(values = (cards_to_display),size = (30,30), key = 'CARDS',change_submits = True,font = ('Courier', 15, ''))]]
+    col2 = [[sg.Text('Type', key = 'TYPE'),sg.Text('Name', key = 'NAME', size = (None,2),auto_size_text = True)],
+            [sg.Text('Cost',key = 'COST')],
+            [sg.Text('Leader Skill',key = 'LEADERSKILLNAME',size = (None,2))],
+            [sg.Text('Leader Skill Description',key = 'LEADERSKILLDESC',size = (None,6))],
+            [sg.Text('Link Skill',key = 'LINKSKILL1',size = (None,2))],
+            [sg.Text('Link Skill',key = 'LINKSKILL2',size = (None,2))],
+            [sg.Text('Link Skill',key = 'LINKSKILL3',size = (None,2))],
+            [sg.Text('Link Skill',key = 'LINKSKILL4',size = (None,2))],
+            [sg.Text('Link Skill',key = 'LINKSKILL5',size = (None,2))],
+            [sg.Text('Link Skill',key = 'LINKSKILL6',size = (None,2))],
+            [sg.Text('Link Skill',key = 'LINKSKILL7',size = (None,2))]]
+
+    layout = [[sg.Column(col1),sg.Column(col2)]]
+    window = sg.Window('Items').Layout(layout)
+    while True:
+        event,values = window.Read()
+
+        if event == None:
+            window.Close()
+            return 0
+
+        if event == 'CARDS':
+            # Get Card ID 
+            card_id = int(values['CARDS'][0].split(' | ')[1])
+
+            # Get correct colour for card element
+            if cards[card_id]['type'] == 'PHY':
+                colour = 'gold2'
+            elif cards[card_id]['type'] == 'STR':
+                colour = 'red'
+            elif cards[card_id]['type'] == 'AGL':
+                colour = 'blue'
+            elif cards[card_id]['type'] == 'TEQ':
+                colour = 'green'
+            elif cards[card_id]['type'] == 'INT':
+                colour = 'purple'
+            else:
+                colour = 'black'
+
+            # Retrieve leaderskill from DB
+            try:
+                config.Model.set_connection_resolver(config.db_glb)
+                leader_skill_name = config.LeaderSkills.find_or_fail(cards[card_id]['leader_skill_id']).name.replace('\n',' ')
+                leader_skill_desc = config.LeaderSkills.find_or_fail(cards[card_id]['leader_skill_id']).description.replace('\n',' ')
+
+            except:
+                config.Model.set_connection_resolver(config.db_jp)
+                leader_skill_name = config.LeaderSkills.find_or_fail(cards[card_id]['leader_skill_id']).name.replace('\n',' ')
+                leader_skill_desc = config.LeaderSkills.find_or_fail(cards[card_id]['leader_skill_id']).description.replace('\n',' ')
+
+            # Retrieve link skills from DB
+            ls1 = None
+            ls2 = None
+            ls3 = None
+            ls4 = None
+            ls5 = None
+            ls6 = None
+            ls7 = None
 
 
-            
+            try:
+                config.Model.set_connection_resolver(config.db_glb)
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][0]) != None:
+                    ls1 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][0]).name.replace('\n',' ')
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][1]) != None:
+                    ls2 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][1]).name.replace('\n',' ')
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][2]) != None:
+                    ls3 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][2]).name.replace('\n',' ')
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][3]) != None:
+                    ls4 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][3]).name.replace('\n',' ')
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][4]) != None:
+                    ls5 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][4]).name.replace('\n',' ')
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][5]) != None:
+                    ls6 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][5]).name.replace('\n',' ')
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][6]) != None:
+                    ls7 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][6]).name.replace('\n',' ')
+            except:
+                config.Model.set_connection_resolver(config.db_jp)
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][0]) != None:
+                    ls1 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][0]).name.replace('\n',' ')
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][1]) != None:
+                    ls2 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][1]).name.replace('\n',' ')
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][2]) != None:
+                    ls3 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][2]).name.replace('\n',' ')
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][3]) != None:
+                    ls4 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][3]).name.replace('\n',' ')
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][4]) != None:
+                    ls5 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][4]).name.replace('\n',' ')
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][5]) != None:
+                    ls6 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][5]).name.replace('\n',' ')
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][6]) != None:
+                    ls7 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][6]).name.replace('\n',' ')
+
+            window.FindElement('NAME').Update(value = cards[card_id]['name'].replace('\n',' '))
+            window.FindElement('TYPE').Update(value = cards[card_id]['type'],text_color = colour)
+            window.FindElement('COST').Update(value = 'COST: ' + str(cards[card_id]['cost']))
+            window.FindElement('LEADERSKILLNAME').Update(value = leader_skill_name)
+            window.FindElement('LEADERSKILLDESC').Update(value = leader_skill_desc)
+            window.FindElement('LINKSKILL1').Update(value = ls1)
+            window.FindElement('LINKSKILL2').Update(value = ls2)
+            window.FindElement('LINKSKILL3').Update(value = ls3)
+            window.FindElement('LINKSKILL4').Update(value = ls4)
+            window.FindElement('LINKSKILL5').Update(value = ls5)
+            window.FindElement('LINKSKILL6').Update(value = ls6)
+            window.FindElement('LINKSKILL7').Update(value = ls7)
+
     
 
 
