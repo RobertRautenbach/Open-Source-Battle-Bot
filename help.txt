@@ -10,6 +10,7 @@ To stop a command from executing, hold ctrl + c
 'completequests' -> Completes all unfinished quest stages.
 'completeevents' -> Completes all unfinished quest stages.
 'completezbattles' -> Completes all unfinished zbattles to stage 30.
+'zstage' -> Provides a GUI to complete single Z-Battle stages.
 'clash' -> Complete ultimate clash if you have enough UR cards.
 'listevents' -> Prints a list of all currently available events.
 'chooseevents' -> Provides a GUI to sort through events.
