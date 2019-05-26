@@ -3556,7 +3556,7 @@ def sell_medals():
         medal_list.append(item.name +' [x'+str(medal['quantity']) + '] | ' + str(item.id))
 
     layout = [[sg.Text('Select a medal-')],
-              [sg.Listbox(values=(medal_list),size = (None,15),key = 'medal_tally',font = ('',15,'bold'))],
+              [sg.Listbox(values=(medal_list),size = (30,15),key = 'medal_tally',font = ('',15,'bold'))],
               [sg.Text('Amount'),sg.Spin([i for i in range(1,999)], initial_value=1, size=(5, None))],
               [sg.Button(button_text = 'Sell',key='Medal')]]
 
@@ -3570,7 +3570,7 @@ def sell_medals():
         
         # Check if medal selected and sell
         if event == 'Medal':
-            if len(values[0]) == 0:
+            if len(values['medal_tally']) == 0:
                 print(Fore.RED + Style.BRIGHT + "You did not select a medal.")
                 continue
 
