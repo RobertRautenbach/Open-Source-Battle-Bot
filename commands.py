@@ -2241,6 +2241,8 @@ def user_command_executor(command):
         complete_unfinished_events()
         complete_unfinished_zbattles()
         complete_clash()
+        elif command == 'medalcal':
+        medal_calculator()
     ## When this will get updated, we shall add :finishzbattle,30, + sell + sellhercule + baba(?)
     elif command == 'completequests':
         complete_unfinished_quest_stages()
@@ -2293,8 +2295,7 @@ def user_command_executor(command):
         refresh_client()
     else:
         print('Command not found.')
-    elif command == 'medalcal':
-        medal_calculator()
+ 
 ####################################################################
 def complete_unfinished_zbattles(kagi = False):
     # JP Translated
@@ -3993,7 +3994,8 @@ def complete_zbattle_stage(kagi = False):
                 print('##############################################')
             window.UnHide()
             window.Refresh()
-       
+ 
+
   ####################################################################
 def medal_calculator():
     # ## Pre Lr Accounts
