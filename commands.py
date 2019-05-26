@@ -2241,8 +2241,6 @@ def user_command_executor(command):
         complete_unfinished_events()
         complete_unfinished_zbattles()
         complete_clash()
-    elif command =='medalcal':
-        medal_calculator()
     ## When this will get updated, we shall add :finishzbattle,30, + sell + sellhercule + baba(?)
     elif command == 'completequests':
         complete_unfinished_quest_stages()
@@ -2250,6 +2248,8 @@ def user_command_executor(command):
         complete_unfinished_events()
     elif command == 'completezbattles':
         complete_unfinished_zbattles()
+    elif command == 'zstages':
+        complete_zbattle_stage()
     elif command == 'clash':
         complete_clash()
     elif command == 'daily':
@@ -2273,8 +2273,12 @@ def user_command_executor(command):
         get_user_info()
     elif command == 'items':
         items_viewer()
+    elif command == 'medals':
+        sell_medals()
     elif command == 'sell':
         sell_cards__bulk_GUI()
+    elif command == 'cards':
+        list_cards()
     elif command == 'team':
         change_team()
     elif command == 'deck':
@@ -2319,49 +2323,39 @@ def complete_unfinished_zbattles(kagi = False):
                 config.Model.set_connection_resolver(config.db_jp)
             print(config.ZBattles.where('z_battle_stage_id','=',event['id']).first().enemy_name,end='')
             print(Fore.CYAN + Style.BRIGHT+' | ID: ' + str(event['id']))
-            # Get Max cleared level
+
+            # Get current zbattle level
             headers = {
                 'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
                 'Accept': '*/*',
-                'Authorization': packet.mac('GET', '/z_battles/'+str(event['id'])+'/rankings'),
+                'Authorization': packet.mac('GET', '/user_areas'),
                 'Content-type': 'application/json',
+                'X-Language': 'en',
                 'X-Platform': config.platform,
                 'X-AssetVersion': '////',
                 'X-DatabaseVersion': '////',
                 'X-ClientVersion': '////',
                 }
             if config.client == 'global':
-                url = 'https://ishin-global.aktsk.com/z_battles/'+str(event['id'])+'/rankings'
+                url = 'https://ishin-global.aktsk.com/user_areas'
             else:
-                url = 'http://ishin-production.aktsk.jp/z_battles/'+str(event['id'])+'/rankings'   
+                url = 'http://ishin-production.aktsk.jp/user_areas'
             r = requests.get(url, headers=headers)
-
-            # Determine the current stage
-            if len(r.json()['friends']) == 0:
-                level = 1
+            if 'user_z_battles' in r.json():
+                zbattles = r.json()['user_z_battles']
+                if zbattles == []:
+                    zbattles = 0
             else:
-                # Find user_id in response and selects the max_clear_level
-                i = 0
-                tempheaders = {
-                        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
-                        'Accept': '*/*',
-                        'Authorization': packet.mac('GET', '/user'),
-                        'Content-type': 'application/json',
-                        'X-Platform': config.platform,
-                        'X-AssetVersion': '////',
-                        'X-DatabaseVersion': '////',
-                        'X-ClientVersion': '////',
-                    }
-                if config.client == 'global':
-                    tempurl = 'https://ishin-global.aktsk.com/user'
-                    tempr = requests.get(tempurl, headers=tempheaders)
-                else:
-                    tempurl = 'http://ishin-production.aktsk.jp/user'
-                    tempr = requests.get(tempurl, headers=tempheaders)
-                for names in r.json()['friends']:
-                    if str(r.json()['friends'][i]['user_id']) == str(tempr.json()['user']['id']):
-                        level = int(r.json()['friends'][i]['max_clear_level']) + 1
-                    i = i + 1
+                zbattles = 0
+
+            level = 1
+            for zbattle in zbattles:
+                if int(zbattle['z_battle_stage_id']) == int(event['id']):
+                    level = zbattle['max_clear_level'] + 1
+                    print('Current EZA Level: ' + str(level))
+            
+
+
             # Stop at level 30 !! This may not work for all zbattle e.g kid gohan
             while level < 31:
                 ##Get supporters
@@ -2427,9 +2421,17 @@ def complete_unfinished_zbattles(kagi = False):
 
                 if 'sign' in r.json():
                     dec_sign = packet.decrypt_sign(r.json()['sign'])
+                # Check if error was due to lack of stamina
                 elif 'error' in r.json():
-                    print(r.json())
-                    return 0
+                    if r.json()['error']['code'] == 'act_is_not_enough':
+                        # Check if allowed to refill stamina
+                        if config.allow_stamina_refill == True:
+                            refill_stamina()
+                            r = requests.post(url, data=json.dumps(data),
+                                    headers=headers)
+                    else:  
+                        print(r.json())
+                        return 0
                 else:
                     print(Fore.RED + Style.BRIGHT+'Problem with ZBattle')
                     print(r.raw())
@@ -3293,9 +3295,705 @@ def items_viewer():
                         config.Model.set_connection_resolver(config.db_jp)
                         print(str(config.SpecialItems.find(item['special_item_id']).name)+' x'+str(item['quantity']))
                 window.Refresh()
-
-                
 ####################################################################
+def list_cards():
+    headers = {
+            'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+            'Accept': '*/*',
+            'Authorization': packet.mac('GET', '/cards'),
+            'Content-type': 'application/json',
+            'X-Language': 'en',
+            'X-Platform': config.platform,
+            'X-AssetVersion': '////',
+            'X-DatabaseVersion': '////',
+            'X-ClientVersion': '////',
+            }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/cards'
+    else:
+        url = 'http://ishin-production.aktsk.jp/cards'
+    r = requests.get(url, headers=headers)
+    cards = {}
+    for card in r.json()['cards']:
+        try:
+            config.Model.set_connection_resolver(config.db_glb)
+            name = config.Cards.find_or_fail(card['card_id']).name
+        except:
+            config.Model.set_connection_resolver(config.db_jp)
+            name = config.Cards.find_or_fail(card['card_id']).name
+
+        try:
+            config.Model.set_connection_resolver(config.db_glb)
+            element = str(config.Cards.find_or_fail(card['card_id']).element)
+        except:
+            config.Model.set_connection_resolver(config.db_jp)
+            element = str(config.Cards.find_or_fail(card['card_id']).element)
+
+        if element[-1] == '0':
+            element = 'AGL'
+        elif element[-1] == '1':
+            element = 'TEQ'
+        elif element[-1] == '2':
+            element = 'INT'
+        elif element[-1] == '3':
+            element = 'STR'
+        elif element[-1] == '4':
+            element = 'PHY'
+
+        try:
+            config.Model.set_connection_resolver(config.db_glb)
+            cost = config.Cards.find_or_fail(card['card_id']).cost
+            leader_skill_id = config.Cards.find_or_fail(card['card_id']).leader_skill_id
+            passive_skill_id = config.Cards.find_or_fail(card['card_id']).passive_skill_set_id
+            links_skill_ids = []
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill1_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill2_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill3_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill4_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill5_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill6_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill7_id)
+
+        except:
+            config.Model.set_connection_resolver(config.db_jp)
+            cost = config.Cards.find_or_fail(card['card_id']).cost
+            leader_skill_id = config.Cards.find_or_fail(card['card_id']).leader_skill_id
+            passive_skill_id = config.Cards.find_or_fail(card['card_id']).passive_skill_set_id
+            links_skill_ids = []
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill1_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill2_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill3_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill4_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill5_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill6_id)
+            links_skill_ids.append(config.Cards.find_or_fail(card['card_id']).link_skill7_id)
+
+        cards[card['card_id']] = {
+                                  'id' : card['card_id'],
+                                  'unique_id' : card['id'],
+                                  'name' : name,
+                                  'type' : element,
+                                  'cost' : cost,
+                                  'leader_skill_id' : leader_skill_id,
+                                  'link_skill_ids' : links_skill_ids,
+                                  'passive_skill_id' : passive_skill_id
+                                 }
+    cards_sort = []
+    for item in cards:
+        cards_sort.append(cards[item])
+
+    # Sort cards for listbox
+    cards_sort = sorted(cards_sort, key = lambda k:k['name'])
+    cards_sort = sorted(cards_sort, key = lambda k:k['cost'])
+
+    # Card strings to for listbox value
+    cards_to_display = []
+    for card in cards_sort:
+        cards_to_display.append(card['type']+' '+str(card['cost'])+' '+card['name'] + ' | ' + str(card['id']))
+
+    col1 = [[sg.Listbox(values = (cards_to_display),size = (30,30), key = 'CARDS',change_submits = True,font = ('Courier', 15, 'bold'))]]
+    col2 = [[sg.Text('Type', key = 'TYPE',font = ('', 15, 'bold'),auto_size_text = True),
+             sg.Text('Name', key = 'NAME', size = (None,3),font = ('', 15, 'bold'),auto_size_text = True)],
+            [sg.Text('Cost',key = 'COST',font = ('', 10, 'bold'))],
+            [sg.Text('Leader Skill',key = 'LEADERSKILLNAME',size = (None,1),font = ('', 12, 'bold underline'))],
+            [sg.Text('Leader Skill Description',key = 'LEADERSKILLDESC',size = (None,4),font = ('', 10, 'bold'))],
+            [sg.Text('Passive',key = 'PASSIVESKILLNAME',size = (None,2),font = ('', 12, 'bold underline'))],
+            [sg.Text('Passive Description',key = 'PASSIVESKILLDESC',size = (None,5),font = ('', 10, 'bold'))],
+            [sg.Text('Link Skill',key = 'LINKSKILL1',size = (None,1),font = ('', 10, 'bold'))],
+            [sg.Text('Link Skill',key = 'LINKSKILL2',size = (None,1),font = ('', 10, 'bold'))],
+            [sg.Text('Link Skill',key = 'LINKSKILL3',size = (None,1),font = ('', 10, 'bold'))],
+            [sg.Text('Link Skill',key = 'LINKSKILL4',size = (None,1),font = ('', 10, 'bold'))],
+            [sg.Text('Link Skill',key = 'LINKSKILL5',size = (None,1),font = ('', 10, 'bold'))],
+            [sg.Text('Link Skill',key = 'LINKSKILL6',size = (None,1),font = ('', 10, 'bold'))],
+            [sg.Text('Link Skill',key = 'LINKSKILL7',size = (None,1),font = ('', 10, 'bold'))]]
+
+    layout = [[sg.Column(col1),sg.Column(col2)]]
+    window = sg.Window('Items').Layout(layout)
+    while True:
+        event,values = window.Read()
+
+        if event == None:
+            window.Close()
+            return 0
+
+        if event == 'CARDS':
+            # Get Card ID 
+            card_id = int(values['CARDS'][0].split(' | ')[1])
+
+            # Get correct colour for card element
+            if cards[card_id]['type'] == 'PHY':
+                colour = 'gold2'
+            elif cards[card_id]['type'] == 'STR':
+                colour = 'red'
+            elif cards[card_id]['type'] == 'AGL':
+                colour = 'blue'
+            elif cards[card_id]['type'] == 'TEQ':
+                colour = 'green'
+            elif cards[card_id]['type'] == 'INT':
+                colour = 'purple'
+            else:
+                colour = 'black'
+
+            # Retrieve leaderskill from DB
+            try:
+                config.Model.set_connection_resolver(config.db_glb)
+                leader_skill_name = config.LeaderSkills.find_or_fail(cards[card_id]['leader_skill_id']).name.replace('\n',' ')
+                leader_skill_desc = config.LeaderSkills.find_or_fail(cards[card_id]['leader_skill_id']).description.replace('\n',' ')
+
+            except:
+                config.Model.set_connection_resolver(config.db_jp)
+                leader_skill_name = config.LeaderSkills.find_or_fail(cards[card_id]['leader_skill_id']).name.replace('\n',' ')
+                leader_skill_desc = config.LeaderSkills.find_or_fail(cards[card_id]['leader_skill_id']).description.replace('\n',' ')
+
+            # Retrieve passive skill
+            if cards[card_id]['passive_skill_id'] == None:
+                passive_skill_name = 'None'
+                passive_skill_desc = 'None'
+            else:
+                try:
+                    config.Model.set_connection_resolver(config.db_glb)
+                    passive_skill_name = config.Passives.find_or_fail(cards[card_id]['passive_skill_id']).name.replace('\n',' ')
+                    passive_skill_desc = config.Passives.find_or_fail(cards[card_id]['passive_skill_id']).description.replace('\n',' ')
+
+                except:
+                    config.Model.set_connection_resolver(config.db_jp)
+                    passive_skill_name = config.Passives.find_or_fail(cards[card_id]['passive_skill_id']).name.replace('\n',' ')
+                    passive_skill_desc = config.Passives.find_or_fail(cards[card_id]['passive_skill_id']).description.replace('\n',' ')
+
+
+            # Retrieve link skills from DB
+            ls1 = None
+            ls2 = None
+            ls3 = None
+            ls4 = None
+            ls5 = None
+            ls6 = None
+            ls7 = None
+
+
+            try:
+                config.Model.set_connection_resolver(config.db_glb)
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][0]) != None:
+                    ls1 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][0]).name.replace('\n',' ')
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][1]) != None:
+                    ls2 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][1]).name.replace('\n',' ')
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][2]) != None:
+                    ls3 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][2]).name.replace('\n',' ')
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][3]) != None:
+                    ls4 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][3]).name.replace('\n',' ')
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][4]) != None:
+                    ls5 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][4]).name.replace('\n',' ')
+                else:
+                    ls5 = 'Link Skill'
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][5]) != None:
+                    ls6 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][5]).name.replace('\n',' ')
+                else:
+                    ls6 = 'Link Skill'
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][6]) != None:
+                    ls7 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][6]).name.replace('\n',' ')
+                else:
+                    ls7 = 'Link Skill'
+            except:
+                config.Model.set_connection_resolver(config.db_jp)
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][0]) != None:
+                    ls1 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][0]).name.replace('\n',' ')
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][1]) != None:
+                    ls2 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][1]).name.replace('\n',' ')
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][2]) != None:
+                    ls3 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][2]).name.replace('\n',' ')
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][3]) != None:
+                    ls4 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][3]).name.replace('\n',' ')
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][4]) != None:
+                    ls5 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][4]).name.replace('\n',' ')
+                else:
+                    ls5 = 'Link Skill'
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][5]) != None:
+                    ls6 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][5]).name.replace('\n',' ')
+                else:
+                    ls6 = 'Link Skill'
+                if config.LinkSkills.find(cards[card_id]['link_skill_ids'][6]) != None:
+                    ls7 = config.LinkSkills.find(cards[card_id]['link_skill_ids'][6]).name.replace('\n',' ')
+                else:
+                    ls7 = 'Link Skill'
+
+            window.FindElement('NAME').Update(value = cards[card_id]['name'].replace('\n',' '))
+            window.FindElement('TYPE').Update(value = '['+cards[card_id]['type']+']',text_color = colour)
+            window.FindElement('COST').Update(value = 'COST: ' + str(cards[card_id]['cost']))
+            window.FindElement('LEADERSKILLNAME').Update(value = leader_skill_name)
+            window.FindElement('LEADERSKILLDESC').Update(value = leader_skill_desc)
+            window.FindElement('PASSIVESKILLNAME').Update(value = passive_skill_name)
+            window.FindElement('PASSIVESKILLDESC').Update(value = passive_skill_desc)
+            window.FindElement('LINKSKILL1').Update(value = ls1)
+            window.FindElement('LINKSKILL2').Update(value = ls2)
+            window.FindElement('LINKSKILL3').Update(value = ls3)
+            window.FindElement('LINKSKILL4').Update(value = ls4)
+            window.FindElement('LINKSKILL5').Update(value = ls5)
+            window.FindElement('LINKSKILL6').Update(value = ls6)
+            window.FindElement('LINKSKILL7').Update(value = ls7)
+
+####################################################################
+def sell_medals():
+    # Get Medals
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/awakening_items'),
+        'Content-type': 'application/json',
+        'X-Language': 'en',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+        }
+    if config.client == 'global':
+        config.Model.set_connection_resolver(config.db_glb)
+        url = 'https://ishin-global.aktsk.com/awakening_items'
+    else:
+        config.Model.set_connection_resolver(config.db_jp)
+        url = 'http://ishin-production.aktsk.jp/awakening_items'
+    r = requests.get(url, headers=headers)
+    
+    # Create list with ID for listbox
+    medal_list = []
+    for medal in reversed(r.json()['awakening_items']):
+        try:
+            config.Model.set_connection_resolver(config.db_glb)
+            item = config.Medal.find_or_fail(int(medal['awakening_item_id']))
+        except:
+            config.Model.set_connection_resolver(config.db_jp)
+            item = config.Medal.find_or_fail(int(medal['awakening_item_id']))
+
+        medal_list.append(item.name +' [x'+str(medal['quantity']) + '] | ' + str(item.id))
+
+    layout = [[sg.Text('Select a medal-')],
+              [sg.Listbox(values=(medal_list),size = (30,15),key = 'medal_tally',font = ('',15,'bold'))],
+              [sg.Text('Amount'),sg.Spin([i for i in range(1,999)], initial_value=1, size=(5, None))],
+              [sg.Button(button_text = 'Sell',key='Medal')]]
+
+    window = sg.Window('Medal List',keep_on_top = True).Layout(layout)
+    while True:
+        event,values = window.Read()
+
+        if event == None:
+            window.Close()
+            return 0
+        
+        # Check if medal selected and sell
+        if event == 'Medal':
+            if len(values['medal_tally']) == 0:
+                print(Fore.RED + Style.BRIGHT + "You did not select a medal.")
+                continue
+
+            value = values['medal_tally'][0]
+            medal = value.split(' | ')
+            medalo = medal[1]
+            amount = values[0]    
+
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                'Accept': '*/*',
+                'Authorization': packet.mac('POST', '/awakening_items/exchange'),
+                'Content-type': 'application/json',
+                'X-Platform': config.platform,
+                'X-AssetVersion': '////',
+                'X-DatabaseVersion': '////',
+                'X-ClientVersion': '////',
+                }
+            if config.client == 'global':
+                url = 'https://ishin-global.aktsk.com/awakening_items/exchange'
+            else:
+                url = 'http://ishin-production.aktsk.jp/awakening_items/exchange'
+            
+            medal_id = int(medalo)
+            chunk = int(amount) // 99
+            remainder = int(amount) % 99
+
+            window.Hide()
+            window.Refresh()
+            for i in range(chunk):
+                data = {'awakening_item_id': medal_id, 'quantity': 99}
+                r = requests.post(url, data=json.dumps(data), headers=headers)
+                if 'error' in r.json():
+                    print(Fore.RED+Style.BRIGHT+str(r.json))
+                else:
+                    print(Fore.GREEN + Style.BRIGHT + 'Sold Medals x' + str(99))
+
+            if remainder > 0:
+                data = {'awakening_item_id': medal_id, 'quantity': remainder}
+                r = requests.post(url, data=json.dumps(data), headers=headers)
+                if 'error' in r.json():
+                    print(Fore.RED+Style.BRIGHT+str(r.json))
+                else:
+                    print(Fore.GREEN + Style.BRIGHT + 'Sold Medals x' + str(remainder))
+
+            # New medal list 
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                'Accept': '*/*',
+                'Authorization': packet.mac('GET', '/awakening_items'),
+                'Content-type': 'application/json',
+                'X-Language': 'en',
+                'X-Platform': config.platform,
+                'X-AssetVersion': '////',
+                'X-DatabaseVersion': '////',
+                'X-ClientVersion': '////',
+                }
+            if config.client == 'global':
+                url = 'https://ishin-global.aktsk.com/awakening_items'
+            else:
+                url = 'http://ishin-production.aktsk.jp/awakening_items'
+            r = requests.get(url, headers=headers)
+
+            medal_list[:] = []
+            for medal in reversed(r.json()['awakening_items']):
+                try:
+                    config.Model.set_connection_resolver(config.db_glb)
+                    item = config.Medal.find_or_fail(int(medal['awakening_item_id']))
+                except:
+                    config.Model.set_connection_resolver(config.db_jp)
+                    item = config.Medal.find_or_fail(int(medal['awakening_item_id']))
+
+                medal_list.append(item.name +' [x'+str(medal['quantity'])+']' + ' | ' + str(item.id))
+            
+            window.FindElement('medal_tally').Update(values = medal_list)
+            window.UnHide()
+            window.Refresh()
+####################################################################
+def complete_zbattle_stage(kagi = False):
+    headers = {
+            'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+            'Accept': '*/*',
+            'Authorization': packet.mac('GET', '/events'),
+            'Content-type': 'application/json',
+            'X-Language': 'en',
+            'X-Platform': config.platform,
+            'X-AssetVersion': '////',
+            'X-DatabaseVersion': '////',
+            'X-ClientVersion': '////',
+            }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/events'
+    else:
+        url = 'http://ishin-production.aktsk.jp/events'
+    r = requests.get(url, headers=headers)
+    events = r.json()
+
+    zbattles_to_display = []
+    for event in events['z_battle_stages']:
+        try:
+            config.Model.set_connection_resolver(config.db_glb)
+            zbattle = config.ZBattles.where('z_battle_stage_id','=',event['id']).first().enemy_name +' | '+ str(event['id'])
+        except:
+            config.Model.set_connection_resolver(config.db_jp)
+            zbattle = config.ZBattles.where('z_battle_stage_id','=',event['id']).first().enemy_name +' | '+ str(event['id'])
+        zbattles_to_display.append(zbattle)
+
+    col1 = [[sg.Text('Select a Z-Battle',font = ('',15,'bold'))],
+            [sg.Listbox(values=(zbattles_to_display),size = (30,15),key = 'ZBATTLE',font = ('',15,'bold'))]]
+
+    col2 = [[sg.Text('Select Single Stage:'),sg.Combo(['5','10','15','20','25','30'],size=(6,3),key = 'LEVEL')],
+            [sg.Text('Amount of times: '),sg.Spin([i for i in range(1,999)], initial_value=1, size=(5, None),key = 'LOOP')],
+            [sg.Button(button_text = 'Go!',key='GO')]]
+
+    layout = [[sg.Column(col1),sg.Column(col2)]]
+    window = sg.Window('Medal List').Layout(layout)
+
+    while True:
+        event,values = window.Read()
+        if event == None:
+            window.Close()
+            return 0
+
+        if event == 'GO':
+            if len(values['ZBATTLE']) == 0:
+                print(Fore.RED+Style.BRIGHT+"Select a Z-Battle!")
+                continue
+
+            for i in range(int(values['LOOP'])):
+                window.Hide()
+                window.Refresh()
+                #
+                stage = values['ZBATTLE'][0].split(' | ')[1]
+                level = values['LEVEL']
+
+                ##Get supporters
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                    'Accept': '*/*',
+                    'Authorization': packet.mac('GET', '/z_battles/'+str(stage)+'/supporters'),
+                    'Content-type': 'application/json',
+                    'X-Platform': config.platform,
+                    'X-AssetVersion': '////',
+                    'X-DatabaseVersion': '////',
+                    'X-ClientVersion': '////',
+                    }
+                if config.client == 'global':
+                    url = 'https://ishin-global.aktsk.com/z_battles/'+str(stage)+'/supporters'
+                else:
+                    url = 'http://ishin-production.aktsk.jp/z_battles/'+str(stage)+'/supporters'   
+                r = requests.get(url, headers=headers)
+                if 'supporters' in r.json():
+                    supporter = r.json()['supporters'][0]['id']
+                elif 'error' in r.json():
+                    print(Fore.RED + Style.BRIGHT+r.json())
+                    return 0
+                else:
+                    print(Fore.RED + Style.BRIGHT+'Problem with ZBattle')
+                    print(r.raw())
+                    return 0
+
+                ###Send first request
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                    'Accept': '*/*',
+                    'Authorization': packet.mac('POST', '/z_battles/'+str(stage)+'/start'),
+                    'Content-type': 'application/json',
+                    'X-Platform': config.platform,
+                    'X-AssetVersion': '////',
+                    'X-DatabaseVersion': '////',
+                    'X-ClientVersion': '////',
+                    }
+
+
+                if kagi == True:
+                    sign = json.dumps({
+                            'friend_id': supporter,
+                            'level': int(level),
+                            'selected_team_num': config.deck,
+                            'eventkagi_item_id': 5
+                            })
+                else:
+                    sign = json.dumps({
+                            'friend_id': supporter,
+                            'level': int(level),
+                            'selected_team_num': config.deck,
+                            })
+                
+                enc_sign = packet.encrypt_sign(sign)
+                data = {'sign': enc_sign}
+                if config.client == 'global':
+                    url = 'https://ishin-global.aktsk.com/z_battles/'+str(stage)+'/start'
+                else:
+                    url = 'http://ishin-production.aktsk.jp/z_battles/'+str(stage)+'/start'
+                r = requests.post(url, data=json.dumps(data), headers=headers)
+                
+                if 'sign' in r.json():
+                    dec_sign = packet.decrypt_sign(r.json()['sign'])
+                # Check if error was due to lack of stamina
+                elif 'error' in r.json():
+                    if r.json()['error']['code'] == 'act_is_not_enough':
+                        # Check if allowed to refill stamina
+                        if config.allow_stamina_refill == True:
+                            refill_stamina()
+                            r = requests.post(url, data=json.dumps(data),
+                                    headers=headers)
+                    else:  
+                        print(r.json())
+                        return 0
+                else:
+                    print(Fore.RED + Style.BRIGHT+'Problem with ZBattle')
+                    print(r.raw())
+                    return 0
+
+                finish_time = int(round(time.time(), 0)+2000)
+                start_time = finish_time - randint(6200000, 8200000)
+
+                data = {
+                    'elapsed_time': finish_time - start_time,
+                    'is_cleared': True,
+                    'level': int(level),
+                    's': 'rGAX18h84InCwFGbd/4zr1FvDNKfmo/TJ02pd6onclk=',
+                    't': 'eyJzdW1tYXJ5Ijp7ImVuZW15X2F0dGFjayI6MTAwMzg2LCJlbmVteV9hdHRhY2tfY291bnQiOjUsImVuZW15X2hlYWxfY291bnRzIjpbMF0sImVuZW15X2hlYWxzIjpbMF0sImVuZW15X21heF9hdHRhY2siOjEwMDAwMCwiZW5lbXlfbWluX2F0dGFjayI6NTAwMDAsInBsYXllcl9hdHRhY2tfY291bnRzIjpbMTBdLCJwbGF5ZXJfYXR0YWNrcyI6WzMwNjYwNTJdLCJwbGF5ZXJfaGVhbCI6MCwicGxheWVyX2hlYWxfY291bnQiOjAsInBsYXllcl9tYXhfYXR0YWNrcyI6WzEyMzY4NTBdLCJwbGF5ZXJfbWluX2F0dGFja3MiOls0NzcxOThdLCJ0eXBlIjoic3VtbWFyeSJ9fQ==',
+                    'token': dec_sign['token'],
+                    'used_items': [],
+                    'z_battle_finished_at_ms': finish_time,
+                    'z_battle_started_at_ms': start_time,
+                    }
+                #enc_sign = encrypt_sign(sign)
+
+                headers = {
+                    'User-Agent': 'Android',
+                    'Accept': '*/*',
+                    'Authorization': packet.mac('POST', '/z_battles/'+str(stage)+'/finish'),
+                    'Content-type': 'application/json',
+                    'X-Platform': config.platform,
+                    'X-AssetVersion': '////',
+                    'X-DatabaseVersion': '////',
+                    'X-ClientVersion': '////',
+                    }
+                if config.client == 'global':
+                    url = 'https://ishin-global.aktsk.com/z_battles/'+str(stage)+'/finish'
+                else:
+                    url = 'http://ishin-production.aktsk.jp/z_battles/'+str(stage)+'/finish'   
+                
+                r = requests.post(url, data=json.dumps(data), headers=headers)
+                dec_sign = packet.decrypt_sign(r.json()['sign'])
+                # ## Print out Items from Database
+                print('Level: '+str(level))
+                # ## Print out Items from Database
+                if 'items' in dec_sign:
+                    supportitems = []
+                    awakeningitems = []
+                    trainingitems = []
+                    potentialitems = []
+                    treasureitems = []
+                    carditems = []
+                    trainingfields = []
+                    stones = 0
+                    supportitemsset = set()
+                    awakeningitemsset = set()
+                    trainingitemsset = set()
+                    potentialitemsset = set()
+                    treasureitemsset = set()
+                    carditemsset = set()
+                    trainingfieldsset = set()
+                    print('Items:')
+                    print('-------------------------')
+                    if 'quest_clear_rewards' in dec_sign:
+                        for x in dec_sign['quest_clear_rewards']:
+                            if x['item_type'] == 'Point::Stone':
+                                stones += x['amount']
+                    for x in dec_sign['items']:
+                        if x['item_type'] == 'SupportItem':
+
+                            # print('' + SupportItems.find(x['item_id']).name + ' x '+str(x['quantity']))
+
+                            for i in range(x['quantity']):
+                                supportitems.append(x['item_id'])
+                            supportitemsset.add(x['item_id'])
+                        elif x['item_type'] == 'PotentialItem':
+
+                            # print('' + PotentialItems.find(x['item_id']).name + ' x '+str(x['quantity']))
+
+                            for i in range(x['quantity']):
+                                potentialitems.append(x['item_id'])
+                            potentialitemsset.add(x['item_id'])
+                        elif x['item_type'] == 'TrainingItem':
+
+                            # print('' + TrainingItems.find(x['item_id']).name + ' x '+str(x['quantity']))
+
+                            for i in range(x['quantity']):
+                                trainingitems.append(x['item_id'])
+                            trainingitemsset.add(x['item_id'])
+                        elif x['item_type'] == 'AwakeningItem':
+
+                            # print('' + AwakeningItems.find(x['item_id']).name + ' x '+str(x['quantity']))
+
+                            for i in range(x['quantity']):
+                                awakeningitems.append(x['item_id'])
+                            awakeningitemsset.add(x['item_id'])
+                        elif x['item_type'] == 'TreasureItem':
+
+                            # print('' + TreasureItems.find(x['item_id']).name + ' x '+str(x['quantity']))
+
+                            for i in range(x['quantity']):
+                                treasureitems.append(x['item_id'])
+                            treasureitemsset.add(x['item_id'])
+                        elif x['item_type'] == 'Card':
+
+                            # card = Cards.find(x['item_id'])
+
+                            carditems.append(x['item_id'])
+                            carditemsset.add(x['item_id'])
+                        elif x['item_type'] == 'Point::Stone':
+                            stones += 1
+                        elif x['item_type'] == 'TrainingField':
+
+                            # card = Cards.find(x['item_id'])
+
+                            for i in range(x['quantity']):
+                                trainingfields.append(x['item_id'])
+                            trainingfieldsset.add(x['item_id'])
+                        else:
+                            print(x['item_type'])
+
+                    # Print items
+                    for x in supportitemsset:
+                        # JP Translation
+                        try:
+                            config.Model.set_connection_resolver(config.db_glb)
+                            config.SupportItems.find_or_fail(x).name
+                        except:
+                            config.Model.set_connection_resolver(config.db_jp)
+
+                        # Print name and item count
+                        print(Fore.CYAN + Style.BRIGHT+ config.SupportItems.find(x).name + ' x' \
+                            + str(supportitems.count(x)))
+                    for x in awakeningitemsset:
+                        # JP Translation
+                        try:
+                            config.Model.set_connection_resolver(config.db_glb)
+                            config.AwakeningItems.find_or_fail(x).name
+                        except:
+                            config.Model.set_connection_resolver(config.db_jp)
+
+                        # Print name and item count
+                        print(Fore.MAGENTA + Style.BRIGHT  + config.AwakeningItems.find(x).name + ' x' \
+                            + str(awakeningitems.count(x)))
+                    for x in trainingitemsset:
+                        # JP Translation
+                        try:
+                            config.Model.set_connection_resolver(config.db_glb)
+                            config.TrainingItems.find_or_fail(x).name
+                        except:
+                            config.Model.set_connection_resolver(config.db_jp)
+
+                        # Print name and item count
+                        print(Fore.RED + Style.BRIGHT + config.TrainingItems.find(x).name + ' x' \
+                            + str(trainingitems.count(x)))
+                    for x in potentialitemsset:
+                        # JP Translation
+                        try:
+                            config.Model.set_connection_resolver(config.db_glb)
+                            config.PotentialItems.find_or_fail(x).name
+                        except:
+                            config.Model.set_connection_resolver(config.db_jp)
+
+                        # Print name and item count
+                        print(config.PotentialItems.find_or_fail(x).name + ' x' \
+                            + str(potentialitems.count(x)))
+                    for x in treasureitemsset:
+                        # JP Translation
+                        try:
+                            config.Model.set_connection_resolver(config.db_glb)
+                            config.TreasureItems.find_or_fail(x).name
+                        except:
+                            config.Model.set_connection_resolver(config.db_jp)
+
+                        # Print name and item count
+                        print(Fore.GREEN + Style.BRIGHT + config.TreasureItems.find(x).name + ' x' \
+                            + str(treasureitems.count(x)))
+                    for x in trainingfieldsset:
+                        # JP Translation
+                        try:
+                            config.Model.set_connection_resolver(config.db_glb)
+                            config.TrainingFields.find_or_fail(x).name
+                        except:
+                            config.Model.set_connection_resolver(config.db_jp)
+
+                        # Print name and item count
+                        print(config.TrainingFields.find(x).name + ' x' \
+                            + str(trainingfields.count(x)))
+                    for x in carditemsset:
+                        # JP Translation
+                        try:
+                            config.Model.set_connection_resolver(config.db_glb)
+                            config.Cards.find_or_fail(x).name
+                        except:
+                            config.Model.set_connection_resolver(config.db_jp)
+
+                        # Print name and item count
+                        print(config.Cards.find(x).name + ' x' + str(carditems.count(x)))
+                    print(Fore.YELLOW + Style.BRIGHT + 'Stones x' + str(stones))
+                if 'gasha_point' in dec_sign:
+                    print('Friend Points: ' + str(dec_sign['gasha_point']))
+
+                print('--------------------------')
+                print('##############################################')
+            window.UnHide()
+            window.Refresh()
+       
+  ####################################################################
 def medal_calculator():
     # ## Pre Lr Accounts
 
@@ -3303,12 +4001,11 @@ def medal_calculator():
     print("2. Lr Frieza")
     print("3. Lr Andriods")
     print("4. Lr Vegito (WIP)")
-    print("5. Summonable Lr ")
-    
+    print("5. Summonable Lr")
 
     # Lrgoku medals drop as 50% for 7, 20% for 5 or 10, 5% for 15 or 20
     # Lrfrieza drop is same as goku
-    Select1 = input("Select 1 2 3 4 5   here:")
+    Select1 = input("Select 1 2 3 4 5 6  here:")
     if Select1 == "1":
         print("-----------------------------------")
         To = "-"
@@ -3381,7 +4078,7 @@ def medal_calculator():
     if Select1 == "3":
         print("-----------------------------------")
         To = "-"
-        LrlevelA = input("Are you READY TO LR andriods  Lr?:")
+        LrlevelA = input("Are you READY TO LR andriods  Lr(type Lr?):")
         if LrlevelA == "Lr":
             LrhaveGT = input("How many Gotenks medals do you have?:")
             LrhaveV = input("How many Super Vegito medals do you have?:")
@@ -3527,7 +4224,7 @@ def medal_calculator():
             LRVBTURneed = 70 - int(LRVBTURhave)
             print("Potara medals needed:", LRVBTURneed)
     if Select1 == "5":
-        LrTrunkRarity = input(" Lr?:")
+        LrTrunkRarity = input("Lr(type Lr?):")
         if LrTrunkRarity == "Lr":
             To = "-"
             LrTrunksURhave = input("How many Warrior's mark trunks medals do you have?:")
@@ -3555,7 +4252,7 @@ def medal_calculator():
             print("Teen Trunks medals needed:", Lrttneed)
             print("Mecha Freiza medals needed:", LRtMFneed)
             print("Stamina needed:", stamneedmin, To, stamneedmax)
-    print("5. Lr Trunks")       
+    print("5. Lr Trunks")
     stage = input('What stage would you like to complete(Proud Bloodline 320022) : ')
     difficulty = input('Enter the difficulty|(2:Z-Hard): ')
     loop = input('Enter how many times to execute(11): ')
@@ -3902,13 +4599,6 @@ def medal_calculator():
     for i in range(int(loop)):
         complete_stage(stage, difficulty)
         return 0
-
-
-
-            
-    
-
-
 
 
 

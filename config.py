@@ -19,6 +19,10 @@ db_glb = DatabaseManager(glb_config)
 db_jp = DatabaseManager(jp_config)
 Model.set_connection_resolver(db_glb)
 
+class LeaderSkills(Model):
+
+    __table__ = 'leader_skills'
+    
 class LinkSkills(Model):
 
     __table__ = 'link_skills'

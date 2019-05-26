@@ -6,9 +6,11 @@ To stop a command from executing, hold ctrl + c
 
 'stage' -> Completes stage given ID or name.
 'area' -> Complete all stages and difficulties in an area.
+'cards' -> Provides a GUI to view card information.
 'completequests' -> Completes all unfinished quest stages.
 'completeevents' -> Completes all unfinished quest stages.
 'completezbattles' -> Completes all unfinished zbattles to stage 30.
+'zstage' -> Provides a GUI to complete single Z-Battle stages.
 'clash' -> Complete ultimate clash if you have enough UR cards.
 'listevents' -> Prints a list of all currently available events.
 'chooseevents' -> Provides a GUI to sort through events.
@@ -18,6 +20,7 @@ To stop a command from executing, hold ctrl + c
 'omegafarm' -> Completes everything (story, events, zbattle)
 'info' -> Print out account information.
 'items' -> Provides a GUI to view user items.
+'medals' -> Provides a GUI to view and sell medals.
 'sell' -> Provides a GUI to sell cards.
 'team' -> Change composition of a deck.
 'deck' -> Select a deck to be the default.
