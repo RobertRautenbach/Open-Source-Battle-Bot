@@ -2293,7 +2293,8 @@ def user_command_executor(command):
         refresh_client()
     else:
         print('Command not found.')
-
+    elif command == 'medalcal':
+        medal_calculator()
 ####################################################################
 def complete_unfinished_zbattles(kagi = False):
     # JP Translated
