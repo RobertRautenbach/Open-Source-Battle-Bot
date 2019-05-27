@@ -2241,7 +2241,7 @@ def user_command_executor(command):
         complete_unfinished_events()
         complete_unfinished_zbattles()
         complete_clash()
-        elif command == 'medalcal':
+    elif command == 'medalcal':
         medal_calculator()
     ## When this will get updated, we shall add :finishzbattle,30, + sell + sellhercule + baba(?)
     elif command == 'completequests':
