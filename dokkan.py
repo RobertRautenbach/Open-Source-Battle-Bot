@@ -18,7 +18,16 @@ while True:
             break
         else:
             continue
-
+    # Daily Logins?
+    while True:
+        db = input("Perform daily logins on all accounts? Y/N: ")
+        if db.lower() == 'y':
+            commands.bulk_daily_logins()
+            break
+        elif db.lower() == 'n':
+            break
+        else:
+            continue
     # Decide which client to use.
     while True:
         client = input("JP or GLB? J/G: ")
