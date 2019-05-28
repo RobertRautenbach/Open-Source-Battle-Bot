@@ -1991,15 +1991,16 @@ def save_account():
 def load_account():
 
     while 1==1:
-        platform = input("'a'|Android -- 'i'|iOS: ")
-        if platform[0].lower() in ['a','i']:
-            if platform[0].lower() == 'a':
+        print('Choose your operating system (' + Fore.YELLOW + Style.BRIGHT + 'Android: 1' + Style.RESET_ALL + ' or' + Fore.YELLOW + Style.BRIGHT + ' IOS: 2' + Style.RESET_ALL + ')', end='')
+        platform = input('')
+        if platform[0].lower() in ['1','2']:
+            if platform[0].lower() == '1':
                 config.platform = 'android'
             else:
                 config.platform = 'ios'
             break
         else:
-            print(Fore.RED+'Could not identify correct platform to use.')
+            print(Fore.RED+'Could not identify correct operating system to use.')
 
     while 1==1:
         save_name = input("What save would you like to load?: ")
@@ -2645,15 +2646,16 @@ def complete_unfinished_zbattles(kagi = False):
 ####################################################################
 def set_platform():
     while True:
-        platform = input("'a'|Android -- 'i'|iOS: ")
-        if platform[0].lower() in ['a','i']:
-            if platform[0].lower() == 'a':
+        print('Choose your operating system (' + Fore.YELLOW + Style.BRIGHT + 'Android: 1' + Style.RESET_ALL + ' or' + Fore.YELLOW + Style.BRIGHT + ' IOS: 2' + Style.RESET_ALL + ') ',end='')
+        platform = input('')
+        if platform[0].lower() in ['1','2']:
+            if platform[0].lower() == '1':
                 config.platform = 'android'
             else:
                 config.platform = 'ios'
             break
         else:
-            print(Fore.RED + Style.BRIGHT+'Could not identify correct platform to use.')
+            print(Fore.RED + Style.BRIGHT+'Could not identify correct operating system to use.')
 
 ####################################################################
 def list_events():
