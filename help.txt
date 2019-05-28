@@ -1,7 +1,7 @@
 111
 111
+---------------------------------
 
-############################################################################
 To stop a command from executing, hold ctrl + c
 
 'stage' -> Completes stage given ID or name.
@@ -29,4 +29,3 @@ To stop a command from executing, hold ctrl + c
 'capacity' -> Increase card capacity by +5.
 'name' -> Change account name.
 'refresh' -> Reauthenticates the client.
-############################################################################
