@@ -13,6 +13,7 @@ The dokkan module is where the command line/UI will be implemented, and will cal
 The decryptor module uses: https://github.com/bssthu/pysqlsimplecipher
 Although it's slow I preferred this code over pysqlcipher simply because it's easier to package it for distribution without running into issues.
 
+<<<<<<< HEAD
 # ToDo (lacking from paid bot)
 
 
@@ -61,6 +62,10 @@ Although it's slow I preferred this code over pysqlcipher simply because it's ea
 [] 'list' to print master list of stages
 ```
 
+=======
+# Download
+https://github.com/FlashChaser/Open-Source-Battle-Bot/releases
+>>>>>>> cd7be82da47e0e23a6c5d600bdda9518ee23cbbb
 
 # Installation
 
@@ -71,8 +76,8 @@ pip3 install six
 pip3 install pyinstaller
 pip3 install colorama
 pip3 install orator
-pip3 install pycryptodome
-pip3 install pysimplegui 
+pip3 install pycrypto - https://github.com/dlitz/pycrypto
+pip3 install PySimpleGUI
 pip3 install requests
 ```
 
