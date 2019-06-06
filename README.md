@@ -25,7 +25,8 @@ pip3 install six
 pip3 install pyinstaller
 pip3 install colorama
 pip3 install orator
-pip3 install pycrypto - https://github.com/dlitz/pycrypto
+	pip3 install pycrypto - https://github.com/dlitz/pycrypto
+OR	pip3 install pycryptodome
 pip3 install PySimpleGUI
 pip3 install requests
 ```
