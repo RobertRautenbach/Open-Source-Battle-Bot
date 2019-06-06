@@ -2626,10 +2626,10 @@ def user_command_executor(command):
         sell_cards__bulk_GUI()
     elif command == 'cards':
         list_cards()
-    elif command == 'team':
-        change_team()
     elif command == 'supporter':
-        change_supporter()   
+        change_supporter() 
+    elif command == 'team':
+        change_team()  
     elif command == 'deck':
         config.deck = int(input('Enter a deck number to use: '))
     elif command == 'transfer':
