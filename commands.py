@@ -2629,7 +2629,7 @@ def user_command_executor(command):
     elif command == 'supporter':
         change_supporter() 
     elif command == 'team':
-        change_team()  
+        change_team()
     elif command == 'deck':
         config.deck = int(input('Enter a deck number to use: '))
     elif command == 'transfer':
