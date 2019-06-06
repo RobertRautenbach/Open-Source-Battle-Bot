@@ -1325,7 +1325,7 @@ def change_supporter():
              sg.Button(button_text ='Clear Links',key='clear_links')]]
 
     layout = [[sg.Column(col1),sg.Column(col2),sg.Column(col3)]]
-    window = sg.Window('Deck Update',grab_anywhere=True,keep_on_top = True).Layout(layout)
+    window = sg.Window('Supporter Update',grab_anywhere=True,keep_on_top = True).Layout(layout)
     
 
     ###Begin window loop
