@@ -23,6 +23,7 @@ To stop a command from executing, hold ctrl + c
 'medals' -> Provides a GUI to view and sell medals.
 'sell' -> Provides a GUI to sell cards.
 'team' -> Change composition of a deck.
+'supporter' -> Change your support Unit.
 'deck' -> Select a deck to be the default.
 'gift' -> Accepts gifts and missions.
 'transfer' -> Generates transfer code.
