@@ -2290,6 +2290,19 @@ def user_command_executor(command):
         increase_capacity()
     elif command == 'name':
         change_name()
+    elif command == 'bossrush':
+        complete_stage('701001', 3)
+        complete_stage('701001', 4)
+        complete_stage('701002', 4)
+        complete_stage('701002', 5)
+        complete_stage('701003', 5)
+        complete_stage('701004', 5)
+        complete_stage('701005', 5)
+        complete_stage('701006', 5)
+        if config.client == "japan":
+            complete_stage('701007', 5)
+            complete_stage('701008', 5)
+        accept_missions()
     elif command == 'refresh':
         refresh_client()
     else:
