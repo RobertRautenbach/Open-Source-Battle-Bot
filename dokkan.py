@@ -9,22 +9,11 @@ init(autoreset=True)
 
 while True:
     print(' ')
-    print(Fore.CYAN + Style.BRIGHT + 'Select one of the following')
+    print(Fore.CYAN+Style.BRIGHT+'Updating databases')
     print('---------------------------------')
     print(' ')
     # Database Check.
-    while True:
-        print('Check for updated database? (' + Fore.YELLOW + Style.BRIGHT + 'Yes: 1 ' + Style.RESET_ALL + 'or ' + Fore.YELLOW + Style.BRIGHT + 'No: 2' + Style.RESET_ALL + ')',end='')
-        db = input(' ')
-        if db.lower() == '1':
-            commands.db_download()
-            break
-        elif db.lower() == '2':
-            break
-        else:
-            print('')
-            continue
-
+    commands.db_download()
     # Daily Logins?
     print(' ')
     print(Fore.CYAN + Style.BRIGHT + 'Choose an option')
