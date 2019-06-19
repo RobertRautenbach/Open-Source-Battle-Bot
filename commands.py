@@ -886,16 +886,16 @@ def db_download():
     jp_out_of_date = False
     glb_out_of_date = False
 
-    #Check local DB versions in help.txt
+    #Check local DB versions in DatabaseVersion
     while True:
-        if os.path.isfile('help.txt'):
-            f = open(os.path.join('help.txt'), 'r')
+        if os.path.isfile('DatabaseVersion'):
+            f = open(os.path.join('DatabaseVersion'), 'r')
             local_version_glb = f.readline().rstrip()
             local_version_jp = f.readline().rstrip()
             f.close()
             break
         else:
-            f = open(os.path.join('help.txt'), 'w')
+            f = open(os.path.join('DatabaseVersion'), 'w')
             f.write('111\n')
             f.write('111\n')
             f.close()
@@ -979,19 +979,19 @@ def db_download():
     if glb_out_of_date:
         print('Decrypting Global Database')
         decryptor.main()
-        with open('help.txt', 'r') as file:
+        with open('DatabaseVersion', 'r') as file:
             data = file.readlines()
             data[0] = str(glb_current) + '\n'
-        with open('help.txt', 'w') as file:
+        with open('DatabaseVersion', 'w') as file:
             file.writelines(data)
 
     if jp_out_of_date:
         print('Decrypting JP Database')
         decryptor.main(p = '2db857e837e0a81706e86ea66e2d1633')
-        with open('help.txt', 'r') as file:
+        with open('DatabaseVersion', 'r') as file:
             data = file.readlines()
             data[1] = str(jp_current) + '\n'
-        with open('help.txt', 'w') as file:
+        with open('DatabaseVersion', 'w') as file:
             file.writelines(data)
 
     print(Fore.GREEN + Style.BRIGHT + 'Database update complete.')
