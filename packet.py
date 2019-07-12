@@ -111,13 +111,14 @@ def get_key_and_iv(
 ####################################################################
 def encrypt_sign(data):
     data = pad(data)
+    key1 = str.encode(data)
     password = \
         'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzJ9JaHioVi6rr0TAfr6j'
     salt = os.urandom(8)
     (key, iv) = get_key_and_iv(password, salt, klen=32, ilen=16,
                                msgdgst='md5')
     cipher = AES.new(key, AES.MODE_CBC, iv)
-    a = cipher.encrypt(data)
+    a = cipher.encrypt(key1)
     a = salt + a
     return base64.b64encode(a).decode()
 

@@ -1,16 +1,32 @@
+111
+111
+---------------------------------
+
 To stop a command from executing, hold ctrl + c
 
 'stage' -> Completes stage given ID or name.
 'area' -> Complete all stages and difficulties in an area.
+'cards' -> Provides a GUI to view card information.
 'completequests' -> Completes all unfinished quest stages.
 'completeevents' -> Completes all unfinished quest stages.
 'completezbattles' -> Completes all unfinished zbattles to stage 30.
+'zstages' -> Provides a GUI to complete single Z-Battle stages.
 'clash' -> Complete ultimate clash if you have enough UR cards.
+'listevents' -> Prints a list of all currently available events.
+'chooseevents' -> Provides a GUI to sort through events.
+'summon' -> Provides a GUI to choose what banner to summon.
+'listsummons' -> Prints a list of all currently available summons.
 'dragonballs' -> Collects Dragonballs and makes wishes.
 'omegafarm' -> Completes everything (story, events, zbattle)
 'info' -> Print out account information.
+'items' -> Provides a GUI to view user items.
+'medals' -> Provides a GUI to view and sell medals.
+'sell' -> Provides a GUI to sell cards.
 'team' -> Change composition of a deck.
+'supporter' -> Change your support Unit.
+'deck' -> Select a deck to be the default.
 'gift' -> Accepts gifts and missions.
 'transfer' -> Generates transfer code.
 'capacity' -> Increase card capacity by +5.
 'name' -> Change account name.
+'refresh' -> Reauthenticates the client.
