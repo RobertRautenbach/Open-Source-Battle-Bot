@@ -2581,6 +2581,8 @@ def user_command_executor(command):
     elif command == 'gift':
         accept_gifts()
         accept_missions()
+    elif command == 'potara':
+        potara()
     elif command == 'omegafarm':
         accept_gifts()
         accept_missions()

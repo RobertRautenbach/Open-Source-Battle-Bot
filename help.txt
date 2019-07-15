@@ -1,5 +1,4 @@
-111
-111
+
 ---------------------------------
 
 To stop a command from executing, hold ctrl + c
@@ -21,6 +20,7 @@ To stop a command from executing, hold ctrl + c
 'info' -> Print out account information.
 'items' -> Provides a GUI to view user items.
 'medals' -> Provides a GUI to view and sell medals.
+'potara' -> Potaring stuff
 'sell' -> Provides a GUI to sell cards.
 'team' -> Change composition of a deck.
 'supporter' -> Change your support Unit.

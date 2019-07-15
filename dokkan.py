@@ -77,8 +77,6 @@ while True:
             commands.tutorial()
             commands.daily_login()
             break
-        elif command == 'potara':
-            commands.potara()
         elif command == '1':
             print(' ')
             commands.transfer_account()
