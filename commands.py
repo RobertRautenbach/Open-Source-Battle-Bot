@@ -3116,7 +3116,7 @@ def event_viewer():
     difficulties = [0]
     stage_name = ''
 
-    col1 = [[sg.Listbox(values=(sorted(areas_to_display)),change_submits = True,size = (60,20), key='AREAS')]]
+    col1 = [[sg.Listbox(values=(sorted(areas_to_display)),change_submits = True,size = (30,20), key='AREAS')]]
     col2 = [[sg.Listbox(values=(sorted(stages_to_display)),change_submits = True,size = (30,20),key = 'STAGES')]]
     col3 = [[sg.Text('Name',key = 'STAGE_NAME',size = (30,2))],
             [sg.Text('Difficulty: '),sg.Combo(difficulties,key = 'DIFFICULTIES',size=(6,3),readonly=True)],
