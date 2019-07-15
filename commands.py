@@ -2635,7 +2635,22 @@ def user_command_executor(command):
     elif command == 'transfer':
         get_transfer_code()
     elif command == 'capacity':
-        increase_capacity()
+        ### Checking if the input is valid
+        valid = False
+        while not valid:
+            try:
+                increase_times = int(input("How many times do you want to increase the capacity? (+5 per time): "))
+                valid = True
+            except ValueError:
+                print("That's not a valid number.")
+        ### Checking if you have enough Dragon Stones
+        if increase_times > get_user()['user']['stone']:
+            print("You don't have enough Dragon Stones.")
+            pass
+        ### Increasing the capacity
+        else:
+            for _ in range(increase_times):
+                increase_capacity()
     elif command == 'name':
         change_name()
     elif command == 'refresh':
@@ -3101,7 +3116,7 @@ def event_viewer():
     difficulties = [0]
     stage_name = ''
 
-    col1 = [[sg.Listbox(values=(sorted(areas_to_display)),change_submits = True,size = (30,20),key='AREAS')]]
+    col1 = [[sg.Listbox(values=(sorted(areas_to_display)),change_submits = True,size = (60,20), key='AREAS')]]
     col2 = [[sg.Listbox(values=(sorted(stages_to_display)),change_submits = True,size = (30,20),key = 'STAGES')]]
     col3 = [[sg.Text('Name',key = 'STAGE_NAME',size = (30,2))],
             [sg.Text('Difficulty: '),sg.Combo(difficulties,key = 'DIFFICULTIES',size=(6,3),readonly=True)],
