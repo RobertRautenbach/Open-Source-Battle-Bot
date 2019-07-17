@@ -2587,6 +2587,7 @@ def user_command_executor(command):
     elif command == 'potara':
         potara()
     elif command == 'omegafarm':
+        print('This will do all daily, potential, unfinished stages, events, zbattles and clash...')
         complete_stage('130001', 0)
         complete_stage('131001', 0)
         complete_stage('132001', 0)
@@ -2600,7 +2601,6 @@ def user_command_executor(command):
         complete_clash()
         refresh_client()
         get_user_info()
-    ## When this will get updated, we shall add :finishzbattle,30, + sell + sellhercule + baba(?)
     elif command == 'completequests':
         complete_unfinished_quest_stages()
     elif command == 'completeevents':
