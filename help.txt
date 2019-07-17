@@ -16,11 +16,11 @@ To stop a command from executing, hold ctrl + c
 'summon' -> Provides a GUI to choose what banner to summon.
 'listsummons' -> Prints a list of all currently available summons.
 'dragonballs' -> Collects Dragonballs and makes wishes.
-'omegafarm' -> Completes everything (story, events, zbattle)
+'omegafarm' -> Completes everything (story, events, zbattle, daily, accepts gifts and missions)
 'info' -> Print out account information.
 'items' -> Provides a GUI to view user items.
 'medals' -> Provides a GUI to view and sell medals.
-'potara' -> Potaring stuff
+'potara' -> One command to do all potara events (it's not automated, you have to do stuff manualy as well!)
 'sell' -> Provides a GUI to sell cards.
 'team' -> Change composition of a deck.
 'supporter' -> Change your support Unit.
