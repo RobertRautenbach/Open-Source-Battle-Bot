@@ -2637,7 +2637,22 @@ def user_command_executor(command):
     elif command == 'transfer':
         get_transfer_code()
     elif command == 'capacity':
-        increase_capacity()
+        ### Checking if the input is valid
+        valid = False
+        while not valid:
+            try:
+                increase_times = int(input("How many times do you want to increase the capacity? (+5 per time): "))
+                valid = True
+            except ValueError:
+                print("That's not a valid number.")
+        ### Checking if you have enough Dragon Stones
+        if increase_times > get_user()['user']['stone']:
+            print("You don't have enough Dragon Stones.")
+            pass
+        ### Increasing the capacity
+        else:
+            for _ in range(increase_times):
+                increase_capacity()
     elif command == 'name':
         change_name()
     elif command == 'refresh':
