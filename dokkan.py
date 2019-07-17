@@ -15,6 +15,7 @@ while True:
     # Database Check.
     while True:
         print('Check for updated database? (' + Fore.YELLOW + Style.BRIGHT + 'Yes: 1 ' + Style.RESET_ALL + 'or ' + Fore.YELLOW + Style.BRIGHT + 'No: 2' + Style.RESET_ALL + ')',end='')
+        print()
         db = input(' ')
         if db.lower() == '1':
             commands.db_download()
@@ -32,6 +33,7 @@ while True:
     print(' ')
     while True:
         print('Perform daily logins on all accounts? (' + Fore.YELLOW + Style.BRIGHT + 'Yes: 1 ' + Style.RESET_ALL + 'or ' + Fore.YELLOW + Style.BRIGHT + 'No: 2' + Style.RESET_ALL + ')',end='')
+        print()
         db = input(' ')
         if db.lower() == '1':
             commands.bulk_daily_logins()
@@ -48,6 +50,7 @@ while True:
     print(' ')
     while True:
         print('Which version? (' + Fore.YELLOW + Style.BRIGHT + 'Jp: 1 ' + Style.RESET_ALL + 'or ' + Fore.YELLOW + Style.BRIGHT + 'Global: 2' + Style.RESET_ALL + ')',end='')
+        print()
         client = input(" ")
         if client.lower() == '1':
             config.client = 'japan'
