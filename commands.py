@@ -879,7 +879,7 @@ def tutorial():
 
     print(Fore.CYAN + Style.BRIGHT + 'Tutorial Progress: 7/8')
     print(Fore.CYAN + Style.BRIGHT + 'Tutorial Progress: 8/8')
-    print(Fore.RED + Style.BRIGHT + 'TUTORIAL COMPLETE')
+    print(Fore.RED + Style.BRIGHT + 'TUTORIAL COMPLETE\n')
 ####################################################################
 def db_download():
     #
@@ -973,7 +973,7 @@ def db_download():
     config.client = original_client
 
     print(Fore.RED + Style.BRIGHT \
-        + 'Decrypting Latest Databases... This can take a few minutes...')
+        + 'Decrypting Latest Databases... This can take a few minutes...\n')
 
     # Calling database decrypt script
     if glb_out_of_date:
@@ -995,6 +995,7 @@ def db_download():
             file.writelines(data)
 
     print(Fore.GREEN + Style.BRIGHT + 'Database update complete.')
+    print() 
 ####################################################################
 def accept_missions():
     # Accept all remaining missions
@@ -1038,6 +1039,7 @@ def accept_missions():
     r = requests.post(url, data = json.dumps(data),headers = headers)
     if 'error' not in r.json():
         print(Fore.GREEN+ Style.BRIGHT+'Accepted missions')
+        print()
 ####################################################################
 def accept_gifts():
 
@@ -1089,6 +1091,7 @@ def accept_gifts():
         r = requests.post(url, data=json.dumps(data), headers=headers)
     if 'error' not in r.json():
         print(Fore.GREEN + Style.BRIGHT +'Gifts Accepted...')
+        print() 
     else:
         print(r.json())
 ####################################################################
@@ -2584,12 +2587,19 @@ def user_command_executor(command):
     elif command == 'potara':
         potara()
     elif command == 'omegafarm':
+        complete_stage('130001', 0)
+        complete_stage('131001', 0)
+        complete_stage('132001', 0)
+        complete_potential()
+        refresh_client()
         accept_gifts()
         accept_missions()
         complete_unfinished_quest_stages()
         complete_unfinished_events()
         complete_unfinished_zbattles()
         complete_clash()
+        refresh_client()
+        get_user_info()
     ## When this will get updated, we shall add :finishzbattle,30, + sell + sellhercule + baba(?)
     elif command == 'completequests':
         complete_unfinished_quest_stages()
