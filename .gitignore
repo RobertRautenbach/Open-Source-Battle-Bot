@@ -1,0 +1,7 @@
+.idea/
+venv/
+Saves/
+__pycache__/
+*.pyc
+*.db
+!database.db

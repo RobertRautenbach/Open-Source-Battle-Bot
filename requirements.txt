@@ -1,0 +1,7 @@
+colorama==0.4.1
+orator==0.9.9
+pycryptodome==3.8.2
+PyInstaller==3.5
+PySimpleGUI==4.0.0
+requests==2.22.0
+six==1.12.0

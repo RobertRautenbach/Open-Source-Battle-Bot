@@ -16,22 +16,21 @@ Although it's slow I preferred this code over pysqlcipher simply because it's ea
 # Download
 https://github.com/FlashChaser/Open-Source-Battle-Bot/releases
 
-# Installation
-
-You might need to use sudo before every pip3 command.
+# Setup
+You might need to use sudo when using pip.
 
 ```
-pip3 install six
-pip3 install pyinstaller
-pip3 install colorama
-pip3 install orator
-	pip3 install pycrypto - https://github.com/dlitz/pycrypto
-OR	pip3 install pycryptodome
-pip3 install PySimpleGUI
-pip3 install requests
+First install virtualen using: pip install virtualenv
+
+Secondly, create a python3 virtual env using: virtualenv venv
+*create this inside the dokkan bot directory
+*you may have to specify python3 for the virtualenv if python3 is not your system default
+
+pip install -r requirements.txt
+*pycryptodome can be replaced with pycrypto if you wish
 ```
 
-Then go to folder where your dokkan.py file is and: python3 dokkan.py
+To run the script following setup, simply run the following from the bots directory: python dokkan.py
 
 Happy testing!
 
