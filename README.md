@@ -20,7 +20,7 @@ https://github.com/FlashChaser/Open-Source-Battle-Bot/releases
 You might need to use sudo when using pip.
 
 ```
-First install virtualen using: pip install virtualenv
+First install virtualenv using: pip install virtualenv
 
 Secondly, create a python3 virtual env using: virtualenv venv
 *create this inside the dokkan bot directory
