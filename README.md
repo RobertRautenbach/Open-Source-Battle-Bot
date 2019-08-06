@@ -56,5 +56,4 @@ except:
 - RankUp,
 - Transfer,
 - BossRush
-- GT Dragonballs (?)
-- EzaPLUS (up to 50lvl)
+- *EzaPLUS (up to 50lvl)* - done
