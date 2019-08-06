@@ -2586,6 +2586,8 @@ def user_command_executor(command):
         accept_missions()
     elif command == 'potara':
         potara()
+ ##   elif command == 'ezaplus':
+ ##       complete_unfinished_zbattles_plus()
     elif command == 'omegafarm':
         print('This will do all daily, potential, unfinished stages, events, zbattles and clash...')
         complete_stage('130001', 0)
@@ -3018,6 +3020,8 @@ def complete_unfinished_zbattles(kagi = False):
     except Exception as e:
         print(Fore.RED + Style.BRIGHT+str(e))
         print(Fore.RED + Style.BRIGHT+'Trouble finding new Z-Battle events')
+ 
+
 ####################################################################
 def set_platform():
     while True:

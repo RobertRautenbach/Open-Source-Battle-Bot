@@ -49,3 +49,12 @@ except:
     config.Model.set_connection_resolver(config.db_jp)
     config.Quests.find_or_fail(int(stage_id))
 ```
+
+
+# To Do
+- SBR,
+- RankUp,
+- Transfer,
+- BossRush
+- GT Dragonballs (?)
+- EzaPLUS (up to 50lvl)
