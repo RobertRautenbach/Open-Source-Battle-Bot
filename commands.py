@@ -143,7 +143,7 @@ def complete_stage(stage_id, difficulty, kagi = None):
     damage = randint(500000, 1000000)
 
     # Hercule punching bag event damage
-    if str(stage_id)[0:3] == '711':
+    if str(stage_id)[0:3] in ('711','184'):
         damage = randint(100000000, 101000000)
 
     sign = {
