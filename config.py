@@ -7,6 +7,7 @@ access_token = None
 secret = None
 client = 'japan'
 platform = 'android'
+last_save_name = ''
 
 deck = 1
 allow_stamina_refill = True
