@@ -1624,7 +1624,7 @@ def change_team():
             'Categories': categories,
             'Links': link_skills,
             'UniqueID': card['id']
-        }
+            }
         card_list.append(dict)
     print(Fore.GREEN + Style.BRIGHT + "Done...")
 
@@ -1672,10 +1672,17 @@ def change_team():
 
     categories_to_display = sorted(categories_master)
 
+    rarities_to_display = ['N',
+                           'R',
+                           'SR',
+                           'SSR',
+                           'UR',
+                           'LR']
+
     ###Define window layout
 
-    col1 = [[sg.Listbox(values=(cards_to_display), size=(30, 20), key='CARDS')],
-            [sg.Listbox(values=([]), size=(30, 6), key='CARDS_CHOSEN')],
+    col1 = [[sg.Listbox(values=(cards_to_display), size=(60, 20), key='CARDS')],
+            [sg.Listbox(values=([]), size=(60, 6), key='CARDS_CHOSEN')],
             [sg.Button(button_text='Choose Card', key='choose_card'),
              sg.Button(button_text='Confirm Team', key='confirm_team')]]
 
@@ -1689,12 +1696,18 @@ def change_team():
             [sg.Button(button_text='Choose Links', key='choose_links'),
              sg.Button(button_text='Clear Links', key='clear_links')]]
 
-    layout = [[sg.Column(col1), sg.Column(col2), sg.Column(col3)]]
+    col4 = [[sg.Listbox(values=rarities_to_display, size=(20, 20), key='RARITY')],
+            [sg.Listbox(values=([]), size=(20, 6), key='RARITY_CHOSEN')],
+            [sg.Button(button_text='Choose Rarity', key='choose_rarity'),
+             sg.Button(button_text='Clear Rarities', key='clear_rarity')]]
+
+    layout = [[sg.Column(col1), sg.Column(col2), sg.Column(col3), sg.Column(col4)]]
     window = sg.Window('Deck Update', grab_anywhere=True, keep_on_top=True).Layout(layout)
 
     ###Begin window loop
     chosen_links = []
     chosen_categories = []
+    chosen_rarities = []
 
     ###
     chosen_cards_ids = []
@@ -1705,7 +1718,7 @@ def change_team():
     while len(chosen_cards_ids) < 6:
         event, values = window.Read()
 
-        if event == None:
+        if event is None:
             return 0
 
         if event == 'choose_card':
@@ -1736,6 +1749,15 @@ def change_team():
             chosen_categories[:] = []
             categories_to_display = sorted(categories_to_display)
 
+        if event == 'choose_rarity':
+            for rarity in values['RARITY']:
+                chosen_rarities.append(rarity)
+                rarities_to_display.remove(rarity)
+
+        if event == 'clear_rarity':
+            rarities_to_display.extend(chosen_rarities)
+            chosen_rarities[:] = []
+
         if event == 'choose_links':
             for link in values['LINKS']:
                 chosen_links.append(link)
@@ -1762,6 +1784,10 @@ def change_team():
             if char['Name'] in chosen_cards_names:
                 continue
 
+            if len(chosen_rarities) > 0:
+                if not char['Rarity'] in chosen_rarities:
+                    continue
+
             if len(list(set(chosen_links) & set(char['Links']))) != len(chosen_links):
                 # print("List intersection")
                 continue
@@ -1781,6 +1807,8 @@ def change_team():
         window.FindElement('CATEGORIES_CHOSEN').Update(values=chosen_categories)
         window.FindElement('LINKS').Update(values=links_to_display)
         window.FindElement('LINKS_CHOSEN').Update(values=chosen_links)
+        window.FindElement('RARITY').Update(values=rarities_to_display)
+        window.FindElement('RARITY_CHOSEN').Update(values=chosen_rarities)
 
     window.Close()
     ###Send selected team to bandai
@@ -2010,6 +2038,30 @@ def get_user_info():
     print('Name: ' + str(user['user']['name']))
     print('Total Card Capacity: ' + str(user['user']['total_card_capacity']))
 
+
+####################################################################
+
+def get_remaining_stones():
+    # ## Returns User possessed stones
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'Accept': '*/*',
+        'Authorization': packet.mac('GET', '/user'),
+        'Content-type': 'application/json',
+        'X-Platform': config.platform,
+        'X-AssetVersion': '////',
+        'X-DatabaseVersion': '////',
+        'X-ClientVersion': '////',
+    }
+    if config.client == 'global':
+        url = 'https://ishin-global.aktsk.com/user'
+    else:
+        url = 'http://ishin-production.aktsk.jp/user'
+    r = requests.get(url, headers=headers)
+    user = r.json()
+
+    return 'Stones: ' + str(user['user']['stone'])
 
 ####################################################################
 def complete_unfinished_events():
@@ -3297,7 +3349,7 @@ def summon():
     for gasha in r.json()['gashas']:
         gashas.append(gasha['name'] + ' | ' + str(gasha['id']))
 
-    layout = [[sg.Listbox(values=(gashas), size=(30, 20), key='GASHAS')],
+    layout = [[sg.Listbox(values=(gashas), size=(50, 20), key='GASHAS')],
               [sg.Radio('Multi', "TYPE", default=True), sg.Radio('Single', "TYPE")],
               [sg.Spin([i for i in range(1, 999)], key='LOOP', initial_value=1, size=(3, 3))],
               [sg.Button(button_text='Summon!', key='SUMMON')]]
@@ -3438,7 +3490,8 @@ def summon():
                         print(card)
                 window.UnHide()
                 window.Refresh()
-            print('------------------------------------------')
+
+            print('------------------- Stones remaining: ' + get_remaining_stones())
 
 
 ####################################################################
