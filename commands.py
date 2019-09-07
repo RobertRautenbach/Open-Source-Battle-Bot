@@ -913,7 +913,7 @@ def db_download():
 
     # Set first db to download to global.
     config.client = 'global'
-    config.identifier = signup()
+    config.identifier = signup(False)
     config.access_token, config.secret = signin(config.identifier)
 
     headers = {
@@ -945,7 +945,7 @@ def db_download():
 
     # Set second db to download to jp.
     config.client = 'japan'
-    config.identifier = signup()
+    config.identifier = signup(False)
     config.access_token, config.secret = signin(config.identifier)
 
     headers = {
@@ -2323,7 +2323,7 @@ def complete_area(area_id):
 
 
 ####################################################################
-def save_account(retry_state):
+def save_account(reroll_state):
     if not os.path.isdir("Saves"):
         try:
             os.mkdir('Saves')
@@ -2333,7 +2333,7 @@ def save_account(retry_state):
             print(Fore.RED + Style.BRIGHT + 'Unable to create saves file')
             return 0
 
-    if retry_state:
+    if reroll_state:
         create_file('Saves' + os.sep + config.platform + os.sep + config.last_save_name, config.last_save_name)
         return
 
@@ -2402,6 +2402,7 @@ def load_account():
                 config.platform = f.readline().rstrip()
                 client = f.readline().rstrip()
                 if config.client == client:
+                    config.last_save_name = save_name
                     break
                 else:
                     print(Fore.RED + Style.BRIGHT + 'Save does not match client version.')
