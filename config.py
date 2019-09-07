@@ -7,7 +7,11 @@ access_token = None
 secret = None
 client = 'japan'
 platform = 'android'
+
+### Reroll parameters
 last_save_name = ''
+reroll_state = False
+
 
 deck = 1
 allow_stamina_refill = True

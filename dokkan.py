@@ -59,16 +59,15 @@ while True:
             continue
 
     command = ''
-    reroll_state = False
+    config.reroll_state = False
 
     while command != 'exit':
         # User Options
         print(' ')
         if command == 'reroll' or command == '':
             while True:
-                if command == 'reroll':
+                if config.reroll_state:
                     command = '0'
-                    reroll_state = True
                 else:
                     print('---------------------------------')
                     print(Fore.CYAN + Style.BRIGHT + 'New Account :' + Fore.YELLOW + Style.BRIGHT + ' 0')
@@ -76,15 +75,15 @@ while True:
                     print(Fore.CYAN + Style.BRIGHT + 'Load From Save :' + Fore.YELLOW + Style.BRIGHT + ' 2')
                     print('---------------------------------')
                     command = input('Enter your choice: ')
-                    reroll_state = False
+                    config.reroll_state = False
                 if command == '0':
                     print(' ')
-                    config.identifier = commands.signup(reroll_state)
-                    commands.save_account(reroll_state)
+                    config.identifier = commands.signup(config.reroll_state)
+                    commands.save_account(config.reroll_state)
                     config.access_token,config.secret = commands.signin(config.identifier)
                     commands.tutorial()
                     commands.daily_login()
-                    if reroll_state:
+                    if config.reroll_state:
                         commands.accept_gifts()
                         commands.accept_missions()
                         print(' ')
@@ -121,8 +120,10 @@ while True:
                 command = input()
 
             if command == 'exit':
+                config.reroll_state = False
                 break
             elif command == 'reroll':
+                config.reroll_state = True
                 break
 
             # Pass command to command executor and handle keyboard interrupts.
