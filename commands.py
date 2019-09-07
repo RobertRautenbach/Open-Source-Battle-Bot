@@ -3404,7 +3404,7 @@ def summon():
                         elif config.Cards.find(int(card['item_id'])).rarity == 2:
                             rarity = Fore.RED + Style.BRIGHT + 'SR' + Style.RESET_ALL
                         elif config.Cards.find(int(card['item_id'])).rarity == 3:
-                            rarity = Fore.YELLOW + 'SSR' + Style.RESET_ALL
+                            rarity = Fore.BLUE + Back.WHITE + Style.BRIGHT + 'SSR' + Style.RESET_ALL
                         elif config.Cards.find(int(card['item_id'])).rarity == 4:
                             rarity = Fore.MAGENTA + Style.BRIGHT + 'UR' + Style.RESET_ALL
                         elif config.Cards.find(int(card['item_id'])).rarity == 5:
