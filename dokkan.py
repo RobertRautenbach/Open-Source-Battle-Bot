@@ -58,62 +58,81 @@ while True:
         else:
             continue
 
+    command = ''
+    config.reroll_state = False
 
-    # User Options
-    print(' ')
-    while True:
-        print('---------------------------------')
-        print(Fore.CYAN + Style.BRIGHT + 'New Account :' + Fore.YELLOW + Style.BRIGHT + ' 0')
-        print(Fore.CYAN + Style.BRIGHT + 'Transfer Account :' + Fore.YELLOW + Style.BRIGHT + ' 1')
-        print(Fore.CYAN + Style.BRIGHT + 'Load From Save :'  + Fore.YELLOW + Style.BRIGHT + ' 2')
-        print('---------------------------------')
+    while command != 'exit':
+        # User Options
         print(' ')
-        command = input('Enter your choice: ')
-        if command == '0':
-            print(' ')
-            config.identifier = commands.signup()
-            commands.save_account()
-            config.access_token,config.secret = commands.signin(config.identifier)
-            commands.tutorial()
-            commands.daily_login()
-            break
-        elif command == '1':
-            print(' ')
-            commands.transfer_account()
-            commands.daily_login()
-            break
-        elif command == '2':
-            print(' ')
-            commands.load_account()
-            commands.daily_login()
-            commands.accept_gifts()
-            commands.accept_missions()
-            break
-        else:
-            print(Fore.RED + Style.BRIGHT + "Command not understood")
+        if command == 'reroll' or command == '':
+            while True:
+                if config.reroll_state:
+                    command = '0'
+                else:
+                    print('---------------------------------')
+                    print(Fore.CYAN + Style.BRIGHT + 'New Account :' + Fore.YELLOW + Style.BRIGHT + ' 0')
+                    print(Fore.CYAN + Style.BRIGHT + 'Transfer Account :' + Fore.YELLOW + Style.BRIGHT + ' 1')
+                    print(Fore.CYAN + Style.BRIGHT + 'Load From Save :' + Fore.YELLOW + Style.BRIGHT + ' 2')
+                    print('---------------------------------')
+                    command = input('Enter your choice: ')
+                    config.reroll_state = False
+                if command == '0':
+                    print(' ')
+                    config.identifier = commands.signup(config.reroll_state)
+                    commands.save_account(config.reroll_state)
+                    config.access_token,config.secret = commands.signin(config.identifier)
+                    commands.tutorial()
+                    commands.daily_login()
+                    if config.reroll_state:
+                        commands.accept_gifts()
+                        commands.accept_missions()
+                        print(' ')
+                        print(' --------- Alright guys! We\'re back for another Dokkan Battle Video! ---------- ')
+                        print(' ')
+                        commands.user_command_executor('summon')
+                    break
+                elif command == '1':
+                    print(' ')
+                    commands.transfer_account()
+                    commands.daily_login()
+                    break
+                elif command == '2':
+                    print(' ')
+                    commands.load_account()
+                    commands.daily_login()
+                    commands.accept_gifts()
+                    commands.accept_missions()
+                    break
+                else:
+                    print(Fore.RED + Style.BRIGHT + "Command not understood")
 
 
-    # User commands.
-    while True:
-        print('---------------------------------')
-        print(Fore.CYAN + Style.BRIGHT + "Type" + Fore.YELLOW + Style.BRIGHT + " 'help'" + Fore.CYAN + Style.BRIGHT + " to view all commands.")
+        # User commands.
+        while True:
+            print('---------------------------------')
+            print(Fore.CYAN + Style.BRIGHT + "Type" + Fore.YELLOW + Style.BRIGHT + " 'help'" + Fore.CYAN + Style.BRIGHT + " to view all commands.")
 
-        # Set up comma separated chain commands. Handled via stdin
-        try:
-            command = input()
-        except:
-            sys.stdin = sys.__stdin__
-            command = input()
+            # Set up comma separated chain commands. Handled via stdin
+            try:
+                command = input()
+            except:
+                sys.stdin = sys.__stdin__
+                command = input()
 
-        if command == 'exit':
-            break
-        # Pass command to command executor and handle keyboard interrupts.
-        try:
-            commands.user_command_executor(command)
-        except KeyboardInterrupt:
-            print(Fore.CYAN + Style.BRIGHT + 'User interrupted process.')
-        except Exception as e:
-            print(Fore.RED + Style.BRIGHT + repr(e))
+            if command == 'exit':
+                config.reroll_state = False
+                break
+            elif command == 'reroll':
+                config.reroll_state = True
+                break
+
+            # Pass command to command executor and handle keyboard interrupts.
+            try:
+                commands.user_command_executor(command)
+            except KeyboardInterrupt:
+                print(Fore.CYAN + Style.BRIGHT + 'User interrupted process.')
+            except Exception as e:
+                print(Fore.RED + Style.BRIGHT + repr(e))
 
 
 
