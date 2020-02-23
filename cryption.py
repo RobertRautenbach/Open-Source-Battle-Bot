@@ -1,4 +1,7 @@
-### packet.py contains functions critical to sending requests to the server
+###
+# cryption.py
+# contains functions vital for encrypting/decrypting request data.
+###
 
 import base64
 import binascii

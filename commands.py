@@ -6,7 +6,7 @@ import io
 import json
 from orator import DatabaseManager, Model
 import os
-import packet
+import cryption
 import PySimpleGUI as sg
 from random import choice
 from random import randint
