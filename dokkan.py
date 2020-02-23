@@ -2,6 +2,8 @@ from colorama import init, Fore, Back, Style
 import commands
 import config
 import sys
+import requests
+import json
 
 # Coloroma autoreset
 init(autoreset=True)
