@@ -1,0 +1,2 @@
+python dokkan.py
+pause
