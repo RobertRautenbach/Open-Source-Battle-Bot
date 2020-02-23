@@ -38,7 +38,7 @@ def mac(method,action):
     # returns string
 
     ts = str(int(round(time.time(), 0)))
-    nonce = ts + ':' + config.AdId
+    nonce = ts + ':' + str(hashlib.md5(ts.encode()).hexdigest())
     if config.client == 'global':
     	value = ts + '\n' + nonce + '\n' + method + '\n' + action + '\n' \
         + 'ishin-global.aktsk.com' + '\n' + '3001' + '''
