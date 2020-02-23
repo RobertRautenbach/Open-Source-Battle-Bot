@@ -4247,6 +4247,7 @@ def complete_zbattle_stage(kagi=False):
                 r = requests.get(url, headers=headers)
                 if 'supporters' in r.json():
                     supporter = r.json()['supporters'][0]['id']
+                    leader = r.json()['supporters'][0]['card_id']
                 elif 'error' in r.json():
                     print(Fore.RED + Style.BRIGHT + r.json())
                     return 0
@@ -4269,16 +4270,20 @@ def complete_zbattle_stage(kagi=False):
 
                 if kagi == True:
                     sign = json.dumps({
-                        'friend_id': supporter,
+                        'friend_id': int(supporter),
                         'level': int(level),
-                        'selected_team_num': config.deck,
-                        'eventkagi_item_id': 5
+                        'selected_team_num': int(config.deck),
+                        'eventkagi_item_id': 5,
+                        'support_leader': {'card_id': int(leader), 'exp': 0, 'optimal_awakening_step': 0,
+                                           'released_rate': 0}
                     })
                 else:
                     sign = json.dumps({
-                        'friend_id': supporter,
+                        'friend_id': int(supporter),
                         'level': int(level),
-                        'selected_team_num': config.deck,
+                        'selected_team_num': int(config.deck),
+                        'support_leader': {'card_id': int(leader), 'exp': 0, 'optimal_awakening_step': 0,
+                                           'released_rate': 0}
                     })
 
                 enc_sign = cryption.encrypt_sign(sign)
@@ -4310,12 +4315,37 @@ def complete_zbattle_stage(kagi=False):
                 finish_time = int(round(time.time(), 0) + 2000)
                 start_time = finish_time - randint(6200000, 8200000)
 
+                em_hp = []
+                em_atk = 0
+                for i in dec_sign['enemies'][0]:
+                    em_hp.append(i['hp'])
+                    em_atk = int(em_atk) + int(i['attack'])
+
+                summary = {
+                    'summary': {
+                        'enemy_attack': int(em_atk),
+                        'enemy_attack_count': 1,
+                        'enemy_heal_counts': [0],
+                        'enemy_heals': [0],
+                        'enemy_max_attack': int(em_atk),
+                        'enemy_min_attack': int(em_atk),
+                        'player_attack_counts': [3],
+                        'player_attacks': em_hp,
+                        'player_heal': 0,
+                        'player_heal_count': 0,
+                        'player_max_attacks': em_hp,
+                        'player_min_attacks': em_hp,
+                        'type': 'summary'
+                    }
+                }
+
                 data = {
                     'elapsed_time': finish_time - start_time,
                     'is_cleared': True,
                     'level': int(level),
+                    'reason': 'win',
                     's': 'rGAX18h84InCwFGbd/4zr1FvDNKfmo/TJ02pd6onclk=',
-                    't': 'eyJzdW1tYXJ5Ijp7ImVuZW15X2F0dGFjayI6MTAwMzg2LCJlbmVteV9hdHRhY2tfY291bnQiOjUsImVuZW15X2hlYWxfY291bnRzIjpbMF0sImVuZW15X2hlYWxzIjpbMF0sImVuZW15X21heF9hdHRhY2siOjEwMDAwMCwiZW5lbXlfbWluX2F0dGFjayI6NTAwMDAsInBsYXllcl9hdHRhY2tfY291bnRzIjpbMTBdLCJwbGF5ZXJfYXR0YWNrcyI6WzMwNjYwNTJdLCJwbGF5ZXJfaGVhbCI6MCwicGxheWVyX2hlYWxfY291bnQiOjAsInBsYXllcl9tYXhfYXR0YWNrcyI6WzEyMzY4NTBdLCJwbGF5ZXJfbWluX2F0dGFja3MiOls0NzcxOThdLCJ0eXBlIjoic3VtbWFyeSJ9fQ==',
+                    't': base64.b64encode(json.dumps(summary).encode()).decode(),
                     'token': dec_sign['token'],
                     'used_items': [],
                     'z_battle_finished_at_ms': finish_time,
