@@ -61,23 +61,24 @@ def complete_stage(stage_id, difficulty, kagi=None):
     timer_start = int(round(time.time(), 0))
 
     # Form First Request
-    APIToken = ''.join(choice(ascii_uppercase) for i in range(63))
+    APIToken = ''.join(
+        random.choice(list('abcdefghijklmnopqrstuvwxyzBCDEFGHIKLMNOPQRUVWXYZ123456789-_')) for i in range(63))
     friend = get_friend(stage_id, difficulty)
 
     if friend['is_cpu'] == False:
         if kagi != None:
-            sign = json.dumps({'difficulty': difficulty, 'eventkagi_item_id': kagi, 'friend_id': friend['id'],
-                               'is_playing_script': True, 'selected_team_num': config.deck})
+            sign = json.dumps({'difficulty': int(difficulty), 'eventkagi_item_id': kagi, 'friend_id': int(friend['id']),
+                               'is_playing_script': True, 'selected_team_num': int(config.deck), 'support_leader': {'card_id': int(friend['leader']), 'exp': 0, 'optimal_awakening_step': 0, 'released_rate': 0}})
         else:
-            sign = json.dumps({'difficulty': difficulty, 'friend_id': friend['id'], 'is_playing_script': True,
-                               'selected_team_num': config.deck})
+            sign = json.dumps({'difficulty': int(difficulty), 'friend_id': int(friend['id']), 'is_playing_script': True,
+                               'selected_team_num': int(config.deck), 'support_leader': {'card_id': int(friend['leader']), 'exp': 0, 'optimal_awakening_step': 0, 'released_rate': 0}})
     else:
         if kagi != None:
-            sign = json.dumps({'difficulty': difficulty, 'eventkagi_item_id': kagi, 'cpu_friend_id': friend['id'],
-                               'is_playing_script': True, 'selected_team_num': config.deck})
+            sign = json.dumps({'difficulty': int(difficulty), 'eventkagi_item_id': kagi, 'cpu_friend_id': int(friend['id']),
+                               'is_playing_script': True, 'selected_team_num': int(config.deck)})
         else:
-            sign = json.dumps({'difficulty': difficulty, 'cpu_friend_id': friend['id'], 'is_playing_script': True,
-                               'selected_team_num': config.deck})
+            sign = json.dumps({'difficulty': int(difficulty), 'cpu_friend_id': int(friend['id']), 'is_playing_script': True,
+                               'selected_team_num': int(config.deck)})
 
     enc_sign = cryption.encrypt_sign(sign)
 
@@ -137,8 +138,12 @@ def complete_stage(stage_id, difficulty, kagi=None):
         dec_sign = cryption.decrypt_sign(r.json()['sign'])
     # Retrieve possible tile steps from response
     steps = []
-    for x in dec_sign['sugoroku']['events']:
-        steps.append(x)
+    defeated = []
+    for i in dec_sign['sugoroku']['events']:
+        steps.append(i)
+        if 'battle_info' in dec_sign['sugoroku']['events'][i]['content']:
+            for j in dec_sign['sugoroku']['events'][i]['content']['battle_info']:
+                defeated.append(j['round_id'])
 
     finish_time = int(round(time.time(), 0) + 2000)
     start_time = finish_time - randint(6200000, 8200000)
@@ -159,7 +164,8 @@ def complete_stage(stage_id, difficulty, kagi=None):
         'is_defeated_boss': True,
         'is_player_special_attack_only': True,
         'max_damage_to_boss': damage,
-        'min_turn_in_boss_battle': 0,
+        'min_turn_in_boss_battle': len(defeated),
+        'passed_round_ids': defeated,
         'quest_finished_at_ms': finish_time,
         'quest_started_at_ms': start_time,
         'steps': steps,
@@ -438,7 +444,9 @@ def get_friend(
                     return {
                         'is_cpu': True,
                         'id': r.json()['cpu_supporters']['super_hard3']
-                        ['cpu_friends'][0]['id']
+                        ['cpu_friends'][0]['id'],
+                        'leader': r.json()['cpu_supporters']['super_hard3']
+                        ['cpu_friends'][0]['card_id']
                     }
         if int(difficulty) == 4:
             if 'super_hard2' in r.json()['cpu_supporters']:
@@ -447,7 +455,9 @@ def get_friend(
                     return {
                         'is_cpu': True,
                         'id': r.json()['cpu_supporters']['super_hard2']
-                        ['cpu_friends'][0]['id']
+                        ['cpu_friends'][0]['id'],
+                        'leader': r.json()['cpu_supporters']['super_hard2']
+                        ['cpu_friends'][0]['card_id']
                     }
         if int(difficulty) == 3:
             if 'super_hard1' in r.json()['cpu_supporters']:
@@ -456,7 +466,9 @@ def get_friend(
                     return {
                         'is_cpu': True,
                         'id': r.json()['cpu_supporters']['super_hard1']
-                        ['cpu_friends'][0]['id']
+                        ['cpu_friends'][0]['id'],
+                        'leader': r.json()['cpu_supporters']['super_hard1']
+                        ['cpu_friends'][0]['card_id']
                     }
         if int(difficulty) == 2:
             if 'very_hard' in r.json()['cpu_supporters']:
@@ -465,7 +477,9 @@ def get_friend(
                     return {
                         'is_cpu': True,
                         'id': r.json()['cpu_supporters']['very_hard']
-                        ['cpu_friends'][0]['id']
+                        ['cpu_friends'][0]['id'],
+                        'leader': r.json()['cpu_supporters']['very_hard']
+                        ['cpu_friends'][0]['card_id']
                     }
         if int(difficulty) == 1:
             if 'hard' in r.json()['cpu_supporters']:
@@ -474,7 +488,9 @@ def get_friend(
                     return {
                         'is_cpu': True,
                         'id': r.json()['cpu_supporters']['hard']
-                        ['cpu_friends'][0]['id']
+                        ['cpu_friends'][0]['id'],
+                        'leader': r.json()['cpu_supporters']['hard']
+                        ['cpu_friends'][0]['card_id']
                     }
         if int(difficulty) == 0:
             if 'normal' in r.json()['cpu_supporters']:
@@ -483,12 +499,15 @@ def get_friend(
                     return {
                         'is_cpu': True,
                         'id': r.json()['cpu_supporters']['normal']
-                        ['cpu_friends'][0]['id']
+                        ['cpu_friends'][0]['id'],
+                        'leader': r.json()['cpu_supporters']['normal']
+                        ['cpu_friends'][0]['card_id']
                     }
 
     return {
         'is_cpu': False,
-        'id': r.json()['supporters'][0]['id']
+        'id': r.json()['supporters'][0]['id'],
+        'leader': r.json()['supporters'][0]['leader']['card_id']
     }
 
 
