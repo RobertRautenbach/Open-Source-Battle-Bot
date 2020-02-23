@@ -21,14 +21,11 @@ https://github.com/FlashChaser/Open-Source-Battle-Bot/releases
 You might need to use sudo before every pip3 command.
 
 ```
-pip3 install six
-pip3 install pyinstaller
-pip3 install colorama
-pip3 install orator
-	pip3 install pycrypto - https://github.com/dlitz/pycrypto
-OR	pip3 install pycryptodome
-pip3 install PySimpleGUI
-pip3 install requests
+pip install --user pyinstaller
+pip install --user colorama
+pip install --user pyCryptodome
+pip install --user PySimpleGUI
+pip install --user requests
 ```
 
 Then go to folder where your dokkan.py file is and: python3 dokkan.py

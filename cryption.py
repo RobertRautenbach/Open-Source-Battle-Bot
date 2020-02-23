@@ -1,4 +1,7 @@
-### packet.py contains functions critical to sending requests to the server
+###
+# cryption.py
+# contains functions vital for encrypting/decrypting request data.
+###
 
 import base64
 import binascii
@@ -38,15 +41,15 @@ def mac(method,action):
     # returns string
 
     ts = str(int(round(time.time(), 0)))
-    nonce = ts + ':' + config.AdId
+    nonce = ts + ':' + str(hashlib.md5(ts.encode()).hexdigest())
     if config.client == 'global':
     	value = ts + '\n' + nonce + '\n' + method + '\n' + action + '\n' \
-        + 'ishin-global.aktsk.com' + '\n' + '3001' + '''
+        + config.gb_url.replace('https://', '') + '\n' + config.gb_port + '''
 
 '''
     else:
     	value = ts + '\n' + nonce + '\n' + method + '\n' + action + '\n' \
-        + 'ishin-production.aktsk.jp' + '\n' + '3001' + '''
+        + config.jp_url.replace('https://', '') + '\n' + config.jp_port + '''
 
 '''
 
