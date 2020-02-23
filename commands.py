@@ -84,7 +84,7 @@ def complete_stage(stage_id, difficulty, kagi=None):
     # ## Send First Request
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('POST', '/quests/' + stage_id
                                     + '/sugoroku_maps/start'),
@@ -92,7 +92,7 @@ def complete_stage(stage_id, difficulty, kagi=None):
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     data = {'sign': enc_sign}
 
@@ -171,7 +171,7 @@ def complete_stage(stage_id, difficulty, kagi=None):
     # Send second request
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('POST', '/quests/' + stage_id
                                     + '/sugoroku_maps/finish'),
@@ -179,7 +179,7 @@ def complete_stage(stage_id, difficulty, kagi=None):
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     data = {'sign': enc_sign}
     if config.client == 'global':
@@ -392,7 +392,7 @@ def get_friend(
     # Chooses cpu_supporter if possible
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/quests/' + stage_id
                                     + '/supporters'),
@@ -400,7 +400,7 @@ def get_friend(
         'X-Platform': 'config.platform',
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/quests/' + stage_id \
@@ -417,7 +417,7 @@ def get_friend(
         response = SignIn(signup, AdId, UniqueId)
         RefreshClient()
         headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': GetMac('GET', '/quests/' + stage_id
                                 + '/supporters', MacId, secret1),
@@ -425,7 +425,7 @@ def get_friend(
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
         }
         r = requests.get(url, headers=headers)
     '''
@@ -502,26 +502,26 @@ def refill_stamina():
         return 0
     if config.client == 'global':
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+            'User-Agent': config.user_agent,
             'Accept': '*/*',
             'Authorization': packet.mac('PUT', '/user/recover_act_with_stone'),
             'Content-type': 'application/json',
             'X-Platform': config.platform,
             'X-AssetVersion': '////',
             'X-DatabaseVersion': '////',
-            'X-ClientVersion': '////',
+            'X-ClientVersion': config.version_code,
         }
         url = config.gb_url + '/user/recover_act_with_stone'
     else:
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+            'User-Agent': config.user_agent,
             'Accept': '*/*',
             'Authorization': packet.mac('PUT', '/user/recover_act_with_stone'),
             'Content-type': 'application/json',
             'X-Platform': config.platform,
             'X-AssetVersion': '////',
             'X-DatabaseVersion': '////',
-            'X-ClientVersion': '////',
+            'X-ClientVersion': config.version_code,
         }
         url = config.jp_url + '/user/recover_act_with_stone'
 
@@ -534,14 +534,14 @@ def get_user():
     # Returns user response from bandai
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/user'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/user'
@@ -556,14 +556,14 @@ def sell_cards(card_list):
     # Takes cards list and sells them in batches of 99
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('POST', '/cards/sell'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/cards/sell'
@@ -615,11 +615,11 @@ def signup(reroll_state):
     user_account = json.dumps({'user_account': user_acc})
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Content-type': 'application/json',
         'X-Platform': config.platform,
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/auth/sign_up'
@@ -681,11 +681,11 @@ def signin(identifier):
     # print(data)
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': basic_accpw,
         'Content-type': 'application/json',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
         'X-Language': 'en',
         'X-UserCountry': 'AU',
         'X-UserCurrency': 'AUD',
@@ -721,14 +721,14 @@ def get_transfer_code():
     # Returns transfer code in dictionary
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('POST', '/auth/link_codes'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     data = {'eternal': 1}
     if config.client == 'global':
@@ -750,14 +750,14 @@ def tutorial():
 
     print(Fore.CYAN + Style.BRIGHT + 'Tutorial Progress: 1/8')
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('PUT', '/tutorial/finish'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/tutorial/finish'
@@ -768,14 +768,14 @@ def tutorial():
     # ##Progress NULL Gasha
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('POST', '/tutorial/gasha'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/tutorial/gasha'
@@ -787,14 +787,14 @@ def tutorial():
     # ##Progress to 999%
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('PUT', '/tutorial'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     progress = {'progress': '999'}
     if config.client == 'global':
@@ -807,14 +807,14 @@ def tutorial():
     # ##Change User name
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('PUT', '/user'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     user = {'user': {'name': 'Ninja'}}
     if config.client == 'global':
@@ -827,14 +827,14 @@ def tutorial():
     # ##/missions/put_forward
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('POST', '/missions/put_forward'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/missions/put_forward'
@@ -846,14 +846,14 @@ def tutorial():
     # ##Apologies accept
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('PUT', '/apologies/accept'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/apologies/accept'
@@ -864,14 +864,14 @@ def tutorial():
     # ##On Demand
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('PUT', '/user'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/user'
@@ -917,14 +917,14 @@ def db_download():
     config.access_token, config.secret = signin(config.identifier)
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/client_assets/database'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
         'X-Language': 'en',
     }
     if config.client == 'global':
@@ -949,14 +949,14 @@ def db_download():
     config.access_token, config.secret = signin(config.identifier)
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/client_assets/database'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
         'X-Language': 'en',
     }
     if config.client == 'global':
@@ -1008,14 +1008,14 @@ def accept_missions():
     # Accept all remaining missions
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/missions'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////'
+        'X-ClientVersion': config.version_code
     }
     if config.client == 'global':
         url = config.gb_url + '/missions'
@@ -1029,14 +1029,14 @@ def accept_missions():
             mission_list.append(mission['id'])
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('POST', '/missions/accept'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////'
+        'X-ClientVersion': config.version_code
     }
     if config.client == 'global':
         url = config.gb_url + '/missions/accept'
@@ -1053,14 +1053,14 @@ def accept_gifts():
     # Gets Gift Ids
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/gifts'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/gifts'
@@ -1077,14 +1077,14 @@ def accept_gifts():
         print('No gifts to accept...')
         return 0
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('POST', '/gifts/accept'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/gifts/accept'
@@ -1108,7 +1108,7 @@ def change_supporter():
     ###Get user cards
     print(Fore.CYAN + Style.BRIGHT + 'Fetching user cards...')
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/cards'),
         'Content-type': 'application/json',
@@ -1116,7 +1116,7 @@ def change_supporter():
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/cards'
@@ -1423,14 +1423,14 @@ def change_supporter():
     window.Close()
     ###Send selected supporter to bandai
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('PUT', '/support_leaders'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/support_leaders'
@@ -1460,7 +1460,7 @@ def change_team():
     ###Get user cards
     print(Fore.CYAN + Style.BRIGHT + 'Fetching user cards...')
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/cards'),
         'Content-type': 'application/json',
@@ -1468,7 +1468,7 @@ def change_team():
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/cards'
@@ -1813,14 +1813,14 @@ def change_team():
     window.Close()
     ###Send selected team to bandai
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('POST', '/teams'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/teams'
@@ -1847,14 +1847,14 @@ def get_kagi_id(stage):
     # return kagi ID to use for a stage
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/eventkagi_items'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/eventkagi_items'
@@ -1890,7 +1890,7 @@ def complete_unfinished_quest_stages():
     # type: (object, object) -> object
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/user_areas'),
         'Content-type': 'application/json',
@@ -1898,7 +1898,7 @@ def complete_unfinished_quest_stages():
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/user_areas'
@@ -1924,7 +1924,7 @@ def complete_unfinished_quest_stages():
             complete_stage(str(map['sugoroku_map_id'])[:-1], str(map['sugoroku_map_id'])[-1])
 
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+            'User-Agent': config.user_agent,
             'Accept': '*/*',
             'Authorization': packet.mac('GET', '/user_areas'),
             'Content-type': 'application/json',
@@ -1932,7 +1932,7 @@ def complete_unfinished_quest_stages():
             'X-Platform': config.platform,
             'X-AssetVersion': '////',
             'X-DatabaseVersion': '////',
-            'X-ClientVersion': '////',
+            'X-ClientVersion': config.version_code,
         }
         r = requests.get(url, headers=headers)
         maps_check = []
@@ -1959,14 +1959,14 @@ def refresh_client():
 def change_name():
     # Changes name associated with account
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('PUT', '/user'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     name = input('What would you like to change your name to?: ')
     user = {'user': {'name': name}}
@@ -1986,14 +1986,14 @@ def increase_capacity():
     # Increases account card capacity by 5 every time it is called
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('POST', '/user/capacity/card'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/user/capacity/card'
@@ -2013,14 +2013,14 @@ def get_user_info():
     # ## Returns User dictionary and info
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/user'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/user'
@@ -2045,14 +2045,14 @@ def get_remaining_stones():
     # ## Returns User possessed stones
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/user'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/user'
@@ -2071,7 +2071,7 @@ def complete_unfinished_events():
     # ## Gets current events json which contains some useful data
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/events'),
         'Content-type': 'application/json',
@@ -2079,7 +2079,7 @@ def complete_unfinished_events():
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/events'
@@ -2098,7 +2098,7 @@ def complete_unfinished_events():
 
     ### Complete areas if they are in the current ID pool
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/user_areas'),
         'Content-type': 'application/json',
@@ -2106,7 +2106,7 @@ def complete_unfinished_events():
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/user_areas'
@@ -2129,7 +2129,7 @@ def complete_unfinished_events():
 def complete_clash():
     print('Fetching current clash...')
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/resources/home?rmbattles=true'),
         'X-Language': 'en',
@@ -2137,7 +2137,7 @@ def complete_clash():
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/resources/home?rmbattles=true'
@@ -2149,14 +2149,14 @@ def complete_clash():
     #### dropout
     print('Resetting clash to beginning...')
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('POST', '/rmbattles/' + str(clash_id) + '/stages/dropout'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     sign = {
         'reason': "dropout"
@@ -2171,7 +2171,7 @@ def complete_clash():
 
     print('Fetching list of stages from Bandai...')
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/rmbattles/' + str(clash_id)),
         'X-Language': 'en',
@@ -2179,7 +2179,7 @@ def complete_clash():
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/rmbattles/' + str(clash_id)
@@ -2195,7 +2195,7 @@ def complete_clash():
     print('Stages obtained...')
     print('Asking Bandai for available cards...')
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/rmbattles/available_user_cards'),
         'X-Language': 'en',
@@ -2203,7 +2203,7 @@ def complete_clash():
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/rmbattles/available_user_cards'
@@ -2226,7 +2226,7 @@ def complete_clash():
     # print(available_stages)
     print('Sending Bandai full team...')
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('PUT', '/rmbattles/teams/1'),
         'X-Language': 'en',
@@ -2234,7 +2234,7 @@ def complete_clash():
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     data = {'user_card_ids': available_user_cards}
     if config.client == 'global':
@@ -2262,14 +2262,14 @@ def complete_clash():
         }
 
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+            'User-Agent': config.user_agent,
             'Accept': '*/*',
             'Authorization': packet.mac('POST', '/rmbattles/' + str(clash_id) + '/stages/' + str(stage) + '/start'),
             'Content-type': 'application/json',
             'X-Platform': config.platform,
             'X-AssetVersion': '////',
             'X-DatabaseVersion': '////',
-            'X-ClientVersion': '////',
+            'X-ClientVersion': config.version_code,
         }
         if config.client == 'global':
             url = config.gb_url + '/rmbattles/' + str(clash_id) + '/stages/' + str(stage) + '/start'
@@ -2305,14 +2305,14 @@ def complete_clash():
         }
 
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+            'User-Agent': config.user_agent,
             'Accept': '*/*',
             'Authorization': packet.mac('POST', '/rmbattles/' + str(clash_id) + '/stages/finish'),
             'Content-type': 'application/json',
             'X-Platform': config.platform,
             'X-AssetVersion': '////',
             'X-DatabaseVersion': '////',
-            'X-ClientVersion': '////',
+            'X-ClientVersion': config.version_code,
         }
         if config.client == 'global':
             url = config.gb_url + '/rmbattles/' + str(clash_id) + '/stages/finish'
@@ -2323,7 +2323,7 @@ def complete_clash():
         print('Completed Stage ' + Fore.YELLOW + str(stage))
 
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+            'User-Agent': config.user_agent,
             'Accept': '*/*',
             'Authorization': packet.mac('GET', '/rmbattles/teams/1'),
             'X-Language': 'en',
@@ -2331,7 +2331,7 @@ def complete_clash():
             'X-Platform': config.platform,
             'X-AssetVersion': '////',
             'X-DatabaseVersion': '////',
-            'X-ClientVersion': '////',
+            'X-ClientVersion': config.version_code,
         }
         if config.client == 'global':
             url = config.gb_url + '/rmbattles/teams/1'
@@ -2439,6 +2439,7 @@ def load_account():
                 config.platform = 'android'
             else:
                 config.platform = 'ios'
+                config.user_agent = 'CFNetwork/808.3 Darwin/16.3.0 (iPhone; CPU iPhone OS 13_0 like Mac OS X)'
             break
         else:
             print(Fore.RED + 'Could not identify correct operating system to use.')
@@ -2455,6 +2456,8 @@ def load_account():
                 client = f.readline().rstrip()
                 if config.client == client:
                     config.last_save_name = save_name
+                    if client == 'japan':
+                        config.version_code = '4.8.3-3998abb91156a951db70394807eb63d626d20c640c0c2f4611b0973499ce87ef'
                     break
                 else:
                     print(Fore.RED + Style.BRIGHT + 'Save does not match client version.')
@@ -2472,7 +2475,7 @@ def load_account():
 def daily_login():
     # ## Accepts Outstanding Login Bonuses
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET',
                                     '/resources/home?apologies=true&banners=true&bonus_schedules=true&budokai=true&comeback_campaigns=true&gifts=true&login_bonuses=true&rmbattles=true'),
@@ -2481,7 +2484,7 @@ def daily_login():
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/resources/home?apologies=true&banners=true&bonus_schedules=true&budokai=true&comeback_campaigns=true&gifts=true&login_bonuses=true&rmbattles=true'
@@ -2492,14 +2495,14 @@ def daily_login():
         print(r.json())
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('POST', '/login_bonuses/accept'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/login_bonuses/accept'
@@ -2516,7 +2519,7 @@ def dragonballs():
     is_got = 0
     ###Check for Dragonballs
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/dragonball_sets'),
         'Content-type': 'application/json',
@@ -2524,7 +2527,7 @@ def dragonballs():
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////'
+        'X-ClientVersion': config.version_code
     }
     if config.client == 'global':
         url = config.gb_url + '/dragonball_sets'
@@ -2550,7 +2553,7 @@ def dragonballs():
     ### If all dragonballs found then wish
     if is_got == 7:
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+            'User-Agent': config.user_agent,
             'Accept': '*/*',
             'Authorization': packet.mac('GET', '/dragonball_sets/' + str(set) + '/wishes'),
             'Content-type': 'application/json',
@@ -2558,7 +2561,7 @@ def dragonballs():
             'X-Platform': config.platform,
             'X-AssetVersion': '////',
             'X-DatabaseVersion': '////',
-            'X-ClientVersion': '////'
+            'X-ClientVersion': config.version_code
         }
         if config.client == 'global':
             url = config.gb_url + '/dragonball_sets/' + str(set) + '/wishes'
@@ -2586,14 +2589,14 @@ def dragonballs():
             choice = input()
         wish_ids[:] = []
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+            'User-Agent': config.user_agent,
             'Accept': '*/*',
             'Authorization': packet.mac('POST', '/dragonball_sets/' + str(set) + '/wishes'),
             'Content-type': 'application/json',
             'X-Platform': config.platform,
             'X-AssetVersion': '////',
             'X-DatabaseVersion': '////',
-            'X-ClientVersion': '////',
+            'X-ClientVersion': config.version_code,
         }
         if config.client == 'global':
             url = config.gb_url + '/dragonball_sets/' + str(set) + '/wishes'
@@ -2622,13 +2625,13 @@ def transfer_account():
     config.AdId = packet.guid()['AdId']
     config.UniqueId = packet.guid()['UniqueId']
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     data = {'eternal': True, 'old_user_id': '', 'user_account': {
         'device': 'samsung',
@@ -2751,7 +2754,7 @@ def user_command_executor(command):
 def complete_unfinished_zbattles(kagi=False):
     # JP Translated
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/events'),
         'Content-type': 'application/json',
@@ -2759,7 +2762,7 @@ def complete_unfinished_zbattles(kagi=False):
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/events'
@@ -2779,7 +2782,7 @@ def complete_unfinished_zbattles(kagi=False):
 
             # Get current zbattle level
             headers = {
-                'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                'User-Agent': config.user_agent,
                 'Accept': '*/*',
                 'Authorization': packet.mac('GET', '/user_areas'),
                 'Content-type': 'application/json',
@@ -2787,7 +2790,7 @@ def complete_unfinished_zbattles(kagi=False):
                 'X-Platform': config.platform,
                 'X-AssetVersion': '////',
                 'X-DatabaseVersion': '////',
-                'X-ClientVersion': '////',
+                'X-ClientVersion': config.version_code,
             }
             if config.client == 'global':
                 url = config.gb_url + '/user_areas'
@@ -2811,14 +2814,14 @@ def complete_unfinished_zbattles(kagi=False):
             while level < 31:
                 ##Get supporters
                 headers = {
-                    'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                    'User-Agent': config.user_agent,
                     'Accept': '*/*',
                     'Authorization': packet.mac('GET', '/z_battles/' + str(event['id']) + '/supporters'),
                     'Content-type': 'application/json',
                     'X-Platform': config.platform,
                     'X-AssetVersion': '////',
                     'X-DatabaseVersion': '////',
-                    'X-ClientVersion': '////',
+                    'X-ClientVersion': config.version_code,
                 }
                 if config.client == 'global':
                     url = config.gb_url + '/z_battles/' + str(event['id']) + '/supporters'
@@ -2837,14 +2840,14 @@ def complete_unfinished_zbattles(kagi=False):
 
                 ###Send first request
                 headers = {
-                    'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                    'User-Agent': config.user_agent,
                     'Accept': '*/*',
                     'Authorization': packet.mac('POST', '/z_battles/' + str(event['id']) + '/start'),
                     'Content-type': 'application/json',
                     'X-Platform': config.platform,
                     'X-AssetVersion': '////',
                     'X-DatabaseVersion': '////',
-                    'X-ClientVersion': '////',
+                    'X-ClientVersion': config.version_code,
                 }
 
                 if kagi == True:
@@ -2911,7 +2914,7 @@ def complete_unfinished_zbattles(kagi=False):
                     'X-Platform': config.platform,
                     'X-AssetVersion': '////',
                     'X-DatabaseVersion': '////',
-                    'X-ClientVersion': '////',
+                    'X-ClientVersion': config.version_code,
                 }
                 if config.client == 'global':
                     url = config.gb_url + '/z_battles/' + str(event['id']) + '/finish'
@@ -3119,7 +3122,7 @@ def list_events():
     # Prints all currently available events
     # JP Translated
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/events'),
         'Content-type': 'application/json',
@@ -3127,7 +3130,7 @@ def list_events():
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/events'
@@ -3172,7 +3175,7 @@ def event_viewer():
     # JP Translation needs work
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/events'),
         'Content-type': 'application/json',
@@ -3180,7 +3183,7 @@ def event_viewer():
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/events'
@@ -3267,7 +3270,7 @@ def event_viewer():
 ####################################################################
 def complete_potential():
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/events'),
         'Content-type': 'application/json',
@@ -3275,7 +3278,7 @@ def complete_potential():
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/events'
@@ -3302,7 +3305,7 @@ def list_summons():
     # Prints current available summons, could be formatted better but meh
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/gashas'),
         'Content-type': 'application/json',
@@ -3310,7 +3313,7 @@ def list_summons():
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
 
     if config.client == 'global':
@@ -3329,7 +3332,7 @@ def list_summons():
 ####################################################################
 def summon():
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/gashas'),
         'Content-type': 'application/json',
@@ -3337,7 +3340,7 @@ def summon():
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
 
     if config.client == 'global':
@@ -3364,7 +3367,7 @@ def summon():
             summon_id = values['GASHAS'][0].split(' | ')[1]
             if values[0]:
                 headers = {
-                    'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                    'User-Agent': config.user_agent,
                     'Accept': '*/*',
                     'Authorization': packet.mac('POST', '/gashas/' + str(summon_id)
                                                 + '/courses/2/draw'),
@@ -3372,7 +3375,7 @@ def summon():
                     'X-Platform': config.platform,
                     'X-AssetVersion': '////',
                     'X-DatabaseVersion': '////',
-                    'X-ClientVersion': '////',
+                    'X-ClientVersion': config.version_code,
                 }
                 if config.client == 'global':
                     url = config.gb_url + '/gashas/' + str(summon_id) \
@@ -3429,7 +3432,7 @@ def summon():
 
             else:
                 headers = {
-                    'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                    'User-Agent': config.user_agent,
                     'Accept': '*/*',
                     'Authorization': packet.mac('POST', '/gashas/' + str(summon_id)
                                                 + '/courses/1/draw'),
@@ -3437,7 +3440,7 @@ def summon():
                     'X-Platform': config.platform,
                     'X-AssetVersion': '////',
                     'X-DatabaseVersion': '////',
-                    'X-ClientVersion': '////',
+                    'X-ClientVersion': config.version_code,
                 }
                 if config.client == 'global':
                     url = config.gb_url + '/gashas/' + str(summon_id) \
@@ -3498,7 +3501,7 @@ def summon():
 def sell_cards__bulk_GUI():
     # Provides a GUI to select a range of cards to sell.
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/teams'),
         'Content-type': 'application/json',
@@ -3506,7 +3509,7 @@ def sell_cards__bulk_GUI():
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
 
     if config.client == 'global':
@@ -3520,7 +3523,7 @@ def sell_cards__bulk_GUI():
         team_cards.extend(team['user_card_ids'])
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/support_leaders'),
         'Content-type': 'application/json',
@@ -3528,7 +3531,7 @@ def sell_cards__bulk_GUI():
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
 
     if config.client == 'global':
@@ -3539,7 +3542,7 @@ def sell_cards__bulk_GUI():
     team_cards.extend(r.json()['support_leader_ids'])
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/cards'),
         'Content-type': 'application/json',
@@ -3547,7 +3550,7 @@ def sell_cards__bulk_GUI():
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
 
     if config.client == 'global':
@@ -3669,7 +3672,7 @@ def items_viewer():
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/resources/login?potential_items=true&training_items=true&support_items=true&treasure_items=true&special_items=true'
@@ -3776,7 +3779,7 @@ def items_viewer():
 ####################################################################
 def list_cards():
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/cards'),
         'Content-type': 'application/json',
@@ -3784,7 +3787,7 @@ def list_cards():
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/cards'
@@ -4021,7 +4024,7 @@ def list_cards():
 def sell_medals():
     # Get Medals
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/awakening_items'),
         'Content-type': 'application/json',
@@ -4029,7 +4032,7 @@ def sell_medals():
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         config.Model.set_connection_resolver(config.db_glb)
@@ -4076,14 +4079,14 @@ def sell_medals():
             amount = values[0]
 
             headers = {
-                'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                'User-Agent': config.user_agent,
                 'Accept': '*/*',
                 'Authorization': packet.mac('POST', '/awakening_items/exchange'),
                 'Content-type': 'application/json',
                 'X-Platform': config.platform,
                 'X-AssetVersion': '////',
                 'X-DatabaseVersion': '////',
-                'X-ClientVersion': '////',
+                'X-ClientVersion': config.version_code,
             }
             if config.client == 'global':
                 url = config.gb_url + '/awakening_items/exchange'
@@ -4114,7 +4117,7 @@ def sell_medals():
 
             # New medal list 
             headers = {
-                'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                'User-Agent': config.user_agent,
                 'Accept': '*/*',
                 'Authorization': packet.mac('GET', '/awakening_items'),
                 'Content-type': 'application/json',
@@ -4122,7 +4125,7 @@ def sell_medals():
                 'X-Platform': config.platform,
                 'X-AssetVersion': '////',
                 'X-DatabaseVersion': '////',
-                'X-ClientVersion': '////',
+                'X-ClientVersion': config.version_code,
             }
             if config.client == 'global':
                 url = config.gb_url + '/awakening_items'
@@ -4149,7 +4152,7 @@ def sell_medals():
 ####################################################################
 def complete_zbattle_stage(kagi=False):
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+        'User-Agent': config.user_agent,
         'Accept': '*/*',
         'Authorization': packet.mac('GET', '/events'),
         'Content-type': 'application/json',
@@ -4157,7 +4160,7 @@ def complete_zbattle_stage(kagi=False):
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
         'X-DatabaseVersion': '////',
-        'X-ClientVersion': '////',
+        'X-ClientVersion': config.version_code,
     }
     if config.client == 'global':
         url = config.gb_url + '/events'
@@ -4209,14 +4212,14 @@ def complete_zbattle_stage(kagi=False):
 
                 ##Get supporters
                 headers = {
-                    'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                    'User-Agent': config.user_agent,
                     'Accept': '*/*',
                     'Authorization': packet.mac('GET', '/z_battles/' + str(stage) + '/supporters'),
                     'Content-type': 'application/json',
                     'X-Platform': config.platform,
                     'X-AssetVersion': '////',
                     'X-DatabaseVersion': '////',
-                    'X-ClientVersion': '////',
+                    'X-ClientVersion': config.version_code,
                 }
                 if config.client == 'global':
                     url = config.gb_url + '/z_battles/' + str(stage) + '/supporters'
@@ -4235,14 +4238,14 @@ def complete_zbattle_stage(kagi=False):
 
                 ###Send first request
                 headers = {
-                    'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
+                    'User-Agent': config.user_agent,
                     'Accept': '*/*',
                     'Authorization': packet.mac('POST', '/z_battles/' + str(stage) + '/start'),
                     'Content-type': 'application/json',
                     'X-Platform': config.platform,
                     'X-AssetVersion': '////',
                     'X-DatabaseVersion': '////',
-                    'X-ClientVersion': '////',
+                    'X-ClientVersion': config.version_code,
                 }
 
                 if kagi == True:
@@ -4309,7 +4312,7 @@ def complete_zbattle_stage(kagi=False):
                     'X-Platform': config.platform,
                     'X-AssetVersion': '////',
                     'X-DatabaseVersion': '////',
-                    'X-ClientVersion': '////',
+                    'X-ClientVersion': config.version_code,
                 }
                 if config.client == 'global':
                     url = config.gb_url + '/z_battles/' + str(stage) + '/finish'
