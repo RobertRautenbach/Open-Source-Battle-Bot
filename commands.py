@@ -2309,6 +2309,9 @@ def complete_clash():
         try:
             for enemy in dec_sign['enemies']:
                 enemy_hp += enemy[0]['hp']
+            # can also use this instead... -k1mpl0s
+            hp = dec_sign['continuous_info']['remaining_hp']
+            round = dec_sign['continuous_info']['round']
         except:
             print('nah')
 
@@ -2318,7 +2321,7 @@ def complete_clash():
             'finished_reason': 'win',
             'is_cleared': True,
             'remaining_hp': 0,
-            'round': 0,
+            'round': int(round),
             'started_at_ms': start_time,
             'token': dec_sign['token']
         }
