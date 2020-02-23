@@ -79,14 +79,14 @@ def complete_stage(stage_id, difficulty, kagi=None):
             sign = json.dumps({'difficulty': difficulty, 'cpu_friend_id': friend['id'], 'is_playing_script': True,
                                'selected_team_num': config.deck})
 
-    enc_sign = packet.encrypt_sign(sign)
+    enc_sign = cryption.encrypt_sign(sign)
 
     # ## Send First Request
 
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('POST', '/quests/' + stage_id
+        'Authorization': cryption.mac('POST', '/quests/' + stage_id
                                     + '/sugoroku_maps/start'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
@@ -109,7 +109,7 @@ def complete_stage(stage_id, difficulty, kagi=None):
     # Time for request sent
 
     if 'sign' in r.json():
-        dec_sign = packet.decrypt_sign(r.json()['sign'])
+        dec_sign = cryption.decrypt_sign(r.json()['sign'])
     elif 'error' in r.json():
         print(Fore.RED + Style.BRIGHT + str(r.json()['error']))
         # Check if error was due to lack of stamina
@@ -134,7 +134,7 @@ def complete_stage(stage_id, difficulty, kagi=None):
         print(Fore.RED + Style.BRIGHT + str(r.json()))
         return 0
     if 'sign' in r.json():
-        dec_sign = packet.decrypt_sign(r.json()['sign'])
+        dec_sign = cryption.decrypt_sign(r.json()['sign'])
     # Retrieve possible tile steps from response
     steps = []
     for x in dec_sign['sugoroku']['events']:
@@ -166,14 +166,14 @@ def complete_stage(stage_id, difficulty, kagi=None):
         'token': dec_sign['token'],
     }
 
-    enc_sign = packet.encrypt_sign(json.dumps(sign))
+    enc_sign = cryption.encrypt_sign(json.dumps(sign))
 
     # Send second request
 
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('POST', '/quests/' + stage_id
+        'Authorization': cryption.mac('POST', '/quests/' + stage_id
                                     + '/sugoroku_maps/finish'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
@@ -190,7 +190,7 @@ def complete_stage(stage_id, difficulty, kagi=None):
               + '/sugoroku_maps/finish'
 
     r = requests.post(url, data=json.dumps(data), headers=headers)
-    dec_sign = packet.decrypt_sign(r.json()['sign'])
+    dec_sign = cryption.decrypt_sign(r.json()['sign'])
 
     # ## Print out Items from Database
     if 'items' in dec_sign:
@@ -394,7 +394,7 @@ def get_friend(
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/quests/' + stage_id
+        'Authorization': cryption.mac('GET', '/quests/' + stage_id
                                     + '/supporters'),
         'Content-type': 'application/json',
         'X-Platform': 'config.platform',
@@ -504,7 +504,7 @@ def refill_stamina():
         headers = {
             'User-Agent': config.user_agent,
             'Accept': '*/*',
-            'Authorization': packet.mac('PUT', '/user/recover_act_with_stone'),
+            'Authorization': cryption.mac('PUT', '/user/recover_act_with_stone'),
             'Content-type': 'application/json',
             'X-Platform': config.platform,
             'X-AssetVersion': '////',
@@ -516,7 +516,7 @@ def refill_stamina():
         headers = {
             'User-Agent': config.user_agent,
             'Accept': '*/*',
-            'Authorization': packet.mac('PUT', '/user/recover_act_with_stone'),
+            'Authorization': cryption.mac('PUT', '/user/recover_act_with_stone'),
             'Content-type': 'application/json',
             'X-Platform': config.platform,
             'X-AssetVersion': '////',
@@ -536,7 +536,7 @@ def get_user():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/user'),
+        'Authorization': cryption.mac('GET', '/user'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -558,7 +558,7 @@ def sell_cards(card_list):
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('POST', '/cards/sell'),
+        'Authorization': cryption.mac('POST', '/cards/sell'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -599,8 +599,8 @@ def signup(reroll_state):
     set_platform(reroll_state)
 
     # Generate AdId and Unique ID to send to Bandai
-    config.AdId = packet.guid()['AdId']
-    config.UniqueId = packet.guid()['UniqueId']
+    config.AdId = cryption.guid()['AdId']
+    config.UniqueId = cryption.guid()['UniqueId']
 
     user_acc = {
         'ad_id': config.AdId,
@@ -674,8 +674,8 @@ def signin(identifier):
                   + base64.b64encode(complete_string.encode('utf-8'
                                                             )).decode('utf-8')
     data = json.dumps({
-        'ad_id': packet.guid()['AdId'],
-        'unique_id': packet.guid()['UniqueId']
+        'ad_id': cryption.guid()['AdId'],
+        'unique_id': cryption.guid()['UniqueId']
     })
 
     # print(data)
@@ -723,7 +723,7 @@ def get_transfer_code():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('POST', '/auth/link_codes'),
+        'Authorization': cryption.mac('POST', '/auth/link_codes'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -752,7 +752,7 @@ def tutorial():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('PUT', '/tutorial/finish'),
+        'Authorization': cryption.mac('PUT', '/tutorial/finish'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -770,7 +770,7 @@ def tutorial():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('POST', '/tutorial/gasha'),
+        'Authorization': cryption.mac('POST', '/tutorial/gasha'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -789,7 +789,7 @@ def tutorial():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('PUT', '/tutorial'),
+        'Authorization': cryption.mac('PUT', '/tutorial'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -809,7 +809,7 @@ def tutorial():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('PUT', '/user'),
+        'Authorization': cryption.mac('PUT', '/user'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -829,7 +829,7 @@ def tutorial():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('POST', '/missions/put_forward'),
+        'Authorization': cryption.mac('POST', '/missions/put_forward'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -848,7 +848,7 @@ def tutorial():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('PUT', '/apologies/accept'),
+        'Authorization': cryption.mac('PUT', '/apologies/accept'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -866,7 +866,7 @@ def tutorial():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('PUT', '/user'),
+        'Authorization': cryption.mac('PUT', '/user'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -919,7 +919,7 @@ def db_download():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/client_assets/database'),
+        'Authorization': cryption.mac('GET', '/client_assets/database'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -951,7 +951,7 @@ def db_download():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/client_assets/database'),
+        'Authorization': cryption.mac('GET', '/client_assets/database'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -1010,7 +1010,7 @@ def accept_missions():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/missions'),
+        'Authorization': cryption.mac('GET', '/missions'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -1031,7 +1031,7 @@ def accept_missions():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('POST', '/missions/accept'),
+        'Authorization': cryption.mac('POST', '/missions/accept'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -1055,7 +1055,7 @@ def accept_gifts():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/gifts'),
+        'Authorization': cryption.mac('GET', '/gifts'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -1079,7 +1079,7 @@ def accept_gifts():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('POST', '/gifts/accept'),
+        'Authorization': cryption.mac('POST', '/gifts/accept'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -1110,7 +1110,7 @@ def change_supporter():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/cards'),
+        'Authorization': cryption.mac('GET', '/cards'),
         'Content-type': 'application/json',
         'X-Language': 'en',
         'X-Platform': config.platform,
@@ -1425,7 +1425,7 @@ def change_supporter():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('PUT', '/support_leaders'),
+        'Authorization': cryption.mac('PUT', '/support_leaders'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -1462,7 +1462,7 @@ def change_team():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/cards'),
+        'Authorization': cryption.mac('GET', '/cards'),
         'Content-type': 'application/json',
         'X-Language': 'en',
         'X-Platform': config.platform,
@@ -1815,7 +1815,7 @@ def change_team():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('POST', '/teams'),
+        'Authorization': cryption.mac('POST', '/teams'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -1849,7 +1849,7 @@ def get_kagi_id(stage):
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/eventkagi_items'),
+        'Authorization': cryption.mac('GET', '/eventkagi_items'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -1892,7 +1892,7 @@ def complete_unfinished_quest_stages():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/user_areas'),
+        'Authorization': cryption.mac('GET', '/user_areas'),
         'Content-type': 'application/json',
         'X-Language': 'en',
         'X-Platform': config.platform,
@@ -1926,7 +1926,7 @@ def complete_unfinished_quest_stages():
         headers = {
             'User-Agent': config.user_agent,
             'Accept': '*/*',
-            'Authorization': packet.mac('GET', '/user_areas'),
+            'Authorization': cryption.mac('GET', '/user_areas'),
             'Content-type': 'application/json',
             'X-Language': 'en',
             'X-Platform': config.platform,
@@ -1961,7 +1961,7 @@ def change_name():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('PUT', '/user'),
+        'Authorization': cryption.mac('PUT', '/user'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -1988,7 +1988,7 @@ def increase_capacity():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('POST', '/user/capacity/card'),
+        'Authorization': cryption.mac('POST', '/user/capacity/card'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -2015,7 +2015,7 @@ def get_user_info():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/user'),
+        'Authorization': cryption.mac('GET', '/user'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -2047,7 +2047,7 @@ def get_remaining_stones():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/user'),
+        'Authorization': cryption.mac('GET', '/user'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -2073,7 +2073,7 @@ def complete_unfinished_events():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/events'),
+        'Authorization': cryption.mac('GET', '/events'),
         'Content-type': 'application/json',
         'X-Language': 'en',
         'X-Platform': config.platform,
@@ -2100,7 +2100,7 @@ def complete_unfinished_events():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/user_areas'),
+        'Authorization': cryption.mac('GET', '/user_areas'),
         'Content-type': 'application/json',
         'X-Language': 'en',
         'X-Platform': config.platform,
@@ -2131,7 +2131,7 @@ def complete_clash():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/resources/home?rmbattles=true'),
+        'Authorization': cryption.mac('GET', '/resources/home?rmbattles=true'),
         'X-Language': 'en',
         'Content-type': 'application/json',
         'X-Platform': config.platform,
@@ -2151,7 +2151,7 @@ def complete_clash():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('POST', '/rmbattles/' + str(clash_id) + '/stages/dropout'),
+        'Authorization': cryption.mac('POST', '/rmbattles/' + str(clash_id) + '/stages/dropout'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -2173,7 +2173,7 @@ def complete_clash():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/rmbattles/' + str(clash_id)),
+        'Authorization': cryption.mac('GET', '/rmbattles/' + str(clash_id)),
         'X-Language': 'en',
         'Content-type': 'application/json',
         'X-Platform': config.platform,
@@ -2197,7 +2197,7 @@ def complete_clash():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/rmbattles/available_user_cards'),
+        'Authorization': cryption.mac('GET', '/rmbattles/available_user_cards'),
         'X-Language': 'en',
         'Content-type': 'application/json',
         'X-Platform': config.platform,
@@ -2228,7 +2228,7 @@ def complete_clash():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('PUT', '/rmbattles/teams/1'),
+        'Authorization': cryption.mac('PUT', '/rmbattles/teams/1'),
         'X-Language': 'en',
         'Content-type': 'application/json',
         'X-Platform': config.platform,
@@ -2264,7 +2264,7 @@ def complete_clash():
         headers = {
             'User-Agent': config.user_agent,
             'Accept': '*/*',
-            'Authorization': packet.mac('POST', '/rmbattles/' + str(clash_id) + '/stages/' + str(stage) + '/start'),
+            'Authorization': cryption.mac('POST', '/rmbattles/' + str(clash_id) + '/stages/' + str(stage) + '/start'),
             'Content-type': 'application/json',
             'X-Platform': config.platform,
             'X-AssetVersion': '////',
@@ -2285,7 +2285,7 @@ def complete_clash():
         finish_time = int(round(time.time(), 0) + 2000)
         start_time = finish_time - randint(40000000, 50000000)
         if 'sign' in r.json():
-            dec_sign = packet.decrypt_sign(r.json()['sign'])
+            dec_sign = cryption.decrypt_sign(r.json()['sign'])
         enemy_hp = 0
         try:
             for enemy in dec_sign['enemies']:
@@ -2307,7 +2307,7 @@ def complete_clash():
         headers = {
             'User-Agent': config.user_agent,
             'Accept': '*/*',
-            'Authorization': packet.mac('POST', '/rmbattles/' + str(clash_id) + '/stages/finish'),
+            'Authorization': cryption.mac('POST', '/rmbattles/' + str(clash_id) + '/stages/finish'),
             'Content-type': 'application/json',
             'X-Platform': config.platform,
             'X-AssetVersion': '////',
@@ -2325,7 +2325,7 @@ def complete_clash():
         headers = {
             'User-Agent': config.user_agent,
             'Accept': '*/*',
-            'Authorization': packet.mac('GET', '/rmbattles/teams/1'),
+            'Authorization': cryption.mac('GET', '/rmbattles/teams/1'),
             'X-Language': 'en',
             'Content-type': 'application/json',
             'X-Platform': config.platform,
@@ -2477,7 +2477,7 @@ def daily_login():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET',
+        'Authorization': cryption.mac('GET',
                                     '/resources/home?apologies=true&banners=true&bonus_schedules=true&budokai=true&comeback_campaigns=true&gifts=true&login_bonuses=true&rmbattles=true'),
         'X-Language': 'en',
         'Content-type': 'application/json',
@@ -2497,7 +2497,7 @@ def daily_login():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('POST', '/login_bonuses/accept'),
+        'Authorization': cryption.mac('POST', '/login_bonuses/accept'),
         'Content-type': 'application/json',
         'X-Platform': config.platform,
         'X-AssetVersion': '////',
@@ -2521,7 +2521,7 @@ def dragonballs():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/dragonball_sets'),
+        'Authorization': cryption.mac('GET', '/dragonball_sets'),
         'Content-type': 'application/json',
         'X-Language': 'en',
         'X-Platform': config.platform,
@@ -2555,7 +2555,7 @@ def dragonballs():
         headers = {
             'User-Agent': config.user_agent,
             'Accept': '*/*',
-            'Authorization': packet.mac('GET', '/dragonball_sets/' + str(set) + '/wishes'),
+            'Authorization': cryption.mac('GET', '/dragonball_sets/' + str(set) + '/wishes'),
             'Content-type': 'application/json',
             'X-Language': 'en',
             'X-Platform': config.platform,
@@ -2591,7 +2591,7 @@ def dragonballs():
         headers = {
             'User-Agent': config.user_agent,
             'Accept': '*/*',
-            'Authorization': packet.mac('POST', '/dragonball_sets/' + str(set) + '/wishes'),
+            'Authorization': cryption.mac('POST', '/dragonball_sets/' + str(set) + '/wishes'),
             'Content-type': 'application/json',
             'X-Platform': config.platform,
             'X-AssetVersion': '////',
@@ -2622,8 +2622,8 @@ def transfer_account():
 
     transfercode = input('Enter your transfer code: ')
 
-    config.AdId = packet.guid()['AdId']
-    config.UniqueId = packet.guid()['UniqueId']
+    config.AdId = cryption.guid()['AdId']
+    config.UniqueId = cryption.guid()['UniqueId']
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
@@ -2756,7 +2756,7 @@ def complete_unfinished_zbattles(kagi=False):
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/events'),
+        'Authorization': cryption.mac('GET', '/events'),
         'Content-type': 'application/json',
         'X-Language': 'en',
         'X-Platform': config.platform,
@@ -2784,7 +2784,7 @@ def complete_unfinished_zbattles(kagi=False):
             headers = {
                 'User-Agent': config.user_agent,
                 'Accept': '*/*',
-                'Authorization': packet.mac('GET', '/user_areas'),
+                'Authorization': cryption.mac('GET', '/user_areas'),
                 'Content-type': 'application/json',
                 'X-Language': 'en',
                 'X-Platform': config.platform,
@@ -2816,7 +2816,7 @@ def complete_unfinished_zbattles(kagi=False):
                 headers = {
                     'User-Agent': config.user_agent,
                     'Accept': '*/*',
-                    'Authorization': packet.mac('GET', '/z_battles/' + str(event['id']) + '/supporters'),
+                    'Authorization': cryption.mac('GET', '/z_battles/' + str(event['id']) + '/supporters'),
                     'Content-type': 'application/json',
                     'X-Platform': config.platform,
                     'X-AssetVersion': '////',
@@ -2842,7 +2842,7 @@ def complete_unfinished_zbattles(kagi=False):
                 headers = {
                     'User-Agent': config.user_agent,
                     'Accept': '*/*',
-                    'Authorization': packet.mac('POST', '/z_battles/' + str(event['id']) + '/start'),
+                    'Authorization': cryption.mac('POST', '/z_battles/' + str(event['id']) + '/start'),
                     'Content-type': 'application/json',
                     'X-Platform': config.platform,
                     'X-AssetVersion': '////',
@@ -2864,7 +2864,7 @@ def complete_unfinished_zbattles(kagi=False):
                         'selected_team_num': config.deck,
                     })
 
-                enc_sign = packet.encrypt_sign(sign)
+                enc_sign = cryption.encrypt_sign(sign)
                 data = {'sign': enc_sign}
                 if config.client == 'global':
                     url = config.gb_url + '/z_battles/' + str(event['id']) + '/start'
@@ -2873,7 +2873,7 @@ def complete_unfinished_zbattles(kagi=False):
                 r = requests.post(url, data=json.dumps(data), headers=headers)
 
                 if 'sign' in r.json():
-                    dec_sign = packet.decrypt_sign(r.json()['sign'])
+                    dec_sign = cryption.decrypt_sign(r.json()['sign'])
                 # Check if error was due to lack of stamina
                 elif 'error' in r.json():
                     if r.json()['error']['code'] == 'act_is_not_enough':
@@ -2909,7 +2909,7 @@ def complete_unfinished_zbattles(kagi=False):
                 headers = {
                     'User-Agent': 'Android',
                     'Accept': '*/*',
-                    'Authorization': packet.mac('POST', '/z_battles/' + str(event['id']) + '/finish'),
+                    'Authorization': cryption.mac('POST', '/z_battles/' + str(event['id']) + '/finish'),
                     'Content-type': 'application/json',
                     'X-Platform': config.platform,
                     'X-AssetVersion': '////',
@@ -2922,7 +2922,7 @@ def complete_unfinished_zbattles(kagi=False):
                     url = config.jp_url + '/z_battles/' + str(event['id']) + '/finish'
 
                 r = requests.post(url, data=json.dumps(data), headers=headers)
-                dec_sign = packet.decrypt_sign(r.json()['sign'])
+                dec_sign = cryption.decrypt_sign(r.json()['sign'])
                 # ## Print out Items from Database
                 print('Level: ' + str(level))
                 # ## Print out Items from Database
@@ -3124,7 +3124,7 @@ def list_events():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/events'),
+        'Authorization': cryption.mac('GET', '/events'),
         'Content-type': 'application/json',
         'X-Language': 'en',
         'X-Platform': config.platform,
@@ -3177,7 +3177,7 @@ def event_viewer():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/events'),
+        'Authorization': cryption.mac('GET', '/events'),
         'Content-type': 'application/json',
         'X-Language': 'en',
         'X-Platform': config.platform,
@@ -3272,7 +3272,7 @@ def complete_potential():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/events'),
+        'Authorization': cryption.mac('GET', '/events'),
         'Content-type': 'application/json',
         'X-Language': 'en',
         'X-Platform': config.platform,
@@ -3307,7 +3307,7 @@ def list_summons():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/gashas'),
+        'Authorization': cryption.mac('GET', '/gashas'),
         'Content-type': 'application/json',
         'X-Language': 'en',
         'X-Platform': config.platform,
@@ -3334,7 +3334,7 @@ def summon():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/gashas'),
+        'Authorization': cryption.mac('GET', '/gashas'),
         'Content-type': 'application/json',
         'X-Language': 'en',
         'X-Platform': config.platform,
@@ -3369,7 +3369,7 @@ def summon():
                 headers = {
                     'User-Agent': config.user_agent,
                     'Accept': '*/*',
-                    'Authorization': packet.mac('POST', '/gashas/' + str(summon_id)
+                    'Authorization': cryption.mac('POST', '/gashas/' + str(summon_id)
                                                 + '/courses/2/draw'),
                     'Content-type': 'application/json',
                     'X-Platform': config.platform,
@@ -3434,7 +3434,7 @@ def summon():
                 headers = {
                     'User-Agent': config.user_agent,
                     'Accept': '*/*',
-                    'Authorization': packet.mac('POST', '/gashas/' + str(summon_id)
+                    'Authorization': cryption.mac('POST', '/gashas/' + str(summon_id)
                                                 + '/courses/1/draw'),
                     'Content-type': 'application/json',
                     'X-Platform': config.platform,
@@ -3503,7 +3503,7 @@ def sell_cards__bulk_GUI():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/teams'),
+        'Authorization': cryption.mac('GET', '/teams'),
         'Content-type': 'application/json',
         'X-Language': 'en',
         'X-Platform': config.platform,
@@ -3525,7 +3525,7 @@ def sell_cards__bulk_GUI():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/support_leaders'),
+        'Authorization': cryption.mac('GET', '/support_leaders'),
         'Content-type': 'application/json',
         'X-Language': 'en',
         'X-Platform': config.platform,
@@ -3544,7 +3544,7 @@ def sell_cards__bulk_GUI():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/cards'),
+        'Authorization': cryption.mac('GET', '/cards'),
         'Content-type': 'application/json',
         'X-Language': 'en',
         'X-Platform': config.platform,
@@ -3665,7 +3665,7 @@ def items_viewer():
     headers = {
         'User-Agent': 'Android',
         'Accept': '*/*',
-        'Authorization': packet.mac('GET',
+        'Authorization': cryption.mac('GET',
                                     '/resources/login?potential_items=true&training_items=true&support_items=true&treasure_items=true&special_items=true'),
         'X-Language': 'en',
         'Content-type': 'application/json',
@@ -3781,7 +3781,7 @@ def list_cards():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/cards'),
+        'Authorization': cryption.mac('GET', '/cards'),
         'Content-type': 'application/json',
         'X-Language': 'en',
         'X-Platform': config.platform,
@@ -4026,7 +4026,7 @@ def sell_medals():
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/awakening_items'),
+        'Authorization': cryption.mac('GET', '/awakening_items'),
         'Content-type': 'application/json',
         'X-Language': 'en',
         'X-Platform': config.platform,
@@ -4081,7 +4081,7 @@ def sell_medals():
             headers = {
                 'User-Agent': config.user_agent,
                 'Accept': '*/*',
-                'Authorization': packet.mac('POST', '/awakening_items/exchange'),
+                'Authorization': cryption.mac('POST', '/awakening_items/exchange'),
                 'Content-type': 'application/json',
                 'X-Platform': config.platform,
                 'X-AssetVersion': '////',
@@ -4119,7 +4119,7 @@ def sell_medals():
             headers = {
                 'User-Agent': config.user_agent,
                 'Accept': '*/*',
-                'Authorization': packet.mac('GET', '/awakening_items'),
+                'Authorization': cryption.mac('GET', '/awakening_items'),
                 'Content-type': 'application/json',
                 'X-Language': 'en',
                 'X-Platform': config.platform,
@@ -4154,7 +4154,7 @@ def complete_zbattle_stage(kagi=False):
     headers = {
         'User-Agent': config.user_agent,
         'Accept': '*/*',
-        'Authorization': packet.mac('GET', '/events'),
+        'Authorization': cryption.mac('GET', '/events'),
         'Content-type': 'application/json',
         'X-Language': 'en',
         'X-Platform': config.platform,
@@ -4214,7 +4214,7 @@ def complete_zbattle_stage(kagi=False):
                 headers = {
                     'User-Agent': config.user_agent,
                     'Accept': '*/*',
-                    'Authorization': packet.mac('GET', '/z_battles/' + str(stage) + '/supporters'),
+                    'Authorization': cryption.mac('GET', '/z_battles/' + str(stage) + '/supporters'),
                     'Content-type': 'application/json',
                     'X-Platform': config.platform,
                     'X-AssetVersion': '////',
@@ -4240,7 +4240,7 @@ def complete_zbattle_stage(kagi=False):
                 headers = {
                     'User-Agent': config.user_agent,
                     'Accept': '*/*',
-                    'Authorization': packet.mac('POST', '/z_battles/' + str(stage) + '/start'),
+                    'Authorization': cryption.mac('POST', '/z_battles/' + str(stage) + '/start'),
                     'Content-type': 'application/json',
                     'X-Platform': config.platform,
                     'X-AssetVersion': '////',
@@ -4262,7 +4262,7 @@ def complete_zbattle_stage(kagi=False):
                         'selected_team_num': config.deck,
                     })
 
-                enc_sign = packet.encrypt_sign(sign)
+                enc_sign = cryption.encrypt_sign(sign)
                 data = {'sign': enc_sign}
                 if config.client == 'global':
                     url = config.gb_url + '/z_battles/' + str(stage) + '/start'
@@ -4271,7 +4271,7 @@ def complete_zbattle_stage(kagi=False):
                 r = requests.post(url, data=json.dumps(data), headers=headers)
 
                 if 'sign' in r.json():
-                    dec_sign = packet.decrypt_sign(r.json()['sign'])
+                    dec_sign = cryption.decrypt_sign(r.json()['sign'])
                 # Check if error was due to lack of stamina
                 elif 'error' in r.json():
                     if r.json()['error']['code'] == 'act_is_not_enough':
@@ -4307,7 +4307,7 @@ def complete_zbattle_stage(kagi=False):
                 headers = {
                     'User-Agent': 'Android',
                     'Accept': '*/*',
-                    'Authorization': packet.mac('POST', '/z_battles/' + str(stage) + '/finish'),
+                    'Authorization': cryption.mac('POST', '/z_battles/' + str(stage) + '/finish'),
                     'Content-type': 'application/json',
                     'X-Platform': config.platform,
                     'X-AssetVersion': '////',
@@ -4320,7 +4320,7 @@ def complete_zbattle_stage(kagi=False):
                     url = config.jp_url + '/z_battles/' + str(stage) + '/finish'
 
                 r = requests.post(url, data=json.dumps(data), headers=headers)
-                dec_sign = packet.decrypt_sign(r.json()['sign'])
+                dec_sign = cryption.decrypt_sign(r.json()['sign'])
                 # ## Print out Items from Database
                 print('Level: ' + str(level))
                 # ## Print out Items from Database
