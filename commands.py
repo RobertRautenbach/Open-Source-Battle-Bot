@@ -97,10 +97,10 @@ def complete_stage(stage_id, difficulty, kagi=None):
     data = {'sign': enc_sign}
 
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/quests/' + stage_id \
+        url = config.gb_url + '/quests/' + stage_id \
               + '/sugoroku_maps/start'
     else:
-        url = 'https://ishin-production.aktsk.jp/quests/' + stage_id \
+        url = config.jp_url + '/quests/' + stage_id \
               + '/sugoroku_maps/start'
 
     r = requests.post(url, data=json.dumps(data), headers=headers)
@@ -183,10 +183,10 @@ def complete_stage(stage_id, difficulty, kagi=None):
     }
     data = {'sign': enc_sign}
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/quests/' + stage_id \
+        url = config.gb_url + '/quests/' + stage_id \
               + '/sugoroku_maps/finish'
     else:
-        url = 'https://ishin-production.aktsk.jp/quests/' + stage_id \
+        url = config.jp_url + '/quests/' + stage_id \
               + '/sugoroku_maps/finish'
 
     r = requests.post(url, data=json.dumps(data), headers=headers)
@@ -403,10 +403,10 @@ def get_friend(
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/quests/' + stage_id \
+        url = config.gb_url + '/quests/' + stage_id \
               + '/supporters'
     else:
-        url = 'https://ishin-production.aktsk.jp/quests/' + stage_id \
+        url = config.jp_url + '/quests/' + stage_id \
               + '/supporters'
 
     r = requests.get(url, headers=headers)
@@ -511,7 +511,7 @@ def refill_stamina():
             'X-DatabaseVersion': '////',
             'X-ClientVersion': '////',
         }
-        url = 'https://ishin-global.aktsk.com/user/recover_act_with_stone'
+        url = config.gb_url + '/user/recover_act_with_stone'
     else:
         headers = {
             'User-Agent': 'Mozilla/5.0 (Android 4.4; Mobile; rv:41.0) Gecko/41.0 Firefox/41.0',
@@ -523,7 +523,7 @@ def refill_stamina():
             'X-DatabaseVersion': '////',
             'X-ClientVersion': '////',
         }
-        url = 'https://ishin-production.aktsk.jp/user/recover_act_with_stone'
+        url = config.jp_url + '/user/recover_act_with_stone'
 
     r = requests.put(url, headers=headers)
     print(Fore.GREEN + Style.BRIGHT + 'STAMINA RESTORED')
@@ -544,9 +544,9 @@ def get_user():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/user'
+        url = config.gb_url + '/user'
     else:
-        url = 'https://ishin-production.aktsk.jp/user'
+        url = config.jp_url + '/user'
     r = requests.get(url, headers=headers)
     return r.json()
 
@@ -566,9 +566,9 @@ def sell_cards(card_list):
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/cards/sell'
+        url = config.gb_url + '/cards/sell'
     else:
-        url = 'https://ishin-production.aktsk.jp/cards/sell'
+        url = config.jp_url + '/cards/sell'
 
     cards_to_sell = []
     i = 0
@@ -622,9 +622,9 @@ def signup(reroll_state):
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/auth/sign_up'
+        url = config.gb_url + '/auth/sign_up'
     else:
-        url = 'https://ishin-production.aktsk.jp/auth/sign_up'
+        url = config.jp_url + '/auth/sign_up'
     r = requests.post(url, data=user_account, headers=headers)
 
     # ## It is now necessary to solve the captcha. Opens browser window
@@ -647,9 +647,9 @@ def signup(reroll_state):
             'user_account': user_acc}
 
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/auth/sign_up'
+        url = config.gb_url + '/auth/sign_up'
     else:
-        url = 'https://ishin-production.aktsk.jp/auth/sign_up'
+        url = config.jp_url + '/auth/sign_up'
 
     r = requests.post(url, data=json.dumps(data), headers=headers)
 
@@ -692,9 +692,9 @@ def signin(identifier):
         'X-Platform': config.platform,
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/auth/sign_in'
+        url = config.gb_url + '/auth/sign_in'
     else:
-        url = 'https://ishin-production.aktsk.jp/auth/sign_in'
+        url = config.jp_url + '/auth/sign_in'
 
     r = requests.post(url, data=data, headers=headers)
 
@@ -732,9 +732,9 @@ def get_transfer_code():
     }
     data = {'eternal': 1}
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/auth/link_codes'
+        url = config.gb_url + '/auth/link_codes'
     else:
-        url = 'https://ishin-production.aktsk.jp/auth/link_codes'
+        url = config.jp_url + '/auth/link_codes'
 
     r = requests.post(url, data=json.dumps(data), headers=headers)
     try:
@@ -760,9 +760,9 @@ def tutorial():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/tutorial/finish'
+        url = config.gb_url + '/tutorial/finish'
     else:
-        url = 'https://ishin-production.aktsk.jp/tutorial/finish'
+        url = config.jp_url + '/tutorial/finish'
     r = requests.put(url, headers=headers)
 
     # ##Progress NULL Gasha
@@ -778,9 +778,9 @@ def tutorial():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/tutorial/gasha'
+        url = config.gb_url + '/tutorial/gasha'
     else:
-        url = 'https://ishin-production.aktsk.jp/tutorial/gasha'
+        url = config.jp_url + '/tutorial/gasha'
     r = requests.post(url, headers=headers)
     print(Fore.CYAN + Style.BRIGHT + 'Tutorial Progress: 2/8')
 
@@ -798,9 +798,9 @@ def tutorial():
     }
     progress = {'progress': '999'}
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/tutorial'
+        url = config.gb_url + '/tutorial'
     else:
-        url = 'https://ishin-production.aktsk.jp/tutorial'
+        url = config.jp_url + '/tutorial'
     r = requests.put(url, data=json.dumps(progress), headers=headers)
     print(Fore.CYAN + Style.BRIGHT + 'Tutorial Progress: 3/8')
 
@@ -818,9 +818,9 @@ def tutorial():
     }
     user = {'user': {'name': 'Ninja'}}
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/user'
+        url = config.gb_url + '/user'
     else:
-        url = 'https://ishin-production.aktsk.jp/user'
+        url = config.jp_url + '/user'
     r = requests.put(url, data=json.dumps(user), headers=headers)
     print(Fore.CYAN + Style.BRIGHT + 'Tutorial Progress: 4/8')
 
@@ -837,9 +837,9 @@ def tutorial():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/missions/put_forward'
+        url = config.gb_url + '/missions/put_forward'
     else:
-        url = 'https://ishin-production.aktsk.jp/missions/put_forward'
+        url = config.jp_url + '/missions/put_forward'
     r = requests.post(url, headers=headers)
     print(Fore.CYAN + Style.BRIGHT + 'Tutorial Progress: 5/8')
 
@@ -856,9 +856,9 @@ def tutorial():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/apologies/accept'
+        url = config.gb_url + '/apologies/accept'
     else:
-        url = 'https://ishin-production.aktsk.jp/apologies/accept'
+        url = config.jp_url + '/apologies/accept'
     r = requests.put(url, headers=headers)
 
     # ##On Demand
@@ -874,9 +874,9 @@ def tutorial():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/user'
+        url = config.gb_url + '/user'
     else:
-        url = 'https://ishin-production.aktsk.jp/user'
+        url = config.jp_url + '/user'
     data = {'user': {'is_ondemand': True}}
     r = requests.put(url, data=json.dumps(data), headers=headers)
     print(Fore.CYAN + Style.BRIGHT + 'Tutorial Progress: 6/8')
@@ -928,9 +928,9 @@ def db_download():
         'X-Language': 'en',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/client_assets/database'
+        url = config.gb_url + '/client_assets/database'
     else:
-        url = 'https://ishin-production.aktsk.jp/client_assets/database'
+        url = config.jp_url + '/client_assets/database'
 
     r = requests.get(url, allow_redirects=True, headers=headers)
     if local_version_glb != str(r.json()['version']):
@@ -960,9 +960,9 @@ def db_download():
         'X-Language': 'en',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/client_assets/database'
+        url = config.gb_url + '/client_assets/database'
     else:
-        url = 'https://ishin-production.aktsk.jp/client_assets/database'
+        url = config.jp_url + '/client_assets/database'
 
     r = requests.get(url, allow_redirects=True, headers=headers)
     if local_version_jp != str(r.json()['version']):
@@ -1018,9 +1018,9 @@ def accept_missions():
         'X-ClientVersion': '////'
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/missions'
+        url = config.gb_url + '/missions'
     else:
-        url = 'https://ishin-production.aktsk.jp/missions'
+        url = config.jp_url + '/missions'
     r = requests.get(url, headers=headers)
     missions = r.json()
     mission_list = []
@@ -1039,9 +1039,9 @@ def accept_missions():
         'X-ClientVersion': '////'
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/missions/accept'
+        url = config.gb_url + '/missions/accept'
     else:
-        url = 'https://ishin-production.aktsk.jp/missions/accept'
+        url = config.jp_url + '/missions/accept'
     data = {"mission_ids": mission_list}
     r = requests.post(url, data=json.dumps(data), headers=headers)
     if 'error' not in r.json():
@@ -1063,9 +1063,9 @@ def accept_gifts():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/gifts'
+        url = config.gb_url + '/gifts'
     else:
-        url = 'https://ishin-production.aktsk.jp/gifts'
+        url = config.jp_url + '/gifts'
     r = requests.get(url, headers=headers)
 
     gifts = []
@@ -1087,9 +1087,9 @@ def accept_gifts():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/gifts/accept'
+        url = config.gb_url + '/gifts/accept'
     else:
-        url = 'https://ishin-production.aktsk.jp/gifts/accept'
+        url = config.jp_url + '/gifts/accept'
 
     chunks = [gifts[x:x + 25] for x in range(0, len(gifts), 25)]
     for data in chunks:
@@ -1119,9 +1119,9 @@ def change_supporter():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/cards'
+        url = config.gb_url + '/cards'
     else:
-        url = 'https://ishin-production.aktsk.jp/cards'
+        url = config.jp_url + '/cards'
     r = requests.get(url, headers=headers)
     master_cards = r.json()['cards']
     print(Fore.GREEN + Style.BRIGHT + 'Done...')
@@ -1433,9 +1433,9 @@ def change_supporter():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/support_leaders'
+        url = config.gb_url + '/support_leaders'
     else:
-        url = 'https://ishin-production.aktsk.jp/support_leaders'
+        url = config.jp_url + '/support_leaders'
     # print(chosen_cards_unique_ids)
     data = {'support_leader_ids': chosen_cards_unique_ids}
     # print(data)
@@ -1471,9 +1471,9 @@ def change_team():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/cards'
+        url = config.gb_url + '/cards'
     else:
-        url = 'https://ishin-production.aktsk.jp/cards'
+        url = config.jp_url + '/cards'
     r = requests.get(url, headers=headers)
     master_cards = r.json()['cards']
     print(Fore.GREEN + Style.BRIGHT + 'Done...')
@@ -1823,9 +1823,9 @@ def change_team():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/teams'
+        url = config.gb_url + '/teams'
     else:
-        url = 'https://ishin-production.aktsk.jp/teams'
+        url = config.jp_url + '/teams'
     # print(chosen_cards_unique_ids)
     data = {'selected_team_num': 1, 'user_card_teams': [
         {'num': chosen_deck, 'user_card_ids': chosen_cards_unique_ids},
@@ -1857,9 +1857,9 @@ def get_kagi_id(stage):
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/eventkagi_items'
+        url = config.gb_url + '/eventkagi_items'
     else:
-        url = 'https://ishin-production.aktsk.jp/eventkagi_items'
+        url = config.jp_url + '/eventkagi_items'
     r = requests.get(url, headers=headers)
 
     kagi_items = r.json()['eventkagi_items']
@@ -1901,9 +1901,9 @@ def complete_unfinished_quest_stages():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/user_areas'
+        url = config.gb_url + '/user_areas'
     else:
-        url = 'https://ishin-production.aktsk.jp/user_areas'
+        url = config.jp_url + '/user_areas'
     r = requests.get(url, headers=headers)
 
     maps = []
@@ -1971,9 +1971,9 @@ def change_name():
     name = input('What would you like to change your name to?: ')
     user = {'user': {'name': name}}
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/user'
+        url = config.gb_url + '/user'
     else:
-        url = 'https://ishin-production.aktsk.jp/user'
+        url = config.jp_url + '/user'
     r = requests.put(url, data=json.dumps(user), headers=headers)
     if 'error' in r.json():
         print(r.json())
@@ -1996,9 +1996,9 @@ def increase_capacity():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/user/capacity/card'
+        url = config.gb_url + '/user/capacity/card'
     else:
-        url = 'https://ishin-production.aktsk.jp/user/capacity/card'
+        url = config.jp_url + '/user/capacity/card'
 
     r = requests.post(url, headers=headers)
     if 'error' in r.json():
@@ -2023,9 +2023,9 @@ def get_user_info():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/user'
+        url = config.gb_url + '/user'
     else:
-        url = 'https://ishin-production.aktsk.jp/user'
+        url = config.jp_url + '/user'
     r = requests.get(url, headers=headers)
     user = r.json()
 
@@ -2055,9 +2055,9 @@ def get_remaining_stones():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/user'
+        url = config.gb_url + '/user'
     else:
-        url = 'https://ishin-production.aktsk.jp/user'
+        url = config.jp_url + '/user'
     r = requests.get(url, headers=headers)
     user = r.json()
 
@@ -2082,9 +2082,9 @@ def complete_unfinished_events():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/events'
+        url = config.gb_url + '/events'
     else:
-        url = 'https://ishin-production.aktsk.jp/events'
+        url = config.jp_url + '/events'
     r = requests.get(url, headers=headers)
     events = r.json()
     event_ids = []
@@ -2109,9 +2109,9 @@ def complete_unfinished_events():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/user_areas'
+        url = config.gb_url + '/user_areas'
     else:
-        url = 'https://ishin-production.aktsk.jp/user_areas'
+        url = config.jp_url + '/user_areas'
     r = requests.get(url, headers=headers)
     areas = r.json()['user_areas']
     i = 1
@@ -2140,9 +2140,9 @@ def complete_clash():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/resources/home?rmbattles=true'
+        url = config.gb_url + '/resources/home?rmbattles=true'
     else:
-        url = 'https://ishin-production.aktsk.jp/resources/home?rmbattles=true'
+        url = config.jp_url + '/resources/home?rmbattles=true'
     r = requests.get(url, headers=headers)
     clash_id = r.json()['rmbattles']['id']
 
@@ -2162,9 +2162,9 @@ def complete_clash():
         'reason': "dropout"
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/rmbattles/' + str(clash_id) + '/stages/dropout'
+        url = config.gb_url + '/rmbattles/' + str(clash_id) + '/stages/dropout'
     else:
-        url = 'https://ishin-production.aktsk.jp/rmbattles/' + str(clash_id) + '/stages/dropout'
+        url = config.jp_url + '/rmbattles/' + str(clash_id) + '/stages/dropout'
 
     r = requests.post(url, data=json.dumps(sign), headers=headers)
     print('Reset complete...')
@@ -2182,9 +2182,9 @@ def complete_clash():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/rmbattles/' + str(clash_id)
+        url = config.gb_url + '/rmbattles/' + str(clash_id)
     else:
-        url = 'https://ishin-production.aktsk.jp/rmbattles/' + str(clash_id)
+        url = config.jp_url + '/rmbattles/' + str(clash_id)
 
     r = requests.get(url, headers=headers)
 
@@ -2206,9 +2206,9 @@ def complete_clash():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/rmbattles/available_user_cards'
+        url = config.gb_url + '/rmbattles/available_user_cards'
     else:
-        url = 'https://ishin-production.aktsk.jp/rmbattles/available_user_cards'
+        url = config.jp_url + '/rmbattles/available_user_cards'
 
     r = requests.get(url, headers=headers)
     print('Cards received...')
@@ -2238,9 +2238,9 @@ def complete_clash():
     }
     data = {'user_card_ids': available_user_cards}
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/rmbattles/teams/1'
+        url = config.gb_url + '/rmbattles/teams/1'
     else:
-        url = 'https://ishin-production.aktsk.jp/rmbattles/teams/1'
+        url = config.jp_url + '/rmbattles/teams/1'
 
     r = requests.put(url, data=json.dumps(data), headers=headers)
     print('Sent!')
@@ -2272,9 +2272,9 @@ def complete_clash():
             'X-ClientVersion': '////',
         }
         if config.client == 'global':
-            url = 'https://ishin-global.aktsk.com/rmbattles/' + str(clash_id) + '/stages/' + str(stage) + '/start'
+            url = config.gb_url + '/rmbattles/' + str(clash_id) + '/stages/' + str(stage) + '/start'
         else:
-            url = 'https://ishin-production.aktsk.jp/rmbattles/' + str(clash_id) + '/stages/' + str(stage) + '/start'
+            url = config.jp_url + '/rmbattles/' + str(clash_id) + '/stages/' + str(stage) + '/start'
 
         r = requests.post(url, data=json.dumps(sign), headers=headers)
         print('Commencing Stage ' + Fore.YELLOW + str(stage))
@@ -2315,9 +2315,9 @@ def complete_clash():
             'X-ClientVersion': '////',
         }
         if config.client == 'global':
-            url = 'https://ishin-global.aktsk.com/rmbattles/' + str(clash_id) + '/stages/finish'
+            url = config.gb_url + '/rmbattles/' + str(clash_id) + '/stages/finish'
         else:
-            url = 'https://ishin-production.aktsk.jp/rmbattles/' + str(clash_id) + '/stages/finish'
+            url = config.jp_url + '/rmbattles/' + str(clash_id) + '/stages/finish'
 
         r = requests.post(url, data=json.dumps(sign), headers=headers)
         print('Completed Stage ' + Fore.YELLOW + str(stage))
@@ -2334,9 +2334,9 @@ def complete_clash():
             'X-ClientVersion': '////',
         }
         if config.client == 'global':
-            url = 'https://ishin-global.aktsk.com/rmbattles/teams/1'
+            url = config.gb_url + '/rmbattles/teams/1'
         else:
-            url = 'https://ishin-production.aktsk.jp/rmbattles/teams/1'
+            url = config.jp_url + '/rmbattles/teams/1'
 
         r = requests.get(url, headers=headers)
         print('----------------------------')
@@ -2484,9 +2484,9 @@ def daily_login():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/resources/home?apologies=true&banners=true&bonus_schedules=true&budokai=true&comeback_campaigns=true&gifts=true&login_bonuses=true&rmbattles=true'
+        url = config.gb_url + '/resources/home?apologies=true&banners=true&bonus_schedules=true&budokai=true&comeback_campaigns=true&gifts=true&login_bonuses=true&rmbattles=true'
     else:
-        url = 'https://ishin-production.aktsk.jp/resources/home?apologies=true&banners=true&bonus_schedules=true&budokai=true&comeback_campaigns=true&gifts=true&login_bonuses=true&rmbattles=true'
+        url = config.jp_url + '/resources/home?apologies=true&banners=true&bonus_schedules=true&budokai=true&comeback_campaigns=true&gifts=true&login_bonuses=true&rmbattles=true'
     r = requests.get(url, headers=headers)
     if 'error' in r.json():
         print(r.json())
@@ -2502,9 +2502,9 @@ def daily_login():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/login_bonuses/accept'
+        url = config.gb_url + '/login_bonuses/accept'
     else:
-        url = 'https://ishin-production.aktsk.jp/login_bonuses/accept'
+        url = config.jp_url + '/login_bonuses/accept'
 
     r = requests.post(url, headers=headers)
     if 'error' in r.json():
@@ -2527,9 +2527,9 @@ def dragonballs():
         'X-ClientVersion': '////'
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/dragonball_sets'
+        url = config.gb_url + '/dragonball_sets'
     else:
-        url = 'https://ishin-production.aktsk.jp/dragonball_sets'
+        url = config.jp_url + '/dragonball_sets'
     r = requests.get(url, headers=headers)
     if 'error' in r.json():
         print(Fore.RED + Style.BRIGHT + str(r.json()))
@@ -2561,9 +2561,9 @@ def dragonballs():
             'X-ClientVersion': '////'
         }
         if config.client == 'global':
-            url = 'https://ishin-global.aktsk.com/dragonball_sets/' + str(set) + '/wishes'
+            url = config.gb_url + '/dragonball_sets/' + str(set) + '/wishes'
         else:
-            url = 'https://ishin-production.aktsk.jp/dragonball_sets/' + str(set) + '/wishes'
+            url = config.jp_url + '/dragonball_sets/' + str(set) + '/wishes'
 
         r = requests.get(url, headers=headers)
         if 'error' in r.json():
@@ -2596,9 +2596,9 @@ def dragonballs():
             'X-ClientVersion': '////',
         }
         if config.client == 'global':
-            url = 'https://ishin-global.aktsk.com/dragonball_sets/' + str(set) + '/wishes'
+            url = config.gb_url + '/dragonball_sets/' + str(set) + '/wishes'
         else:
-            url = 'https://ishin-production.aktsk.jp/dragonball_sets/' + str(set) + '/wishes'
+            url = config.jp_url + '/dragonball_sets/' + str(set) + '/wishes'
         data = {'dragonball_wish_ids': [int(choice)]}
         r = requests.post(url, data=json.dumps(data), headers=headers)
         if 'error' in r.json():
@@ -2638,10 +2638,10 @@ def transfer_account():
         'unique_id': config.UniqueId,
     }}
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/auth/link_codes/' \
+        url = config.gb_url + '/auth/link_codes/' \
               + str(transfercode)
     else:
-        url = 'https://ishin-production.aktsk.jp/auth/link_codes/' \
+        url = config.jp_url + '/auth/link_codes/' \
               + str(transfercode)
     print('URL: ' + url)
     r = requests.put(url, data=json.dumps(data), headers=headers)
@@ -2762,9 +2762,9 @@ def complete_unfinished_zbattles(kagi=False):
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/events'
+        url = config.gb_url + '/events'
     else:
-        url = 'https://ishin-production.aktsk.jp/events'
+        url = config.jp_url + '/events'
     r = requests.get(url, headers=headers)
     events = r.json()
     try:
@@ -2790,9 +2790,9 @@ def complete_unfinished_zbattles(kagi=False):
                 'X-ClientVersion': '////',
             }
             if config.client == 'global':
-                url = 'https://ishin-global.aktsk.com/user_areas'
+                url = config.gb_url + '/user_areas'
             else:
-                url = 'https://ishin-production.aktsk.jp/user_areas'
+                url = config.jp_url + '/user_areas'
             r = requests.get(url, headers=headers)
             if 'user_z_battles' in r.json():
                 zbattles = r.json()['user_z_battles']
@@ -2821,9 +2821,9 @@ def complete_unfinished_zbattles(kagi=False):
                     'X-ClientVersion': '////',
                 }
                 if config.client == 'global':
-                    url = 'https://ishin-global.aktsk.com/z_battles/' + str(event['id']) + '/supporters'
+                    url = config.gb_url + '/z_battles/' + str(event['id']) + '/supporters'
                 else:
-                    url = 'https://ishin-production.aktsk.jp/z_battles/' + str(event['id']) + '/supporters'
+                    url = config.jp_url + '/z_battles/' + str(event['id']) + '/supporters'
                 r = requests.get(url, headers=headers)
                 if 'supporters' in r.json():
                     supporter = r.json()['supporters'][0]['id']
@@ -2864,9 +2864,9 @@ def complete_unfinished_zbattles(kagi=False):
                 enc_sign = packet.encrypt_sign(sign)
                 data = {'sign': enc_sign}
                 if config.client == 'global':
-                    url = 'https://ishin-global.aktsk.com/z_battles/' + str(event['id']) + '/start'
+                    url = config.gb_url + '/z_battles/' + str(event['id']) + '/start'
                 else:
-                    url = 'https://ishin-production.aktsk.jp/z_battles/' + str(event['id']) + '/start'
+                    url = config.jp_url + '/z_battles/' + str(event['id']) + '/start'
                 r = requests.post(url, data=json.dumps(data), headers=headers)
 
                 if 'sign' in r.json():
@@ -2914,9 +2914,9 @@ def complete_unfinished_zbattles(kagi=False):
                     'X-ClientVersion': '////',
                 }
                 if config.client == 'global':
-                    url = 'https://ishin-global.aktsk.com/z_battles/' + str(event['id']) + '/finish'
+                    url = config.gb_url + '/z_battles/' + str(event['id']) + '/finish'
                 else:
-                    url = 'https://ishin-production.aktsk.jp/z_battles/' + str(event['id']) + '/finish'
+                    url = config.jp_url + '/z_battles/' + str(event['id']) + '/finish'
 
                 r = requests.post(url, data=json.dumps(data), headers=headers)
                 dec_sign = packet.decrypt_sign(r.json()['sign'])
@@ -3130,9 +3130,9 @@ def list_events():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/events'
+        url = config.gb_url + '/events'
     else:
-        url = 'https://ishin-production.aktsk.jp/events'
+        url = config.jp_url + '/events'
     r = requests.get(url, headers=headers)
     events = r.json()
 
@@ -3183,9 +3183,9 @@ def event_viewer():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/events'
+        url = config.gb_url + '/events'
     else:
-        url = 'https://ishin-production.aktsk.jp/events'
+        url = config.jp_url + '/events'
     r = requests.get(url, headers=headers)
     events = r.json()
 
@@ -3278,9 +3278,9 @@ def complete_potential():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/events'
+        url = config.gb_url + '/events'
     else:
-        url = 'https://ishin-production.aktsk.jp/events'
+        url = config.jp_url + '/events'
     r = requests.get(url, headers=headers)
     events = r.json()
     for event in events['events']:
@@ -3314,9 +3314,9 @@ def list_summons():
     }
 
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/gashas'
+        url = config.gb_url + '/gashas'
     else:
-        url = 'https://ishin-production.aktsk.jp/gashas'
+        url = config.jp_url + '/gashas'
 
     r = requests.get(url, headers=headers)
 
@@ -3341,9 +3341,9 @@ def summon():
     }
 
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/gashas'
+        url = config.gb_url + '/gashas'
     else:
-        url = 'https://ishin-production.aktsk.jp/gashas'
+        url = config.jp_url + '/gashas'
     r = requests.get(url, headers=headers)
     gashas = []
     for gasha in r.json()['gashas']:
@@ -3375,10 +3375,10 @@ def summon():
                     'X-ClientVersion': '////',
                 }
                 if config.client == 'global':
-                    url = 'https://ishin-global.aktsk.com/gashas/' + str(summon_id) \
+                    url = config.gb_url + '/gashas/' + str(summon_id) \
                           + '/courses/2/draw'
                 else:
-                    url = 'https://ishin-production.aktsk.jp/gashas/' + str(summon_id) \
+                    url = config.jp_url + '/gashas/' + str(summon_id) \
                           + '/courses/2/draw'
                 window.Hide()
                 window.Refresh()
@@ -3440,10 +3440,10 @@ def summon():
                     'X-ClientVersion': '////',
                 }
                 if config.client == 'global':
-                    url = 'https://ishin-global.aktsk.com/gashas/' + str(summon_id) \
+                    url = config.gb_url + '/gashas/' + str(summon_id) \
                           + '/courses/1/draw'
                 else:
-                    url = 'https://ishin-production.aktsk.jp/gashas/' + str(summon_id) \
+                    url = config.jp_url + '/gashas/' + str(summon_id) \
                           + '/courses/1/draw'
                 window.Hide()
                 window.Refresh()
@@ -3510,9 +3510,9 @@ def sell_cards__bulk_GUI():
     }
 
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/teams'
+        url = config.gb_url + '/teams'
     else:
-        url = 'https://ishin-production.aktsk.jp/teams'
+        url = config.jp_url + '/teams'
     r = requests.get(url, headers=headers)
 
     team_cards = []
@@ -3532,9 +3532,9 @@ def sell_cards__bulk_GUI():
     }
 
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/support_leaders'
+        url = config.gb_url + '/support_leaders'
     else:
-        url = 'https://ishin-production.aktsk.jp/support_leaders'
+        url = config.jp_url + '/support_leaders'
     r = requests.get(url, headers=headers)
     team_cards.extend(r.json()['support_leader_ids'])
 
@@ -3551,9 +3551,9 @@ def sell_cards__bulk_GUI():
     }
 
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/cards'
+        url = config.gb_url + '/cards'
     else:
-        url = 'https://ishin-production.aktsk.jp/cards'
+        url = config.jp_url + '/cards'
     r = requests.get(url, headers=headers)
 
     cards_master_dict = []
@@ -3672,9 +3672,9 @@ def items_viewer():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/resources/login?potential_items=true&training_items=true&support_items=true&treasure_items=true&special_items=true'
+        url = config.gb_url + '/resources/login?potential_items=true&training_items=true&support_items=true&treasure_items=true&special_items=true'
     else:
-        url = 'https://ishin-production.aktsk.jp/resources/login?potential_items=true&training_items=true&support_items=true&treasure_items=true&special_items=true'
+        url = config.jp_url + '/resources/login?potential_items=true&training_items=true&support_items=true&treasure_items=true&special_items=true'
     r = requests.get(url, headers=headers)
 
     col1 = [[sg.Checkbox('Support Items', default=False, key='SUPPORT', change_submits=True)],
@@ -3787,9 +3787,9 @@ def list_cards():
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/cards'
+        url = config.gb_url + '/cards'
     else:
-        url = 'https://ishin-production.aktsk.jp/cards'
+        url = config.jp_url + '/cards'
     r = requests.get(url, headers=headers)
     cards = {}
     for card in r.json()['cards']:
@@ -4033,10 +4033,10 @@ def sell_medals():
     }
     if config.client == 'global':
         config.Model.set_connection_resolver(config.db_glb)
-        url = 'https://ishin-global.aktsk.com/awakening_items'
+        url = config.gb_url + '/awakening_items'
     else:
         config.Model.set_connection_resolver(config.db_jp)
-        url = 'https://ishin-production.aktsk.jp/awakening_items'
+        url = config.jp_url + '/awakening_items'
     r = requests.get(url, headers=headers)
 
     # Create list with ID for listbox
@@ -4086,9 +4086,9 @@ def sell_medals():
                 'X-ClientVersion': '////',
             }
             if config.client == 'global':
-                url = 'https://ishin-global.aktsk.com/awakening_items/exchange'
+                url = config.gb_url + '/awakening_items/exchange'
             else:
-                url = 'https://ishin-production.aktsk.jp/awakening_items/exchange'
+                url = config.jp_url + '/awakening_items/exchange'
 
             medal_id = int(medalo)
             chunk = int(amount) // 99
@@ -4125,9 +4125,9 @@ def sell_medals():
                 'X-ClientVersion': '////',
             }
             if config.client == 'global':
-                url = 'https://ishin-global.aktsk.com/awakening_items'
+                url = config.gb_url + '/awakening_items'
             else:
-                url = 'https://ishin-production.aktsk.jp/awakening_items'
+                url = config.jp_url + '/awakening_items'
             r = requests.get(url, headers=headers)
 
             medal_list[:] = []
@@ -4160,9 +4160,9 @@ def complete_zbattle_stage(kagi=False):
         'X-ClientVersion': '////',
     }
     if config.client == 'global':
-        url = 'https://ishin-global.aktsk.com/events'
+        url = config.gb_url + '/events'
     else:
-        url = 'https://ishin-production.aktsk.jp/events'
+        url = config.jp_url + '/events'
     r = requests.get(url, headers=headers)
     events = r.json()
 
@@ -4219,9 +4219,9 @@ def complete_zbattle_stage(kagi=False):
                     'X-ClientVersion': '////',
                 }
                 if config.client == 'global':
-                    url = 'https://ishin-global.aktsk.com/z_battles/' + str(stage) + '/supporters'
+                    url = config.gb_url + '/z_battles/' + str(stage) + '/supporters'
                 else:
-                    url = 'https://ishin-production.aktsk.jp/z_battles/' + str(stage) + '/supporters'
+                    url = config.jp_url + '/z_battles/' + str(stage) + '/supporters'
                 r = requests.get(url, headers=headers)
                 if 'supporters' in r.json():
                     supporter = r.json()['supporters'][0]['id']
@@ -4262,9 +4262,9 @@ def complete_zbattle_stage(kagi=False):
                 enc_sign = packet.encrypt_sign(sign)
                 data = {'sign': enc_sign}
                 if config.client == 'global':
-                    url = 'https://ishin-global.aktsk.com/z_battles/' + str(stage) + '/start'
+                    url = config.gb_url + '/z_battles/' + str(stage) + '/start'
                 else:
-                    url = 'https://ishin-production.aktsk.jp/z_battles/' + str(stage) + '/start'
+                    url = config.jp_url + '/z_battles/' + str(stage) + '/start'
                 r = requests.post(url, data=json.dumps(data), headers=headers)
 
                 if 'sign' in r.json():
@@ -4312,9 +4312,9 @@ def complete_zbattle_stage(kagi=False):
                     'X-ClientVersion': '////',
                 }
                 if config.client == 'global':
-                    url = 'https://ishin-global.aktsk.com/z_battles/' + str(stage) + '/finish'
+                    url = config.gb_url + '/z_battles/' + str(stage) + '/finish'
                 else:
-                    url = 'https://ishin-production.aktsk.jp/z_battles/' + str(stage) + '/finish'
+                    url = config.jp_url + '/z_battles/' + str(stage) + '/finish'
 
                 r = requests.post(url, data=json.dumps(data), headers=headers)
                 dec_sign = packet.decrypt_sign(r.json()['sign'])

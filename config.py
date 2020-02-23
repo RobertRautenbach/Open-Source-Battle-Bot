@@ -1,5 +1,11 @@
 from orator import DatabaseManager, Model
 
+gb_url = ''
+gb_port = 0
+
+jp_url = ''
+jp_port = 0
+
 AdId = None
 UniqueId = None
 identifier = None

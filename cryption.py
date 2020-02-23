@@ -44,12 +44,12 @@ def mac(method,action):
     nonce = ts + ':' + str(hashlib.md5(ts.encode()).hexdigest())
     if config.client == 'global':
     	value = ts + '\n' + nonce + '\n' + method + '\n' + action + '\n' \
-        + 'ishin-global.aktsk.com' + '\n' + '3001' + '''
+        + config.gb_url.split('https://')[1] + '\n' + config.gb_port + '''
 
 '''
     else:
     	value = ts + '\n' + nonce + '\n' + method + '\n' + action + '\n' \
-        + 'ishin-production.aktsk.jp' + '\n' + '3001' + '''
+        + config.jp_url.split('https://')[1] + '\n' + config.jp_port + '''
 
 '''
 
