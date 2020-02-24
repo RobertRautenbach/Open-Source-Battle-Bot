@@ -18,7 +18,7 @@ https://github.com/FlashChaser/Open-Source-Battle-Bot/releases
 
 # Installation
 
-You might need to use sudo before every pip3 command.
+You might need to use sudo before every `pip` command.
 
 ```
 pip install --user pyinstaller
@@ -28,7 +28,16 @@ pip install --user PySimpleGUI
 pip install --user requests
 ```
 
-Then go to folder where your dokkan.py file is and: python3 dokkan.py
+• Windows:
+<br>
+in the folder you downloaded; double click the `Windows.bat` file.
+<br>if you want to do it manually; open command prompt then follow the mac guide.
+
+• Mac:
+<br>
+open terminal & move directory to where the bot folder is e.g. `Downloads`
+<br>enter `cd ./Downloads/Open-Source-Battle-Bot-development/Open-Source-Battle-Bot-development`
+<br>then `python dokkan.py`
 
 Happy testing!
 
