@@ -121,6 +121,7 @@ while True:
                     print(Fore.CYAN + Style.BRIGHT + 'New Account :' + Fore.YELLOW + Style.BRIGHT + ' 0')
                     print(Fore.CYAN + Style.BRIGHT + 'Transfer Account :' + Fore.YELLOW + Style.BRIGHT + ' 1')
                     print(Fore.CYAN + Style.BRIGHT + 'Load From Save :' + Fore.YELLOW + Style.BRIGHT + ' 2')
+                    print(Fore.CYAN + Style.BRIGHT + 'Load From Identifier :' + Fore.YELLOW + Style.BRIGHT + ' 3')
                     print('---------------------------------')
                     command = input('Enter your choice: ')
                     config.reroll_state = False
@@ -147,6 +148,16 @@ while True:
                 elif command == '2':
                     print(' ')
                     commands.load_account()
+                    commands.daily_login()
+                    commands.accept_gifts()
+                    commands.accept_missions()
+                    break
+                elif command == '3':
+                    print(' ')
+                    print(Fore.CYAN + Style.BRIGHT + 'Enter identifier below...')
+                    config.identifier = input()
+                    commands.save_account(config.reroll_state)
+                    config.access_token, config.secret = commands.signin(config.identifier)
                     commands.daily_login()
                     commands.accept_gifts()
                     commands.accept_missions()

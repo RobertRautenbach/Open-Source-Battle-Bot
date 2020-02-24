@@ -687,17 +687,20 @@ def signin(identifier):
     # Returns tuple
 
     # Format identifier to receive access_token and secret
-    basic_pwacc = identifier.split(':')
-    complete_string = basic_pwacc[1] + ':' + basic_pwacc[0]
-    basic_accpw = 'Basic ' \
-                  + base64.b64encode(complete_string.encode('utf-8'
-                                                            )).decode('utf-8')
+    basic_accpw = 'Basic ' + cryption.basic(identifier)
+    '''
+    if ':' in identifier:
+        basic_pwacc = identifier.split(':')
+        complete_string = basic_pwacc[1] + ':' + basic_pwacc[0]
+        basic_accpw = 'Basic ' + base64.b64encode(complete_string.encode('utf-8')).decode('utf-8')
+    else:
+        basic_accpw = 'Basic ' + base64.b64encode(identifier.encode('utf-8')).decode('utf-8')
+    '''
+
     data = json.dumps({
         'ad_id': cryption.guid()['AdId'],
         'unique_id': cryption.guid()['UniqueId']
     })
-
-    # print(data)
 
     headers = {
         'User-Agent': config.user_agent,
@@ -718,13 +721,17 @@ def signin(identifier):
     r = requests.post(url, data=data, headers=headers)
 
     if 'captcha_url' in r.json():
-        print(r.json())
-        url = r.json()['captcha_url']
-        webbrowser.open(url, new=2)
+        cap_url = r.json()['captcha_url']
+        webbrowser.open(cap_url, new=2)
         captcha_session_key = r.json()['captcha_session_key']
         print(
             'Opening captcha in browser. Press' + Fore.RED + Style.BRIGHT + ' ENTER ' + Style.RESET_ALL + 'once you have solved it...')
         input()
+        data = json.dumps({
+            'captcha_session_key': captcha_session_key,
+            'ad_id': cryption.guid()['AdId'],
+            'unique_id': cryption.guid()['UniqueId'],
+        })
         r = requests.post(url, data=data, headers=headers)
 
     print(Fore.RED + Style.BRIGHT + 'SIGN IN COMPLETE' + Style.RESET_ALL)
