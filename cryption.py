@@ -34,7 +34,31 @@ def guid():
     return dict(AdId=str(uuid.uuid4()), UniqueId=UniqueId)
 
 ####################################################################
-
+# thanks to renzy for assisting on how the identifier & Basic works so that i could write this. - k1mpl0s
+def basic(identifier):
+    #check if from other bots
+    if ':' not in identifier:
+        #remove next-lines
+        if '\n' in identifier:
+            temp = identifier.replace('\n', '')
+        else:
+            temp = identifier
+        #append blanks to make size of 160
+        if len(temp) < 159:
+            while len(temp) < 159:
+                temp = temp.ljust(159, '\u0008')
+        #flip identifier
+        decode = base64.b64decode(temp).decode()
+        part = decode.split(':')
+        temp = part[1] + ':' + part[0]
+    else:
+        #flip identifier
+        part = identifier.split(':')
+        temp = part[1] + ':' + part[0]
+    #basic
+    basic = base64.b64encode(temp.encode()).decode()
+    return basic
+####################################################################
 def mac(method,action):
 
     # Creates Mac Authentication header string used when sending requests

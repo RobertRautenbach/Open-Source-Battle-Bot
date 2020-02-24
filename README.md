@@ -18,7 +18,7 @@ https://github.com/FlashChaser/Open-Source-Battle-Bot/releases
 
 # Installation
 
-You might need to use sudo before every `pip` command.
+You might need to use `sudo` before every `pip` command.
 
 ```
 pip install --user pyinstaller
