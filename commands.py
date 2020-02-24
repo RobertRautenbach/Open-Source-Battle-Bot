@@ -8,6 +8,7 @@ from orator import DatabaseManager, Model
 import os
 import cryption
 import PySimpleGUI as sg
+import random
 from random import choice
 from random import randint
 import re
