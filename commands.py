@@ -621,13 +621,22 @@ def signup(reroll_state):
     config.AdId = cryption.guid()['AdId']
     config.UniqueId = cryption.guid()['UniqueId']
 
+    if config.platform == 'android':
+        device_name = 'SM'
+        device_model = 'SM-E7000'
+        os_version = '7.0'
+    else:
+        device_name = 'iPhone'
+        device_model = 'iPhone XR'
+        os_version = '13.0'
+
     user_acc = {
         'ad_id': config.AdId,
         'country': 'AU',
         'currency': 'AUD',
-        'device': 'samsung',
-        'device_model': 'SM-E7000',
-        'os_version': '7.0',
+        'device': device_name,
+        'device_model': device_model,
+        'os_version': os_version,
         'platform': config.platform,
         'unique_id': config.UniqueId,
     }
@@ -2662,10 +2671,18 @@ def transfer_account():
         'X-DatabaseVersion': '////',
         'X-ClientVersion': config.version_code,
     }
+    if config.platform == 'android':
+        device_name = 'SM'
+        device_model = 'SM-E7000'
+        os_version = '7.0'
+    else:
+        device_name = 'iPhone'
+        device_model = 'iPhone XR'
+        os_version = '13.0'
     data = {'eternal': True, 'old_user_id': '', 'user_account': {
-        'device': 'samsung',
-        'device_model': 'SM-E7000',
-        'os_version': '7.0',
+        'device': device_name,
+        'device_model': device_model,
+        'os_version': os_version,
         'platform': config.platform,
         'unique_id': config.UniqueId,
     }}
@@ -2724,11 +2741,11 @@ def user_command_executor(command):
         complete_unfinished_zbattles()
         complete_clash()
     ## When this will get updated, we shall add :finishzbattle,30, + sell + sellhercule + baba(?)
-    elif command == 'completequests':
+    elif command == 'quests':
         complete_unfinished_quest_stages()
-    elif command == 'completeevents':
+    elif command == 'events':
         complete_unfinished_events()
-    elif command == 'completezbattles':
+    elif command == 'zbattles':
         complete_unfinished_zbattles()
     elif command == 'zstages':
         complete_zbattle_stage()
