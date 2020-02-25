@@ -8,6 +8,7 @@ from orator import DatabaseManager, Model
 import os
 import cryption
 import PySimpleGUI as sg
+import random
 from random import choice
 from random import randint
 import re
@@ -621,13 +622,22 @@ def signup(reroll_state):
     config.AdId = cryption.guid()['AdId']
     config.UniqueId = cryption.guid()['UniqueId']
 
+    if config.platform == 'android':
+        device_name = 'SM'
+        device_model = 'SM-E7000'
+        os_version = '7.0'
+    else:
+        device_name = 'iPhone'
+        device_model = 'iPhone XR'
+        os_version = '13.0'
+
     user_acc = {
         'ad_id': config.AdId,
         'country': 'AU',
         'currency': 'AUD',
-        'device': 'samsung',
-        'device_model': 'SM-E7000',
-        'os_version': '7.0',
+        'device': device_name,
+        'device_model': device_model,
+        'os_version': os_version,
         'platform': config.platform,
         'unique_id': config.UniqueId,
     }
@@ -687,17 +697,20 @@ def signin(identifier):
     # Returns tuple
 
     # Format identifier to receive access_token and secret
-    basic_pwacc = identifier.split(':')
-    complete_string = basic_pwacc[1] + ':' + basic_pwacc[0]
-    basic_accpw = 'Basic ' \
-                  + base64.b64encode(complete_string.encode('utf-8'
-                                                            )).decode('utf-8')
+    basic_accpw = 'Basic ' + cryption.basic(identifier)
+    '''
+    if ':' in identifier:
+        basic_pwacc = identifier.split(':')
+        complete_string = basic_pwacc[1] + ':' + basic_pwacc[0]
+        basic_accpw = 'Basic ' + base64.b64encode(complete_string.encode('utf-8')).decode('utf-8')
+    else:
+        basic_accpw = 'Basic ' + base64.b64encode(identifier.encode('utf-8')).decode('utf-8')
+    '''
+
     data = json.dumps({
         'ad_id': cryption.guid()['AdId'],
         'unique_id': cryption.guid()['UniqueId']
     })
-
-    # print(data)
 
     headers = {
         'User-Agent': config.user_agent,
@@ -718,13 +731,17 @@ def signin(identifier):
     r = requests.post(url, data=data, headers=headers)
 
     if 'captcha_url' in r.json():
-        print(r.json())
-        url = r.json()['captcha_url']
-        webbrowser.open(url, new=2)
+        cap_url = r.json()['captcha_url']
+        webbrowser.open(cap_url, new=2)
         captcha_session_key = r.json()['captcha_session_key']
         print(
             'Opening captcha in browser. Press' + Fore.RED + Style.BRIGHT + ' ENTER ' + Style.RESET_ALL + 'once you have solved it...')
         input()
+        data = json.dumps({
+            'captcha_session_key': captcha_session_key,
+            'ad_id': cryption.guid()['AdId'],
+            'unique_id': cryption.guid()['UniqueId'],
+        })
         r = requests.post(url, data=data, headers=headers)
 
     print(Fore.RED + Style.BRIGHT + 'SIGN IN COMPLETE' + Style.RESET_ALL)
@@ -2655,10 +2672,18 @@ def transfer_account():
         'X-DatabaseVersion': '////',
         'X-ClientVersion': config.version_code,
     }
+    if config.platform == 'android':
+        device_name = 'SM'
+        device_model = 'SM-E7000'
+        os_version = '7.0'
+    else:
+        device_name = 'iPhone'
+        device_model = 'iPhone XR'
+        os_version = '13.0'
     data = {'eternal': True, 'old_user_id': '', 'user_account': {
-        'device': 'samsung',
-        'device_model': 'SM-E7000',
-        'os_version': '7.0',
+        'device': device_name,
+        'device_model': device_model,
+        'os_version': os_version,
         'platform': config.platform,
         'unique_id': config.UniqueId,
     }}
@@ -2717,11 +2742,11 @@ def user_command_executor(command):
         complete_unfinished_zbattles()
         complete_clash()
     ## When this will get updated, we shall add :finishzbattle,30, + sell + sellhercule + baba(?)
-    elif command == 'completequests':
+    elif command == 'quests':
         complete_unfinished_quest_stages()
-    elif command == 'completeevents':
+    elif command == 'events':
         complete_unfinished_events()
-    elif command == 'completezbattles':
+    elif command == 'zbattles':
         complete_unfinished_zbattles()
     elif command == 'zstages':
         complete_zbattle_stage()

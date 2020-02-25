@@ -5,10 +5,12 @@ gb_port = 0
 jp_url = ''
 jp_port = 0
 
-# these can be updated automatically but it'd require an APK download.
-# it's better to manually update them along with the bot to prevent account bans from game-breaking changes.
-# the end of the version is 2 md5 hashes together as noted here: https://twitter.com/dbzspace/status/1106316112638210050
-# we're not sure what the 2 hashes are of... - k1mpl0s
+'''
+these can be updated automatically but it'd require an APK download.
+it's better to manually update them along with the bot to prevent account bans from game-breaking changes.
+noted here: https://twitter.com/dbzspace/status/1106316112638210050
+we're not sure what the 2 hashes are of... - k1mpl0s
+'''
 version_code = '4.7.1-0cfca85464a68be2257af10e69257dfba116fa0f7315c6b930b4eec74f41a49f'
 # 4.8.3-3998abb91156a951db70394807eb63d626d20c640c0c2f4611b0973499ce87ef
 # ^ this is set if account is japan in load_account() - commands.py
@@ -20,7 +22,7 @@ access_token = None
 secret = None
 client = 'japan'
 platform = 'android'
-user_agent = 'Dalvik/2.1.0 (Linux; Android 9.0; SM-S10)'
+user_agent = 'Dalvik/2.1.0 (Linux; Android 7.0; SM-E7000)'
 # CFNetwork/808.3 Darwin/16.3.0 (iPhone; CPU iPhone OS 13_0 like Mac OS X)
 # ^ this is set if platform is iOS in load_account() - commands.py
 
